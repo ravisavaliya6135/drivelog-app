@@ -1,0 +1,377 @@
+import { ArrowLeft, Save, X, User, Car, Trash2, Edit2, Plus, MapPin, Bell, Moon, Sun, Download, Wrench, Info, Shield } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { MultiDriverForm } from '../components/MultiDriverForm';
+import { StateSelector } from '../components/StateSelector';
+import { useDriveLog } from '../hooks/useDriveLog';
+import { US_STATES } from '../types';
+
+export function Settings() {
+  const { drivers, vehicles, loading, refresh } = useDriveLog();
+  const [selectedState, setSelectedState] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('drivelog-state') || 'CA';
+    }
+    return 'CA';
+  });
+  const [activeTab, setActiveTab] = useState<'drivers' | 'vehicles' | 'preferences' | 'about'>('drivers');
+  const [showExportData, setShowExportData] = useState(false);
+  const [exportData, setExportData] = useState('');
+
+  const handleStateChange = (stateCode: string) => {
+    setSelectedState(stateCode);
+    localStorage.setItem('drivelog-state', stateCode);
+  };
+
+  const handleExportAllData = async () => {
+    const { getAllDrives, getAllDrivers, getAllVehicles } = await import('../utils/db');
+    const [allDrives, allDrivers, allVehicles] = await Promise.all([
+      getAllDrives(),
+      getAllDrivers(),
+      getAllVehicles(),
+    ]);
+    const data = { drives: allDrives, drivers: allDrivers, vehicles: allVehicles, state: selectedState, exportedAt: new Date().toISOString() };
+    const json = JSON.stringify(data, null, 2);
+    setExportData(json);
+    setShowExportData(true);
+  };
+
+  const handleDownloadExport = () => {
+    const blob = new Blob([exportData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `DriveLog-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const data = JSON.parse(event.target?.result as string);
+        const { saveDrive, saveDriver, saveVehicle, saveSetting } = await import('../utils/db');
+        
+        if (data.drives) {
+          for (const drive of data.drives) {
+            await saveDrive(drive);
+          }
+        }
+        if (data.drivers) {
+          for (const driver of data.drivers) {
+            await saveDriver(driver);
+          }
+        }
+        if (data.vehicles) {
+          for (const vehicle of data.vehicles) {
+            await saveVehicle(vehicle);
+          }
+        }
+        if (data.state) {
+          await saveSetting('drivelog-state', data.state);
+          setSelectedState(data.state);
+        }
+        
+        await refresh();
+        alert('Data imported successfully!');
+      } catch (err) {
+        alert('Failed to import data. Invalid file format.');
+        console.error(err);
+      }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  };
+
+  const handleClearAllData = async () => {
+    if (!confirm('This will delete ALL drives, drivers, and vehicles. This cannot be undone. Are you sure?')) return;
+    if (!confirm('Last chance! Type "DELETE" to confirm.')) return;
+    
+    const { getAllDrives, getAllDrivers, getAllVehicles, deleteDrive, deleteDriver, deleteVehicle } = await import('../utils/db');
+    const [allDrives, allDrivers, allVehicles] = await Promise.all([
+      getAllDrives(),
+      getAllDrivers(),
+      getAllVehicles(),
+    ]);
+    
+    await Promise.all([
+      ...allDrives.map(d => deleteDrive(d.id)),
+      ...allDrivers.map(d => deleteDriver(d.id)),
+      ...allVehicles.map(v => deleteVehicle(v.id)),
+    ]);
+    
+    await refresh();
+    alert('All data cleared.');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const state = US_STATES.find(s => s.code === selectedState) || US_STATES[4];
+
+  return (
+    <div className="min-h-screen bg-slate-50 pb-20">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
+        <div className="max-w-4xl mx-auto px-4 py-4">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => window.history.back()}
+              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900">Settings</h1>
+              <p className="text-xs text-slate-500">Manage drivers, vehicles & preferences</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        {/* Tab Navigation */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-1">
+          <nav className="flex gap-1" aria-label="Settings tabs">
+            <TabButton active={activeTab === 'drivers'} onClick={() => setActiveTab('drivers')}>
+              <User className="w-4 h-4" /> Drivers
+            </TabButton>
+            <TabButton active={activeTab === 'vehicles'} onClick={() => setActiveTab('vehicles')}>
+              <Car className="w-4 h-4" /> Vehicles
+            </TabButton>
+            <TabButton active={activeTab === 'preferences'} onClick={() => setActiveTab('preferences')}>
+              <MapPin className="w-4 h-4" /> Preferences
+            </TabButton>
+            <TabButton active={activeTab === 'about'} onClick={() => setActiveTab('about')}>
+              <Info className="w-4 h-4" /> About
+            </TabButton>
+          </nav>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'drivers' && (
+          <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-6" aria-labelledby="drivers-heading">
+            <h2 id="drivers-heading" className="text-lg font-semibold text-slate-900 mb-4">Manage Drivers</h2>
+            <MultiDriverForm
+              drivers={drivers}
+              vehicles={vehicles}
+              onDriversChange={async (newDrivers) => {
+                const { saveDriver } = await import('../utils/db');
+                for (const driver of newDrivers) {
+                  await saveDriver(driver);
+                }
+                await refresh();
+              }}
+              onVehiclesChange={async (newVehicles) => {
+                const { saveVehicle } = await import('../utils/db');
+                for (const vehicle of newVehicles) {
+                  await saveVehicle(vehicle);
+                }
+                await refresh();
+              }}
+            />
+          </section>
+        )}
+
+        {activeTab === 'vehicles' && (
+          <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-6" aria-labelledby="vehicles-heading">
+            <h2 id="vehicles-heading" className="text-lg font-semibold text-slate-900 mb-4">Manage Vehicles</h2>
+            <p className="text-slate-500 mb-4">Use the Drivers tab to manage vehicles (they're grouped together).</p>
+            <div className="text-center py-8">
+              <Car className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+              <p className="text-slate-500">Vehicle management is in the Drivers tab</p>
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'preferences' && (
+          <section className="space-y-6" aria-labelledby="preferences-heading">
+            <h2 id="preferences-heading" className="text-lg font-semibold text-slate-900">Preferences</h2>
+            
+            {/* Default State */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <h3 className="text-md font-medium text-slate-900 mb-4 flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-slate-600" />
+                Default State
+              </h3>
+              <p className="text-sm text-slate-500 mb-4">
+                This determines legal night calculations and DMV requirements for PDF export.
+              </p>
+              <StateSelector 
+                value={selectedState} 
+                onChange={handleStateChange} 
+                showWarning={true}
+              />
+            </div>
+
+            {/* Data Management */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <h3 className="text-md font-medium text-slate-900 mb-4 flex items-center gap-2">
+                <Download className="w-5 h-5 text-slate-600" />
+                Data Backup & Restore
+              </h3>
+              <p className="text-sm text-slate-500 mb-4">
+                Export all your data as JSON for backup or to transfer to another device.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleExportAllData}
+                  className="px-4 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-700 flex items-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  Export All Data (JSON)
+                </button>
+                <label className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 flex items-center gap-2 cursor-pointer">
+                  <Download className="w-4 h-4" />
+                  Import Data
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={handleImportData}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+              
+              {showExportData && (
+                <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium text-slate-700">Backup Data (copy or download)</span>
+                    <button
+                      onClick={() => { setShowExportData(false); }}
+                      className="p-1 text-slate-400 hover:text-slate-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <textarea
+                    value={exportData}
+                    readOnly
+                    rows={8}
+                    className="w-full font-mono text-xs bg-white border border-slate-300 rounded p-2"
+                  />
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      onClick={handleDownloadExport}
+                      className="px-3 py-1.5 bg-slate-900 text-white text-sm rounded-lg hover:bg-slate-700"
+                    >
+                      Download .json File
+                    </button>
+                    <button
+                      onClick={() => { navigator.clipboard.writeText(exportData); alert('Copied to clipboard!'); }}
+                      className="px-3 py-1.5 bg-slate-100 text-slate-700 text-sm rounded-lg hover:bg-slate-200"
+                    >
+                      Copy to Clipboard
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Danger Zone */}
+            <div className="bg-white rounded-xl shadow-sm border border-red-200 p-6">
+              <h3 className="text-md font-medium text-red-700 mb-4 flex items-center gap-2">
+                <Shield className="w-5 h-5" />
+                Danger Zone
+              </h3>
+              <p className="text-sm text-red-600 mb-4">
+                These actions are irreversible. Use with extreme caution.
+              </p>
+              <button
+                onClick={handleClearAllData}
+                className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg font-medium hover:bg-red-100 flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Clear ALL Data (Drives, Drivers, Vehicles)
+              </button>
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'about' && (
+          <section className="space-y-6" aria-labelledby="about-heading">
+            <h2 id="about-heading" className="text-lg font-semibold text-slate-900">About DriveLog</h2>
+            
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <div className="text-center mb-6">
+                <div className="w-20 h-20 bg-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Car className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900">DriveLog</h3>
+                <p className="text-slate-500 mt-1">Teen Driving Hours Tracker</p>
+                <p className="text-sm text-slate-400 mt-2">Version 1.0.0</p>
+              </div>
+
+              <div className="space-y-4 text-sm text-slate-600">
+                <p>
+                  DriveLog is a privacy-first, offline-capable Progressive Web App designed to help parents 
+                  and teens track supervised driving hours for DMV license requirements.
+                </p>
+                <p>
+                  <strong>Key Features:</strong>
+                </p>
+                <ul className="list-disc list-inside space-y-1 ml-4">
+                  <li>Offline-first — works without internet</li>
+                  <li>Auto day/night detection (legal 30-min after sunset)</li>
+                  <li>DMV-ready PDF export for all 50 states</li>
+                  <li>Multi-driver & multi-vehicle support</li>
+                  <li>No ads, no tracking, no subscriptions</li>
+                  <li>Installable as a native-like app (PWA)</li>
+                </ul>
+
+                <p className="pt-4 border-t border-slate-200">
+                  <strong>Built with:</strong> React 18, TypeScript, Tailwind CSS, IndexedDB, @react-pdf/renderer, SunCalc
+                </p>
+                <p>
+                  <strong>Privacy:</strong> All data stays on your device. No analytics, no cloud sync, no accounts required.
+                </p>
+              </div>
+            </div>
+
+            {/* Legal Disclaimer */}
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+              <h4 className="font-medium text-amber-800 mb-2 flex items-center gap-2">
+                <Shield className="w-4 h-4" />
+                Important Legal Disclaimer
+              </h4>
+              <p className="text-sm text-amber-700">
+                DriveLog is a record-keeping tool only. It does not guarantee license approval or DMV acceptance.
+                Requirements vary by state and change over time. Always verify current requirements with your 
+                local DMV before your licensing appointment. Some states may require specific forms or digital submissions.
+              </p>
+            </div>
+          </section>
+        )}
+      </main>
+    </div>
+  );
+}
+
+function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex-1 py-2.5 px-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
+        active 
+          ? 'bg-slate-900 text-white shadow-sm' 
+          : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
+      }`}
+      aria-selected={active}
+    >
+      {children}
+    </button>
+  );
+}

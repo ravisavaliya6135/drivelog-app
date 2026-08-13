@@ -1,0 +1,81 @@
+import { ArrowLeft, Save, X, Calendar, MapPin, Cloud, Road, ClipboardList, UserCheck, Truck, Car, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { DriveLogEntry } from '../components/DriveLogEntry';
+import { StateSelector } from '../components/StateSelector';
+import { useDriveLog } from '../hooks/useDriveLog';
+import { useNightDetection } from '../hooks/useNightDetection';
+import { US_STATES, WEATHER_OPTIONS, ROAD_TYPE_OPTIONS, SKILLS_OPTIONS } from '../types';
+
+export function LogDrive() {
+  const { drivers, vehicles, loading, addDrive } = useDriveLog();
+  const { getNightStatus } = useNightDetection();
+  const [selectedState, setSelectedState] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('drivelog-state') || 'CA';
+    }
+    return 'CA';
+  });
+  const [showSkills, setShowSkills] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const handleStateChange = (stateCode: string) => {
+    setSelectedState(stateCode);
+    localStorage.setItem('drivelog-state', stateCode);
+  };
+
+  const handleSave = async (entry: any) => {
+    await addDrive(entry);
+    // Navigate back to home
+    window.history.back();
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 pb-20">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
+        <div className="max-w-2xl mx-auto px-4 py-4">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => window.history.back()}
+              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900">Log Drive Manually</h1>
+              <p className="text-xs text-slate-500">Fill in all required fields</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-2xl mx-auto px-4 py-6">
+        <StateSelector 
+          value={selectedState} 
+          onChange={handleStateChange} 
+          showWarning={true}
+          className="mb-6"
+        />
+
+        <DriveLogEntry
+          drivers={drivers}
+          vehicles={vehicles}
+          selectedState={selectedState}
+          onSave={handleSave}
+          onCancel={() => window.history.back()}
+          isEditing={false}
+        />
+      </main>
+    </div>
+  );
+}
