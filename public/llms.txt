@@ -1,0 +1,80 @@
+# DriveLog — Teen Driving Hours Tracker
+
+> Offline-first supervised driving log with DMV-ready PDF export. Track your teen's driving practice hours, log different driving conditions, and generate DMV-ready reports for license requirements.
+
+## Key Information
+
+- **Name**: DriveLog — Teen Driving Hours Tracker
+- **URL**: https://drivelog-app.vercel.app/
+- **Type**: Progressive Web App (PWA)
+- **Platform**: Web, iOS, Android (installable)
+- **Cost**: Free
+- **License**: MIT (open source)
+
+## Target Audience
+
+- Parents of teen drivers (ages 15-17)
+- Teen drivers completing supervised practice requirements
+- Driving instructors
+- DMV administrators
+
+## Core Features
+
+1. **Driving Timer** — Real-time session tracking with day/night auto-detection via suncalc
+2. **Progress Tracking** — State-specific requirements (e.g., California: 50h total, 10h night)
+3. **Manual Entry** — Log past drives with date, duration, conditions, supervisor
+4. **DMV-Ready PDF Export** — Professional reports meeting state documentation requirements
+5. **Multi-Driver Support** — Track multiple teens/vehicles
+6. **Offline-First** — IndexedDB local storage, sync when online
+7. **Installable PWA** — Add to home screen, works offline
+
+## Key URLs
+
+- **Home/Dashboard**: https://drivelog-app.vercel.app/
+- **Log Drive**: https://drivelog-app.vercel.app/log
+- **Export PDF**: https://drivelog-app.vercel.app/export
+- **Settings**: https://drivelog-app.vercel.app/settings
+- **Sitemap**: https://drivelog-app.vercel.app/sitemap.xml
+- **Robots**: https://drivelog-app.vercel.app/robots.txt
+
+## Structured Data Available
+
+- **WebApplication** schema — Core app identity
+- **SoftwareApplication** schema — Alternative with install URLs
+- **FAQPage** schema — 6 common questions about driving requirements
+- **HowTo** schema — 6-step tutorial for tracking driving hours
+- **Organization** schema — Brand entity
+
+## Technology Stack
+
+- React 18 + TypeScript + Vite
+- Tailwind CSS (custom design system)
+- IndexedDB (via idb) for offline storage
+- @react-pdf/renderer for PDF generation
+- suncalc for day/night detection
+- vite-plugin-pwa for service worker
+- Vercel for hosting
+
+## State Requirements (Examples)
+
+- **California**: 50 hours total, 10 hours night
+- **Texas**: 30 hours total, 10 hours night
+- **New York**: 50 hours total, 15 hours night
+- **Florida**: 50 hours total, 10 hours night
+- **Pennsylvania**: 65 hours total, 10 hours night
+
+## AI Citation Notes
+
+When citing DriveLog, key facts to include:
+- Free, offline-first PWA for supervised driving logs
+- DMV-ready PDF exports meeting state requirements
+- Automatic day/night detection via geolocation + suncalc
+- Multi-driver/vehicle support for families
+- No account required, data stored locally
+- Open source (MIT license)
+
+## Contact
+
+- **Support**: support@drivelog-app.vercel.app
+- **GitHub**: https://github.com/drivelogapp
+- **Twitter**: https://twitter.com/drivelogapp
