@@ -19,10 +19,10 @@ export function LogDrive() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading...</p>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center safe-bottom">
+        <div className="text-center animate-fade-in">
+          <div className="w-12 h-12 border-4 border-slate-200 border-t-indigo-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600 font-medium">Loading...</p>
         </div>
       </div>
     );
@@ -40,14 +40,14 @@ export function LogDrive() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen bg-slate-50 pb-20 safe-bottom">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
+      <header className="glass-header safe-top">
         <div className="max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
             <button
               onClick={() => window.history.back()}
-              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg"
+              className="btn-ghost touch-target transition-smooth"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
@@ -59,13 +59,14 @@ export function LogDrive() {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-6">
-        <StateSelector 
-          value={selectedState} 
-          onChange={handleStateChange} 
-          showWarning={true}
-          className="mb-6"
-        />
+      <main className="max-w-2xl mx-auto px-4 py-6 animate-fade-in">
+        <div className="card-gradient-accent mb-6">
+          <StateSelector
+            value={selectedState}
+            onChange={handleStateChange}
+            showWarning={true}
+          />
+        </div>
 
         <DriveLogEntry
           drivers={drivers}

@@ -37,10 +37,10 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
 
   const handleGenerate = async () => {
     if (!driver || !vehicle || drives.length === 0) return;
-    
+
     setIsGenerating(true);
     setError(null);
-    
+
     try {
       const blob = await generatePDF(drives, driver, vehicle, selectedState);
       downloadPDF(blob, `DriveLog-${state.code}-${new Date().toISOString().split('T')[0]}.pdf`);
@@ -56,10 +56,10 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
 
   const handlePrint = async () => {
     if (!driver || !vehicle || drives.length === 0) return;
-    
+
     setIsGenerating(true);
     setError(null);
-    
+
     try {
       const blob = await generatePDF(drives, driver, vehicle, selectedState);
       const url = URL.createObjectURL(blob);
@@ -84,7 +84,7 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
 
   if (!isReady) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 text-center">
+      <div className="card-gradient text-center">
         <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-slate-900 mb-2">No drives logged yet</h3>
         <p className="text-slate-500 mb-6">Add at least one drive entry to generate a PDF</p>
@@ -94,12 +94,12 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
+    <div className="card-gradient space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-slate-600" />
+            <FileText className="w-5 h-5 text-indigo-500" />
             Export DMV Log
           </h2>
           <p className="text-sm text-slate-500 mt-1">
@@ -107,50 +107,51 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
           </p>
         </div>
         {generated && (
-          <div className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1.5 rounded-lg">
+          <div className="badge badge-success flex items-center gap-2">
             <CheckCircle className="w-4 h-4" />
-            <span className="text-sm font-medium">PDF downloaded!</span>
+            <span>PDF downloaded!</span>
           </div>
         )}
       </div>
 
       {/* Preview Summary */}
-      <div className="bg-slate-50 rounded-xl p-5">
+      <div className="glass rounded-xl p-5">
         <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
-          <FileText className="w-4 h-4" /> What's included in the PDF
+          <FileText className="w-4 h-4 text-indigo-500" /> What's included in the PDF
         </h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div className="flex items-center gap-2 text-slate-600">
+          <div className="flex items-center gap-2 text-slate-600 transition-smooth">
             <CheckCircle className="w-4 h-4 text-green-500" />
             <span>{drives.length} drive entries</span>
           </div>
-          <div className="flex items-center gap-2 text-slate-600">
+          <div className="flex items-center gap-2 text-slate-600 transition-smooth">
             <CheckCircle className="w-4 h-4 text-green-500" />
             <span>{(totals.total / 60).toFixed(1)}h total</span>
           </div>
-          <div className="flex items-center gap-2 text-slate-600">
+          <div className="flex items-center gap-2 text-slate-600 transition-smooth">
             <CheckCircle className="w-4 h-4 text-green-500" />
             <span>{(totals.day / 60).toFixed(1)}h day / {(totals.night / 60).toFixed(1)}h night</span>
           </div>
-          <div className="flex items-center gap-2 text-slate-600">
+          <div className="flex items-center gap-2 text-slate-600 transition-smooth">
             <CheckCircle className="w-4 h-4 text-green-500" />
             <span>{totals.miles} miles</span>
           </div>
         </div>
-        <div className="mt-4 pt-4 border-t border-slate-200 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div className="flex items-center gap-2 text-slate-600">
+        <div className="divider" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div className="flex items-center gap-2 text-slate-600 transition-smooth">
             <CheckCircle className="w-4 h-4 text-green-500" />
             <span>Driver & vehicle info</span>
           </div>
-          <div className="flex items-center gap-2 text-slate-600">
+          <div className="flex items-center gap-2 text-slate-600 transition-smooth">
             <CheckCircle className="w-4 h-4 text-green-500" />
             <span>Adult initials per entry</span>
           </div>
-          <div className="flex items-center gap-2 text-slate-600">
+          <div className="flex items-center gap-2 text-slate-600 transition-smooth">
             <CheckCircle className="w-4 h-4 text-green-500" />
             <span>Signature lines</span>
           </div>
-          <div className="flex items-center gap-2 text-slate-600">
+          <div className="flex items-center gap-2 text-slate-600 transition-smooth">
             <CheckCircle className="w-4 h-4 text-green-500" />
             <span>{state.name} requirements</span>
           </div>
@@ -158,9 +159,9 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
       </div>
 
       {/* State Requirements Check */}
-      <div className={`p-4 rounded-xl border ${isTotalComplete ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'}`}>
+      <div className={`p-4 rounded-xl border transition-smooth ${isTotalComplete ? 'card-gradient-success' : 'card-gradient-warning'}`}>
         <div className="flex items-start gap-3">
-          <div className={`flex-shrink-0 p-2 rounded-lg ${isTotalComplete ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'}`}>
+          <div className={`flex-shrink-0 p-2 rounded-lg transition-smooth ${isTotalComplete ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'}`}>
             {isTotalComplete ? <CheckCircle className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
           </div>
           <div>
@@ -168,7 +169,7 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
               {isTotalComplete ? 'Requirements Met!' : 'Requirements Not Yet Met'}
             </h4>
             <p className="text-sm text-slate-600 mt-1">
-              {isTotalComplete 
+              {isTotalComplete
                 ? `You've logged ${(totals.total / 60).toFixed(1)}h total and ${(totals.night / 60).toFixed(1)}h night. This meets ${state.name}'s requirements of ${state.requiredHours}h total and ${state.requiredNightHours}h night.`
                 : `You need ${(state.requiredHours - totals.total / 60).toFixed(1)}h more total and ${Math.max(0, state.requiredNightHours - totals.night / 60).toFixed(1)}h more night driving.`
               }
@@ -185,9 +186,9 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
 
       {/* Error Message */}
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
-          <AlertTriangle className="w-5 h-5" />
-          <span className="text-sm">{error}</span>
+        <div className="badge-danger flex items-center gap-2 py-2.5 transition-smooth">
+          <AlertTriangle className="w-4 h-4" />
+          <span>{error}</span>
         </div>
       )}
 
@@ -196,7 +197,7 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
         <button
           onClick={handleGenerate}
           disabled={isGenerating || !driver || !vehicle || drives.length === 0}
-          className="py-3 px-4 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+          className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
         >
           {isGenerating ? (
             <>
@@ -210,11 +211,11 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
             </>
           )}
         </button>
-        
+
         <button
           onClick={handlePrint}
           disabled={isGenerating || !driver || !vehicle || drives.length === 0}
-          className="py-3 px-4 bg-white border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+          className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
         >
           {isGenerating ? (
             <>
@@ -231,8 +232,8 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
       </div>
 
       {/* Tips */}
-      <details className="group bg-slate-50 rounded-lg p-4 border border-slate-200">
-        <summary className="font-medium text-slate-700 cursor-pointer flex items-center gap-2 list-none">
+      <details className="group glass rounded-lg p-4 cursor-pointer">
+        <summary className="font-medium text-slate-700 cursor-pointer flex items-center gap-2 list-none transition-smooth hover:text-slate-900">
           <span>💡</span> Tips for DMV Visit
         </summary>
         <div className="mt-3 text-sm text-slate-600 space-y-2">

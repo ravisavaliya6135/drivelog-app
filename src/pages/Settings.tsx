@@ -111,9 +111,9 @@ export function Settings() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center safe-top safe-bottom">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-slate-600">Loading...</p>
         </div>
       </div>
@@ -123,14 +123,14 @@ export function Settings() {
   const state = US_STATES.find(s => s.code === selectedState) || US_STATES[4];
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen bg-slate-50 pb-20 safe-top safe-bottom">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
+      <header className="glass-header safe-top">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
             <button
               onClick={() => window.history.back()}
-              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg"
+              className="btn-ghost rounded-lg"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
@@ -144,7 +144,7 @@ export function Settings() {
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* Tab Navigation */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-1">
+        <div className="card-gradient-accent !p-1.5">
           <nav className="flex gap-1" aria-label="Settings tabs">
             <TabButton active={activeTab === 'drivers'} onClick={() => setActiveTab('drivers')}>
               <User className="w-4 h-4" /> Drivers
@@ -163,7 +163,7 @@ export function Settings() {
 
         {/* Tab Content */}
         {activeTab === 'drivers' && (
-          <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-6" aria-labelledby="drivers-heading">
+          <section className="card-gradient" aria-labelledby="drivers-heading">
             <h2 id="drivers-heading" className="text-lg font-semibold text-slate-900 mb-4">Manage Drivers</h2>
             <MultiDriverForm
               drivers={drivers}
@@ -187,7 +187,7 @@ export function Settings() {
         )}
 
         {activeTab === 'vehicles' && (
-          <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-6" aria-labelledby="vehicles-heading">
+          <section className="card-gradient" aria-labelledby="vehicles-heading">
             <h2 id="vehicles-heading" className="text-lg font-semibold text-slate-900 mb-4">Manage Vehicles</h2>
             <p className="text-slate-500 mb-4">Use the Drivers tab to manage vehicles (they're grouped together).</p>
             <div className="text-center py-8">
@@ -202,39 +202,39 @@ export function Settings() {
             <h2 id="preferences-heading" className="text-lg font-semibold text-slate-900">Preferences</h2>
             
             {/* Default State */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="card-gradient">
               <h3 className="text-md font-medium text-slate-900 mb-4 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-slate-600" />
+                <MapPin className="w-5 h-5 text-indigo-500" />
                 Default State
               </h3>
               <p className="text-sm text-slate-500 mb-4">
                 This determines legal night calculations and DMV requirements for PDF export.
               </p>
-              <StateSelector 
-                value={selectedState} 
-                onChange={handleStateChange} 
+              <StateSelector
+                value={selectedState}
+                onChange={handleStateChange}
                 showWarning={true}
               />
             </div>
 
             {/* Data Management */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="card-gradient-accent">
               <h3 className="text-md font-medium text-slate-900 mb-4 flex items-center gap-2">
-                <Download className="w-5 h-5 text-slate-600" />
+                <Download className="w-5 h-5 text-indigo-500" />
                 Data Backup & Restore
               </h3>
               <p className="text-sm text-slate-500 mb-4">
                 Export all your data as JSON for backup or to transfer to another device.
               </p>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 <button
                   onClick={handleExportAllData}
-                  className="px-4 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-700 flex items-center gap-2"
+                  className="btn-primary"
                 >
                   <Download className="w-4 h-4" />
                   Export All Data (JSON)
                 </button>
-                <label className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 flex items-center gap-2 cursor-pointer">
+                <label className="btn-secondary cursor-pointer">
                   <Download className="w-4 h-4" />
                   Import Data
                   <input
@@ -247,12 +247,12 @@ export function Settings() {
               </div>
               
               {showExportData && (
-                <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="mt-4 p-4 bg-slate-50/50 rounded-xl border border-slate-200/50 transition-smooth">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-slate-700">Backup Data (copy or download)</span>
                     <button
                       onClick={() => { setShowExportData(false); }}
-                      className="p-1 text-slate-400 hover:text-slate-600"
+                      className="btn-ghost !p-1 text-slate-400 hover:text-slate-600"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -261,18 +261,18 @@ export function Settings() {
                     value={exportData}
                     readOnly
                     rows={8}
-                    className="w-full font-mono text-xs bg-white border border-slate-300 rounded p-2"
+                    className="input-field font-mono text-xs"
                   />
-                  <div className="mt-2 flex gap-2">
+                  <div className="mt-3 flex flex-wrap gap-2">
                     <button
                       onClick={handleDownloadExport}
-                      className="px-3 py-1.5 bg-slate-900 text-white text-sm rounded-lg hover:bg-slate-700"
+                      className="btn-primary !px-3 !py-1.5 !text-sm"
                     >
                       Download .json File
                     </button>
                     <button
                       onClick={() => { navigator.clipboard.writeText(exportData); alert('Copied to clipboard!'); }}
-                      className="px-3 py-1.5 bg-slate-100 text-slate-700 text-sm rounded-lg hover:bg-slate-200"
+                      className="btn-secondary !px-3 !py-1.5 !text-sm"
                     >
                       Copy to Clipboard
                     </button>
@@ -282,7 +282,7 @@ export function Settings() {
             </div>
 
             {/* Danger Zone */}
-            <div className="bg-white rounded-xl shadow-sm border border-red-200 p-6">
+            <div className="card-gradient-warning border-red-200">
               <h3 className="text-md font-medium text-red-700 mb-4 flex items-center gap-2">
                 <Shield className="w-5 h-5" />
                 Danger Zone
@@ -292,7 +292,7 @@ export function Settings() {
               </p>
               <button
                 onClick={handleClearAllData}
-                className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg font-medium hover:bg-red-100 flex items-center gap-2"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-semibold text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 transition-smooth"
               >
                 <Trash2 className="w-4 h-4" />
                 Clear ALL Data (Drives, Drivers, Vehicles)
@@ -305,14 +305,14 @@ export function Settings() {
           <section className="space-y-6" aria-labelledby="about-heading">
             <h2 id="about-heading" className="text-lg font-semibold text-slate-900">About DriveLog</h2>
             
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="card-gradient-accent">
               <div className="text-center mb-6">
-                <div className="w-20 h-20 bg-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <Car className="w-10 h-10 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-slate-900">DriveLog</h3>
                 <p className="text-slate-500 mt-1">Teen Driving Hours Tracker</p>
-                <p className="text-sm text-slate-400 mt-2">Version 1.0.0</p>
+                <span className="badge-primary mt-2">Version 1.0.0</span>
               </div>
 
               <div className="space-y-4 text-sm text-slate-600">
@@ -342,14 +342,15 @@ export function Settings() {
             </div>
 
             {/* Legal Disclaimer */}
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+            <div className="card-gradient-warning">
               <h4 className="font-medium text-amber-800 mb-2 flex items-center gap-2">
                 <Shield className="w-4 h-4" />
                 Important Legal Disclaimer
+                <span className="badge-warning">Important</span>
               </h4>
               <p className="text-sm text-amber-700">
                 DriveLog is a record-keeping tool only. It does not guarantee license approval or DMV acceptance.
-                Requirements vary by state and change over time. Always verify current requirements with your 
+                Requirements vary by state and change over time. Always verify current requirements with your
                 local DMV before your licensing appointment. Some states may require specific forms or digital submissions.
               </p>
             </div>
@@ -364,10 +365,8 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
   return (
     <button
       onClick={onClick}
-      className={`flex-1 py-2.5 px-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
-        active 
-          ? 'bg-slate-900 text-white shadow-sm' 
-          : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
+      className={`flex-1 flex items-center justify-center gap-1.5 ${
+        active ? 'nav-pill-active' : 'nav-pill'
       }`}
       aria-selected={active}
     >
