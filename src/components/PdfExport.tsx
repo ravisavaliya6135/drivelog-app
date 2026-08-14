@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Download, Printer, CheckCircle, AlertTriangle, FileText, Loader2 } from 'lucide-react';
 import type { DriveEntry, DriverProfile, VehicleProfile, StateInfo } from '../types';
 import { US_STATES } from '../types';
-import { generatePDF, downloadPDF } from '../utils/pdf';
+import { generatePDF, downloadPDF } from '../utils/pdf.tsx';
 
 interface PdfExportProps {
   drives: DriveEntry[];
@@ -88,7 +88,7 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
         <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-slate-900 mb-2">No drives logged yet</h3>
         <p className="text-slate-500 mb-6">Add at least one drive entry to generate a PDF</p>
-        <div className="text-sm text-slate-400">PDF will include all entries, totals, and signature lines</p>
+        <div className="text-sm text-slate-400">PDF will include all entries, totals, and signature lines</div>
       </div>
     );
   }

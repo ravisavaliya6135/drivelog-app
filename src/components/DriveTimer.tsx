@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Play, Pause, Stop, RotateCcw, Sun, Moon, AlertCircle } from 'lucide-react';
+import { Play, Pause, StopCircle, RotateCcw, Sun, Moon, AlertCircle } from 'lucide-react';
 import { useDriveTimer } from '../hooks/useDriveTimer';
 import { useNightDetection } from '../hooks/useNightDetection';
 
@@ -138,7 +138,7 @@ export function DriveTimer({ onDriveComplete }: { onDriveComplete?: (data: { dur
               onClick={handleStop}
               className="py-4 bg-red-600 text-white font-medium hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
             >
-              <Stop className="w-5 h-5" />
+              <StopCircle className="w-5 h-5" />
               Stop
             </button>
           </>
@@ -155,7 +155,7 @@ export function DriveTimer({ onDriveComplete }: { onDriveComplete?: (data: { dur
               onClick={handleStop}
               className="py-4 bg-red-600 text-white font-medium hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
             >
-              <Stop className="w-5 h-5" />
+              <StopCircle className="w-5 h-5" />
               Stop
             </button>
           </>

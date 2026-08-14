@@ -1,6 +1,9 @@
 import { getTimes, getSunrise, getSunset } from 'suncalc';
 import type { StateInfo } from '../types';
 
+// Re-export getTimes for use in hooks
+export { getTimes };
+
 // State capital coordinates for sunrise/sunset calculations
 export const STATE_CAPITALS: Record<string, { lat: number; lng: number }> = {
   AL: { lat: 32.3668, lng: -86.2999 },

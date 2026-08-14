@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8fafc',
   },
   cell: {
-    padding: 0 4,
+    paddingHorizontal: 4,
   },
   cellDate: { width: '12%', textAlign: 'center' },
   cellTime: { width: '15%', textAlign: 'center' },

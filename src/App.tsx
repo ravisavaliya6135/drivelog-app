@@ -181,7 +181,7 @@ function SideDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
   );
 }
 
-export function App() {
+export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
