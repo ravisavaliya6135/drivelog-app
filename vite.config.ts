@@ -30,6 +30,7 @@ const manifest: VitePWAOptions['manifest'] = {
 }
 
 export default defineConfig({
+  base: '/',
   plugins: [
     react(),
     VitePWA({
