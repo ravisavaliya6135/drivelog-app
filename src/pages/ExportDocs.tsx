@@ -1,13 +1,15 @@
-import { ArrowLeft, Download, Printer, CheckCircle, AlertTriangle, FileText, Loader2, Settings, MapPin } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { PdfExport } from '../components/PdfExport';
 import { StateSelector } from '../components/StateSelector';
 import { DriveSummary } from '../components/DriveSummary';
 import { useDriveLog } from '../hooks/useDriveLog';
+import { useTheme } from '../hooks/useTheme';
 import { US_STATES } from '../types';
 
 export function ExportDocs() {
   const { drives, drivers, vehicles, loading } = useDriveLog();
+  const { resolvedTheme } = useTheme();
   const [selectedState, setSelectedState] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('drivelog-state') || 'CA';
@@ -26,7 +28,7 @@ export function ExportDocs() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className={`min-h-screen ${resolvedTheme === 'dark' ? 'bg-slate-950' : 'bg-slate-50'} flex items-center justify-center`}>
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-slate-600">Loading...</p>
@@ -36,7 +38,7 @@ export function ExportDocs() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 safe-bottom">
+    <div className={`min-h-screen ${resolvedTheme === 'dark' ? 'bg-slate-950' : 'bg-slate-50'} pb-20 safe-bottom`}>
       {/* Header */}
       <header className="glass-header">
         <div className="max-w-4xl mx-auto px-4 py-4 safe-top">
@@ -45,11 +47,11 @@ export function ExportDocs() {
               onClick={() => window.history.back()}
               className="btn-ghost p-2 rounded-lg touch-target no-tap-highlight"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5" aria-hidden="true" />
             </button>
             <div>
               <h1 className="text-xl font-bold text-slate-900">Export DMV Log</h1>
-              <p className="text-xs text-slate-500">Generate printable PDF for your state</p>
+              <p className="text-xs text-muted">Generate printable PDF for your state</p>
             </div>
           </div>
         </div>
@@ -57,35 +59,44 @@ export function ExportDocs() {
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* State Selector */}
-        <StateSelector 
-          value={selectedState} 
-          onChange={handleStateChange} 
-          showWarning={true}
-          className="mb-6"
-        />
+        <section aria-labelledby="state-selector-heading">
+          <h2 id="state-selector-heading" className="sr-only">Select State for DMV Log</h2>
+          <StateSelector 
+            value={selectedState} 
+            onChange={handleStateChange} 
+            showWarning={true}
+            className="mb-6"
+          />
+        </section>
 
         {/* Progress Summary */}
-        <DriveSummary 
-          drives={drives} 
-          selectedState={selectedState} 
-          primaryDriver={primaryDriver || null} 
-        />
+        <section aria-labelledby="progress-heading">
+          <h2 id="progress-heading" className="sr-only">Driving Progress Summary</h2>
+          <DriveSummary 
+            drives={drives} 
+            selectedState={selectedState} 
+            primaryDriver={primaryDriver || null} 
+          />
+        </section>
 
         {/* PDF Export */}
-        <PdfExport
-          drives={drives}
-          driver={primaryDriver}
-          vehicle={primaryVehicle}
-          selectedState={selectedState}
-          isReady={drives.length > 0 && !!primaryDriver && !!primaryVehicle}
-        />
+        <section aria-labelledby="export-heading">
+          <h2 id="export-heading" className="sr-only">Export DMV Log PDF</h2>
+          <PdfExport
+            drives={drives}
+            driver={primaryDriver}
+            vehicle={primaryVehicle}
+            selectedState={selectedState}
+            isReady={drives.length > 0 && !!primaryDriver && !!primaryVehicle}
+          />
+        </section>
 
         {/* Requirements Checklist */}
-        <div className="card-gradient-warning">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-amber-600" />
+        <section aria-labelledby="checklist-heading">
+          <h2 id="checklist-heading" className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <FileText className="w-5 h-5 text-amber-600" aria-hidden="true" />
             DMV Visit Checklist
-          </h3>
+          </h2>
           <div className="space-y-3">
             <ChecklistItem
               label="Print 2 copies of the PDF log"
@@ -113,15 +124,11 @@ export function ExportDocs() {
                 done={false}
                 warning
               />
-            )}
-          </div>
-        </div>
-
-        {/* Tips */}
+            )}\n          </div>\n        </section>\n\n        {/* Tips */}
         <details className="group card-gradient-accent">
-          <summary className="font-medium text-slate-700 cursor-pointer flex items-center gap-2 list-none">
-            <span>💡</span> Tips for a Smooth DMV Visit
-          </summary>
+          <summary className="font-medium text-slate-700 cursor-pointer flex items-center gap-2 list-none transition-smooth hover:text-slate-900">
+                      <span aria-hidden="true">💡</span> Tips for a Smooth DMV Visit
+                    </summary>
           <div className="mt-4 text-sm text-slate-600 space-y-2">
             <p>• Arrive early — DMV wait times can be long</p>
             <p>• Bring all required documents in a folder</p>
@@ -140,9 +147,9 @@ function ChecklistItem({ label, done, warning }: { label: string; done: boolean;
   return (
     <div className={`flex items-start gap-3 p-3 rounded-lg transition-smooth ${warning ? 'bg-amber-50/50 border border-amber-200' : 'bg-slate-50 border border-slate-200'}`}>
       <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-smooth ${done ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-slate-200'}`}>
-        {done && <CheckCircle className="w-4 h-4 text-white" />}
+        {done && <CheckCircle className="w-4 h-4 text-white" aria-hidden="true" />}
       </div>
-      <span className={`text-sm transition-smooth ${done ? 'text-slate-500 line-through' : 'text-slate-900 font-medium'} ${warning ? 'text-amber-800' : ''}`}>
+      <span className={`text-sm transition-smooth ${done ? 'text-muted line-through' : 'text-slate-900 font-medium'} ${warning ? 'text-amber-800' : ''}`}>
         {label}
       </span>
       {warning && (

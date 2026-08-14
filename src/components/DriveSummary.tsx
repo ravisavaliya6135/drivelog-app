@@ -50,11 +50,11 @@ export function DriveSummary({ drives, selectedState, primaryDriver }: DriveSumm
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-indigo-500" />
+            <MapPin className="w-5 h-5 text-indigo-500" aria-hidden="true" />
             {state.name} Progress
           </h2>
           {primaryDriver && (
-            <p className="text-sm text-slate-500 mt-1">Primary driver: {primaryDriver.name}</p>
+            <p className="text-sm text-muted mt-1">Primary driver: {primaryDriver.name}</p>
           )}
         </div>
         <StateBadge state={state} />
@@ -74,7 +74,7 @@ export function DriveSummary({ drives, selectedState, primaryDriver }: DriveSumm
             style={{ width: `${totalProgress * 100}%` }}
           />
         </div>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="mt-2 text-sm text-muted">
           {isTotalComplete ? (
             <span className="badge-success flex items-center gap-1 w-fit"><CheckCircle className="w-4 h-4" /> Requirements met!</span>
           ) : (
@@ -88,18 +88,18 @@ export function DriveSummary({ drives, selectedState, primaryDriver }: DriveSumm
         {/* Day Hours */}
         <div className={`card-gradient ${isDayComplete ? 'card-gradient-warning' : ''}`}>
           <div className="flex items-center gap-2 mb-2">
-            <Sun className="w-5 h-5 text-amber-500" />
+            <Sun className="w-5 h-5 text-amber-500" aria-hidden="true" />
             <span className="font-medium text-slate-700">Daytime Hours</span>
           </div>
           <div className="stat-value text-3xl tabular-nums">{dayHours}h</div>
-          <div className="text-sm text-slate-500">Required: {state.requiredHours}h</div>
+          <div className="text-sm text-muted">Required: {state.requiredHours}h</div>
           <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden mt-2">
             <div
               className={`h-full rounded-full transition-smooth ${isDayComplete ? 'gradient-warning' : 'gradient-primary'}`}
               style={{ width: `${dayProgress * 100}%` }}
             />
           </div>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-muted">
             {isDayComplete ? (
               <span className="badge-success flex items-center gap-1 w-fit">✓ Complete</span>
             ) : (
@@ -111,18 +111,18 @@ export function DriveSummary({ drives, selectedState, primaryDriver }: DriveSumm
         {/* Night Hours */}
         <div className={`card-gradient ${isNightComplete ? 'card-gradient-success' : ''}`}>
           <div className="flex items-center gap-2 mb-2">
-            <Moon className="w-5 h-5 text-indigo-500" />
+            <Moon className="w-5 h-5 text-indigo-500" aria-hidden="true" />
             <span className="font-medium text-slate-700">Legal Night Hours</span>
           </div>
           <div className="stat-value text-3xl tabular-nums">{nightHours}h</div>
-          <div className="text-sm text-slate-500">Required: {state.requiredNightHours}h</div>
+          <div className="text-sm text-muted">Required: {state.requiredNightHours}h</div>
           <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden mt-2">
             <div
               className={`h-full rounded-full transition-smooth ${isNightComplete ? 'gradient-success' : 'gradient-primary'}`}
               style={{ width: `${nightProgress * 100}%` }}
             />
           </div>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-muted">
             {isNightComplete ? (
               <span className="badge-success flex items-center gap-1 w-fit">✓ Complete</span>
             ) : (
@@ -137,38 +137,38 @@ export function DriveSummary({ drives, selectedState, primaryDriver }: DriveSumm
         <div className="stat-card">
           <div className="flex items-center justify-between mb-2">
             <span className="p-2 rounded-lg bg-indigo-100 text-indigo-700">
-              <Clock className="w-5 h-5" />
+              <Clock className="w-5 h-5" aria-hidden="true" />
             </span>
           </div>
           <p className="stat-value text-2xl tabular-nums">{formatDuration(totals.total)}</p>
-          <p className="text-xs text-slate-500">Total Time</p>
+          <p className="text-xs text-muted">Total Time</p>
         </div>
         <div className="stat-card">
           <div className="flex items-center justify-between mb-2">
             <span className="p-2 rounded-lg bg-indigo-100 text-indigo-700">
-              <MapPin className="w-5 h-5" />
+              <MapPin className="w-5 h-5" aria-hidden="true" />
             </span>
           </div>
           <p className="stat-value text-2xl tabular-nums">{totals.miles} mi</p>
-          <p className="text-xs text-slate-500">Total Miles</p>
+          <p className="text-xs text-muted">Total Miles</p>
         </div>
         <div className="stat-card">
           <div className="flex items-center justify-between mb-2">
             <span className="p-2 rounded-lg bg-indigo-100 text-indigo-700">
-              <ClipboardList className="w-5 h-5" />
+              <ClipboardList className="w-5 h-5" aria-hidden="true" />
             </span>
           </div>
           <p className="stat-value text-2xl tabular-nums">{drives.length}</p>
-          <p className="text-xs text-slate-500">Entries</p>
+          <p className="text-xs text-muted">Entries</p>
         </div>
         <div className="stat-card">
           <div className="flex items-center justify-between mb-2">
             <span className={`p-2 rounded-lg ${isTotalComplete ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-              {isTotalComplete ? <CheckCircle className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+              {isTotalComplete ? <CheckCircle className="w-5 h-5" aria-hidden="true" /> : <AlertCircle className="w-5 h-5" aria-hidden="true" />}
             </span>
           </div>
           <p className={`text-2xl font-bold tabular-nums ${isTotalComplete ? 'text-emerald-600' : 'text-amber-600'}`}>{isTotalComplete ? 'Ready for DMV' : 'In Progress'}</p>
-          <p className="text-xs text-slate-500">Status</p>
+          <p className="text-xs text-muted">Status</p>
         </div>
       </div>
 

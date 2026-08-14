@@ -1,8 +1,49 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Calendar, MapPin, Cloud, Road, ClipboardList, UserCheck, Truck, Car, Save, X, AlertCircle, Sun, Moon, RotateCcw } from 'lucide-react';
 import type { DriveEntry, DriverProfile, VehicleProfile } from '../types';
 import { WEATHER_OPTIONS, ROAD_TYPE_OPTIONS, SKILLS_OPTIONS, US_STATES } from '../types';
 import { useNightDetection } from '../hooks/useNightDetection';
+
+// Focus trap hook for modals/bottom sheets
+function useFocusTrap(isActive: boolean) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isActive || !containerRef.current) return;
+
+    const container = containerRef.current;
+    const focusableElements = container.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement?.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement?.focus();
+        }
+      }
+    };
+
+    container.addEventListener('keydown', handleKeyDown);
+    firstElement?.focus();
+
+    return () => {
+      container.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isActive]);
+
+  return containerRef;
+}
 
 interface DriveLogEntryProps {
   initialData?: Partial<DriveEntry>;
@@ -24,6 +65,7 @@ export function DriveLogEntry({
   isEditing = false,
 }: DriveLogEntryProps) {
   const { getNightStatus, manualOverride, setManualDayNight } = useNightDetection(selectedState);
+  const focusTrapRef = useFocusTrap(true);
 
   const [formData, setFormData] = useState<Partial<DriveEntry>>({
     date: new Date().toISOString().split('T')[0],
@@ -105,14 +147,14 @@ export function DriveLogEntry({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="card-gradient-accent safe-x safe-bottom">
+    <form ref={focusTrapRef} onSubmit={handleSubmit} className="card-gradient-accent safe-x safe-bottom" role="dialog" aria-modal="true" aria-label={isEditing ? 'Edit Drive Entry' : 'Log New Drive'}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-semibold text-slate-900">
             {isEditing ? 'Edit Drive Entry' : 'Log New Drive'}
           </h2>
-          <p className="text-slate-500 text-sm">All fields required unless marked optional</p>
+          <p className="text-muted text-sm">All fields required unless marked optional</p>
         </div>
         <button
           type="button"
@@ -126,7 +168,7 @@ export function DriveLogEntry({
       {/* Date & Time Section */}
       <fieldset className="space-y-4 mb-6">
         <legend className="text-sm font-semibold text-slate-900 flex items-center gap-2 mb-3">
-          <Calendar className="w-4 h-4 text-indigo-500" /> Date & Time
+          <Calendar className="w-4 h-4 text-indigo-500" aria-hidden="true" /> Date & Time
         </legend>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -139,7 +181,7 @@ export function DriveLogEntry({
               className="input-field"
               required
             />
-            {errors.date && <p className="mt-1 text-sm text-red-600">{errors.date}</p>}
+            {errors.date && <p className="mt-1 text-sm text-red-600" role="alert">{errors.date}</p>}
           </div>
 
           <div>
@@ -151,7 +193,7 @@ export function DriveLogEntry({
               className="input-field"
               required
             />
-            {errors.startTime && <p className="mt-1 text-sm text-red-600">{errors.startTime}</p>}
+            {errors.startTime && <p className="mt-1 text-sm text-red-600" role="alert">{errors.startTime}</p>}
           </div>
 
           <div>
@@ -163,7 +205,7 @@ export function DriveLogEntry({
               className="input-field"
               required
             />
-            {errors.endTime && <p className="mt-1 text-sm text-red-600">{errors.endTime}</p>}
+            {errors.endTime && <p className="mt-1 text-sm text-red-600" role="alert">{errors.endTime}</p>}
           </div>
         </div>
 
@@ -179,7 +221,7 @@ export function DriveLogEntry({
       {/* Driver & Vehicle Section */}
       <fieldset className="space-y-4 mb-6">
         <legend className="text-sm font-semibold text-slate-900 flex items-center gap-2 mb-3">
-          <UserCheck className="w-4 h-4 text-indigo-500" /> Driver & Vehicle
+          <UserCheck className="w-4 h-4 text-indigo-500" aria-hidden="true" /> Driver & Vehicle
         </legend>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -198,7 +240,7 @@ export function DriveLogEntry({
                 </option>
               ))}
             </select>
-            {errors.driverId && <p className="mt-1 text-sm text-red-600">{errors.driverId}</p>}
+            {errors.driverId && <p className="mt-1 text-sm text-red-600" role="alert">{errors.driverId}</p>}
           </div>
 
           <div>
@@ -216,7 +258,7 @@ export function DriveLogEntry({
                 </option>
               ))}
             </select>
-            {errors.vehicleId && <p className="mt-1 text-sm text-red-600">{errors.vehicleId}</p>}
+            {errors.vehicleId && <p className="mt-1 text-sm text-red-600" role="alert">{errors.vehicleId}</p>}
           </div>
         </div>
 
@@ -225,6 +267,7 @@ export function DriveLogEntry({
           <label className="block text-sm font-medium text-slate-700 mb-1.5">Supervising Adult Initials *</label>
           <input
             type="text"
+            inputMode="text"
             maxLength={3}
             value={formData.initials.toUpperCase()}
             onChange={e => handleChange('initials', e.target.value.toUpperCase())}
@@ -232,15 +275,15 @@ export function DriveLogEntry({
             className="input-field max-w-xs text-center text-lg font-semibold tracking-wider uppercase"
             required
           />
-          {errors.initials && <p className="mt-1 text-sm text-red-600">{errors.initials}</p>}
-          <p className="mt-1.5 text-xs text-slate-500">Required per entry for DMV compliance</p>
+          {errors.initials && <p className="mt-1 text-sm text-red-600" role="alert">{errors.initials}</p>}
+          <p className="mt-1.5 text-xs text-muted">Required per entry for DMV compliance</p>
         </div>
       </fieldset>
 
       {/* Conditions Section */}
       <fieldset className="space-y-4 mb-6">
         <legend className="text-sm font-semibold text-slate-900 flex items-center gap-2 mb-3">
-          <Cloud className="w-4 h-4 text-indigo-500" /> Conditions (auto-detected where possible)
+          <Cloud className="w-4 h-4 text-indigo-500" aria-hidden="true" /> Conditions (auto-detected where possible)
         </legend>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -257,7 +300,7 @@ export function DriveLogEntry({
               </select>
               {/* Manual override toggle when auto-detection might be wrong */}
               <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-slate-50 to-slate-100/50 rounded-lg text-xs text-slate-600 border border-slate-100">
-                <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
+                <RotateCcw className="w-3.5 h-3.5 text-muted" />
                 <span>Auto-detected from start time</span>
                 <button
                   type="button"
@@ -301,6 +344,7 @@ export function DriveLogEntry({
           <label className="block text-sm font-medium text-slate-700 mb-1.5">Miles Driven (optional)</label>
           <input
             type="number"
+            inputMode="decimal"
             min={0}
             step={0.1}
             value={formData.miles}
@@ -313,7 +357,7 @@ export function DriveLogEntry({
       {/* Skills & Notes Section */}
       <fieldset className="space-y-4 mb-6">
         <legend className="text-sm font-semibold text-slate-900 flex items-center gap-2 mb-3">
-          <ClipboardList className="w-4 h-4 text-indigo-500" /> Skills Practiced & Notes
+          <ClipboardList className="w-4 h-4 text-indigo-500" aria-hidden="true" /> Skills Practiced & Notes
         </legend>
 
         <div>
@@ -373,20 +417,20 @@ export function DriveLogEntry({
           onClick={onCancel}
           className="btn-secondary"
         >
-          <X className="w-4 h-4" />
+          <X className="w-4 h-4" aria-hidden="true" />
           Cancel
         </button>
         <button
           type="submit"
           className="btn-primary"
         >
-          <Save className="w-4 h-4" />
+          <Save className="w-4 h-4" aria-hidden="true" />
           {isEditing ? 'Update Drive' : 'Save Drive'}
         </button>
       </div>
 
       {errors.durationMinutes && (
-        <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50/80 backdrop-blur-sm px-4 py-3 rounded-xl border border-red-100 mt-4">
+        <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50/80 backdrop-blur-sm px-4 py-3 rounded-xl border border-red-100 mt-4" role="alert">
           <AlertCircle className="w-4 h-4" />
           {errors.durationMinutes}
         </div>

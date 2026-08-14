@@ -87,8 +87,8 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
       <div className="card-gradient text-center">
         <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-slate-900 mb-2">No drives logged yet</h3>
-        <p className="text-slate-500 mb-6">Add at least one drive entry to generate a PDF</p>
-        <div className="text-sm text-slate-400">PDF will include all entries, totals, and signature lines</div>
+        <p className="text-muted mb-6">Add at least one drive entry to generate a PDF</p>
+        <div className="text-sm text-muted">PDF will include all entries, totals, and signature lines</div>
       </div>
     );
   }
@@ -102,7 +102,7 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
             <FileText className="w-5 h-5 text-indigo-500" />
             Export DMV Log
           </h2>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-muted mt-1">
             Generate a printable PDF for {state.name} DMV requirements
           </p>
         </div>

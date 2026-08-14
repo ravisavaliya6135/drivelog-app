@@ -37,6 +37,57 @@
     @apply bg-slate-400;
   }
 
+  /* Dark mode base styles */
+  .dark body {
+    @apply bg-slate-950 text-slate-50;
+  }
+
+  .dark ::-webkit-scrollbar-track {
+    @apply bg-slate-800;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-slate-600;
+  }
+
+  /* --- Focus Ring Styles (M2: Visible focus for keyboard nav) --- */
+  *:focus-visible {
+    outline: 3px solid #6366f1;
+    outline-offset: 2px;
+  }
+
+  /* Override for buttons/links that need custom focus */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 3px solid #6366f1;
+    outline-offset: 2px;
+  }
+
+  /* Dark mode focus ring */
+  .dark *:focus-visible,
+  .dark button:focus-visible,
+  .dark a:focus-visible,
+  .dark input:focus-visible,
+  .dark select:focus-visible,
+  .dark textarea:focus-visible,
+  .dark [role="button"]:focus-visible {
+    outline-color: #818cf8;
+  }
+
+  /* Skip link focus state */
+  .skip-link:focus-visible {
+    outline: 3px solid #6366f1;
+    outline-offset: 2px;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-500;
+  }
+
   /* Hide scrollbar for PWA on mobile */
   @media (max-width: 768px) {
     html {
@@ -66,6 +117,11 @@
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
   }
 
+  .dark .glass-header {
+    @apply bg-slate-900/80 border-b border-white/10;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  }
+
   /* --- Gradient Cards --- */
   .card-gradient {
     @apply relative overflow-hidden rounded-2xl bg-white p-6 shadow-lg;
@@ -76,6 +132,16 @@
   .card-gradient:hover {
     transform: translateY(-2px);
     box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark .card-gradient {
+    @apply bg-slate-800;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 1) 0%, rgba(15, 23, 42, 1) 100%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .dark .card-gradient:hover {
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.4);
   }
 
   .card-gradient-accent {
@@ -124,6 +190,17 @@
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
   }
 
+  .dark .card-glass {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .dark .card-glass:hover {
+    background: rgba(15, 23, 42, 0.7);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  }
+
   /* --- Buttons --- */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white;
@@ -155,6 +232,17 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
+  .dark .btn-secondary {
+    @apply text-slate-200;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .dark .btn-secondary:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium text-slate-600;
     transition: all 0.2s ease;
@@ -164,12 +252,29 @@
     @apply bg-slate-100 text-slate-900;
   }
 
+  .dark .btn-ghost {
+    @apply text-slate-300;
+  }
+
+  .dark .btn-ghost:hover {
+    @apply bg-slate-800 text-slate-100;
+  }
+
   /* --- Input Fields --- */
   .input-field {
     @apply w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400;
     @apply focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500;
     transition: all 0.2s ease;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .dark .input-field {
+    @apply bg-slate-800 border-slate-700 text-slate-100 placeholder-slate-500;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  .dark .input-field:focus {
+    @apply border-indigo-500 ring-indigo-500/30;
   }
 
   .input-field-glass {
@@ -182,6 +287,12 @@
     transition: all 0.2s ease;
   }
 
+  .dark .input-field-glass {
+    @apply text-slate-100 placeholder-slate-500;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
   /* --- Navigation Pills --- */
   .nav-pill {
     @apply px-4 py-2 rounded-full text-sm font-medium text-slate-600;
@@ -190,6 +301,14 @@
 
   .nav-pill:hover {
     @apply bg-white/50 text-slate-900;
+  }
+
+  .dark .nav-pill {
+    @apply text-slate-300;
+  }
+
+  .dark .nav-pill:hover {
+    @apply bg-slate-800 text-slate-100;
   }
 
   .nav-pill-active {
@@ -205,6 +324,10 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  .dark .stat-card {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 1) 0%, rgba(15, 23, 42, 1) 100%);
+  }
+
   .stat-value {
     @apply text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent;
   }
@@ -218,21 +341,71 @@
     @apply bg-indigo-100 text-indigo-700;
   }
 
+  .dark .badge-primary {
+    @apply bg-indigo-900/30 text-indigo-300;
+  }
+
   .badge-success {
     @apply bg-emerald-100 text-emerald-700;
+  }
+
+  .dark .badge-success {
+    @apply bg-emerald-900/30 text-emerald-300;
   }
 
   .badge-warning {
     @apply bg-amber-100 text-amber-700;
   }
 
+  .dark .badge-warning {
+    @apply bg-amber-900/30 text-amber-300;
+  }
+
   .badge-danger {
     @apply bg-red-100 text-red-700;
+  }
+
+  .dark .badge-danger {
+    @apply bg-red-900/30 text-red-300;
+  }
+
+  /* --- WCAG AA Contrast Utilities (M5: Color Contrast Validation) --- */
+  /* text-slate-500 (#64748b) on white = 3.7:1 FAILS AA */
+  /* Upgrade to slate-600 (#475569) = 4.9:1 PASSES AA */
+  /* text-slate-400 (#94a3b8) on dark = 3.7:1 FAILS AA */
+  /* Upgrade to slate-300 (#cbd5e1) = 4.9:1 PASSES AA */
+  
+  .text-muted {
+    @apply text-slate-600;
+  }
+  
+  .dark .text-muted {
+    @apply text-slate-300;
+  }
+  
+  .text-muted-sm {
+    @apply text-sm text-slate-600;
+  }
+  
+  .dark .text-muted-sm {
+    @apply text-sm text-slate-300;
+  }
+  
+  .text-muted-xs {
+    @apply text-xs text-slate-600;
+  }
+  
+  .dark .text-muted-xs {
+    @apply text-xs text-slate-300;
   }
 
   /* --- Dividers --- */
   .divider {
     @apply h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent my-6;
+  }
+
+  .dark .divider {
+    @apply via-slate-700;
   }
 }
 

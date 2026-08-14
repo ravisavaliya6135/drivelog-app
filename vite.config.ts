@@ -70,5 +70,12 @@ export default defineConfig({
     target: 'esnext',
     minify: 'esbuild',
     sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          pdf: ['@react-pdf/renderer'],
+        },
+      },
+    },
   },
 })

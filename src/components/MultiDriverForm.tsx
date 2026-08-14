@@ -1,6 +1,47 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Plus, User, Car, Trash2, X, Save, Edit2 } from 'lucide-react';
 import type { DriverProfile, VehicleProfile } from '../types';
+
+// Focus trap hook for modals/bottom sheets
+function useFocusTrap(isActive: boolean) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isActive || !containerRef.current) return;
+
+    const container = containerRef.current;
+    const focusableElements = container.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement?.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement?.focus();
+        }
+      }
+    };
+
+    container.addEventListener('keydown', handleKeyDown);
+    firstElement?.focus();
+
+    return () => {
+      container.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isActive]);
+
+  return containerRef;
+}
 
 interface MultiDriverFormProps {
   drivers: DriverProfile[];
@@ -14,6 +55,8 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
   const [showAddVehicle, setShowAddVehicle] = useState(false);
   const [editingDriver, setEditingDriver] = useState<DriverProfile | null>(null);
   const [editingVehicle, setEditingVehicle] = useState<VehicleProfile | null>(null);
+  const driverSheetRef = useFocusTrap(showAddDriver);
+  const vehicleSheetRef = useFocusTrap(showAddVehicle);
 
   const [driverForm, setDriverForm] = useState({
     name: '',
@@ -121,7 +164,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
         </div>
 
         {drivers.length === 0 ? (
-          <div className="text-center py-8 text-slate-500">
+          <div className="text-center py-8 text-muted">
             <p>No drivers added yet. Click "Add Driver" to get started.</p>
           </div>
         ) : (
@@ -130,15 +173,15 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
               <div key={driver.id} className="card-gradient flex items-center justify-between transition-smooth">
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-smooth ${driver.role === 'teen' ? 'bg-indigo-100 text-indigo-600' : 'bg-emerald-100 text-emerald-600'}`}>
-                    <User className="w-5 h-5" />
+                    <User className="w-5 h-5" aria-hidden="true" />
                   </div>
                   <div>
                     <p className="font-medium text-slate-900">{driver.name}</p>
-                    <p className="text-sm text-slate-500 flex items-center gap-2">
+                    <p className="text-sm text-muted flex items-center gap-2">
                       {driver.role === 'teen' ? 'Student Driver' : 'Supervising Adult'}
                       {driver.isPrimaryDriver && <span className="badge badge-primary">Primary</span>}
                     </p>
-                    <p className="text-xs text-slate-400">{driver.phone}</p>
+                    <p className="text-xs text-muted">{driver.phone}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -164,7 +207,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
 
         {/* Add/Edit Driver Bottom Sheet */}
         {showAddDriver && (
-          <div className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={resetDriverForm}>
+          <div ref={driverSheetRef} className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={resetDriverForm} role="dialog" aria-modal="true" aria-label={editingDriver ? 'Edit Driver' : 'Add New Driver'}>
             <div
               className="bottom-sheet safe-top p-6 animate-slide-up max-h-[90vh] overflow-y-auto"
               onClick={e => e.stopPropagation()}
@@ -203,6 +246,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
                   <label className="block text-sm font-medium text-slate-700 mb-2">Phone *</label>
                   <input
                     type="tel"
+                    inputMode="tel"
                     value={driverForm.phone}
                     onChange={e => setDriverForm(prev => ({ ...prev, phone: e.target.value }))}
                     placeholder="(555) 123-4567"
@@ -256,7 +300,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
         </div>
 
         {vehicles.length === 0 ? (
-          <div className="text-center py-8 text-slate-500">
+          <div className="text-center py-8 text-muted">
             <p>No vehicles added yet. Click "Add Vehicle" to get started.</p>
           </div>
         ) : (
@@ -265,12 +309,12 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
               <div key={vehicle.id} className="card-gradient-success flex items-center justify-between transition-smooth">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
-                    <Car className="w-5 h-5 text-indigo-600" />
+                    <Car className="w-5 h-5 text-indigo-600" aria-hidden="true" />
                   </div>
                   <div>
                     <p className="font-medium text-slate-900">{vehicle.name}</p>
-                    <p className="text-sm text-slate-500">{vehicle.year} {vehicle.make} {vehicle.model}</p>
-                    <p className="text-xs text-slate-400">Plate: {vehicle.licensePlate}</p>
+                    <p className="text-sm text-muted">{vehicle.year} {vehicle.make} {vehicle.model}</p>
+                    <p className="text-xs text-muted">Plate: {vehicle.licensePlate}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -296,7 +340,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
 
         {/* Add/Edit Vehicle Bottom Sheet */}
         {showAddVehicle && (
-          <div className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={resetVehicleForm}>
+          <div ref={vehicleSheetRef} className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={resetVehicleForm} role="dialog" aria-modal="true" aria-label={editingVehicle ? 'Edit Vehicle' : 'Add New Vehicle'}>
             <div
               className="bottom-sheet safe-top p-6 animate-slide-up max-h-[90vh] overflow-y-auto"
               onClick={e => e.stopPropagation()}
@@ -349,6 +393,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
                     <label className="block text-sm font-medium text-slate-700 mb-2">Year *</label>
                     <input
                       type="text"
+                      inputMode="numeric"
                       value={vehicleForm.year}
                       onChange={e => setVehicleForm(prev => ({ ...prev, year: e.target.value }))}
                       placeholder="2020"
@@ -360,6 +405,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
                     <label className="block text-sm font-medium text-slate-700 mb-2">License Plate</label>
                     <input
                       type="text"
+                      inputMode="text"
                       value={vehicleForm.licensePlate}
                       onChange={e => setVehicleForm(prev => ({ ...prev, licensePlate: e.target.value.toUpperCase() }))}
                       placeholder="ABC1234"

@@ -1,12 +1,14 @@
-import { ArrowLeft, Save, X, User, Car, Trash2, Edit2, Plus, MapPin, Bell, Moon, Sun, Download, Wrench, Info, Shield } from 'lucide-react';
+import { ArrowLeft, Save, X, User, Car, Trash2, Edit2, Plus, MapPin, Bell, Moon, Sun, Download, Wrench, Info, Shield, Monitor } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { MultiDriverForm } from '../components/MultiDriverForm';
 import { StateSelector } from '../components/StateSelector';
 import { useDriveLog } from '../hooks/useDriveLog';
+import { useTheme } from '../hooks/useTheme';
 import { US_STATES } from '../types';
 
 export function Settings() {
   const { drivers, vehicles, loading, refresh } = useDriveLog();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const [selectedState, setSelectedState] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('drivelog-state') || 'CA';
@@ -110,20 +112,20 @@ export function Settings() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center safe-top safe-bottom">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading...</p>
+      return (
+        <div className={`min-h-screen ${resolvedTheme === 'dark' ? 'bg-slate-950' : 'bg-slate-50'} flex items-center justify-center safe-top safe-bottom`}>
+          <div className="text-center animate-fade-in">
+            <div className="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-slate-600 font-medium">Loading...</p>
+          </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
   const state = US_STATES.find(s => s.code === selectedState) || US_STATES[4];
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 safe-top safe-bottom">
+    <div className={`min-h-screen ${resolvedTheme === 'dark' ? 'bg-slate-950' : 'bg-slate-50'} pb-20 safe-top safe-bottom`}>
       {/* Header */}
       <header className="glass-header safe-top">
         <div className="max-w-4xl mx-auto px-4 py-4">
@@ -136,7 +138,7 @@ export function Settings() {
             </button>
             <div>
               <h1 className="text-xl font-bold text-slate-900">Settings</h1>
-              <p className="text-xs text-slate-500">Manage drivers, vehicles & preferences</p>
+              <p className="text-xs text-muted">Manage drivers, vehicles & preferences</p>
             </div>
           </div>
         </div>
@@ -163,7 +165,7 @@ export function Settings() {
 
         {/* Tab Content */}
         {activeTab === 'drivers' && (
-          <section className="card-gradient" aria-labelledby="drivers-heading">
+          <section aria-labelledby="drivers-heading">
             <h2 id="drivers-heading" className="text-lg font-semibold text-slate-900 mb-4">Manage Drivers</h2>
             <MultiDriverForm
               drivers={drivers}
@@ -187,27 +189,76 @@ export function Settings() {
         )}
 
         {activeTab === 'vehicles' && (
-          <section className="card-gradient" aria-labelledby="vehicles-heading">
+          <section aria-labelledby="vehicles-heading">
             <h2 id="vehicles-heading" className="text-lg font-semibold text-slate-900 mb-4">Manage Vehicles</h2>
-            <p className="text-slate-500 mb-4">Use the Drivers tab to manage vehicles (they're grouped together).</p>
+            <p className="text-muted mb-4">Use the Drivers tab to manage vehicles (they're grouped together).</p>
             <div className="text-center py-8">
               <Car className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-500">Vehicle management is in the Drivers tab</p>
+              <p className="text-muted">Vehicle management is in the Drivers tab</p>
             </div>
           </section>
         )}
 
         {activeTab === 'preferences' && (
-          <section className="space-y-6" aria-labelledby="preferences-heading">
-            <h2 id="preferences-heading" className="text-lg font-semibold text-slate-900">Preferences</h2>
+                  <section className="space-y-6" aria-labelledby="preferences-heading">
+                    <h2 id="preferences-heading" className="text-lg font-semibold text-slate-900">Preferences</h2>
             
-            {/* Default State */}
-            <div className="card-gradient">
+                    {/* Appearance / Theme */}
+                    <div className="card-gradient">
+                      <h3 className="text-md font-medium text-slate-900 mb-4 flex items-center gap-2">
+                        <Sun className="w-5 h-5 text-yellow-500" /> Appearance
+                      </h3>
+                      <p className="text-sm text-muted mb-4">
+                        Choose your preferred color scheme. System follows your device settings.
+                      </p>
+                      <div className="flex flex-wrap gap-3">
+                        <button
+                          onClick={() => setTheme('light')}
+                          className={`inline-flex items-center gap-2 px-4 py-3 rounded-xl font-medium border-2 transition-smooth ${
+                            theme === 'light'
+                              ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                              : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                          }`}
+                          aria-pressed={theme === 'light'}
+                        >
+                          <Sun className="w-5 h-5" /> Light
+                        </button>
+                        <button
+                          onClick={() => setTheme('dark')}
+                          className={`inline-flex items-center gap-2 px-4 py-3 rounded-xl font-medium border-2 transition-smooth ${
+                            theme === 'dark'
+                              ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                              : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                          }`}
+                          aria-pressed={theme === 'dark'}
+                        >
+                          <Moon className="w-5 h-5" /> Dark
+                        </button>
+                        <button
+                          onClick={() => setTheme('system')}
+                          className={`inline-flex items-center gap-2 px-4 py-3 rounded-xl font-medium border-2 transition-smooth ${
+                            theme === 'system'
+                              ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                              : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                          }`}
+                          aria-pressed={theme === 'system'}
+                        >
+                          <Monitor className="w-5 h-5" /> System
+                        </button>
+                      </div>
+                      <p className="text-xs text-muted mt-2">
+                        Current: <span className="font-medium capitalize">{theme}</span> 
+                        {theme === 'system' && <span className="text-muted"> ({resolvedTheme})</span>}
+                      </p>
+                    </div>
+
+                    {/* Default State */}
+                    <div className="card-gradient">
               <h3 className="text-md font-medium text-slate-900 mb-4 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-indigo-500" />
                 Default State
               </h3>
-              <p className="text-sm text-slate-500 mb-4">
+              <p className="text-sm text-muted mb-4">
                 This determines legal night calculations and DMV requirements for PDF export.
               </p>
               <StateSelector
@@ -223,7 +274,7 @@ export function Settings() {
                 <Download className="w-5 h-5 text-indigo-500" />
                 Data Backup & Restore
               </h3>
-              <p className="text-sm text-slate-500 mb-4">
+              <p className="text-sm text-muted mb-4">
                 Export all your data as JSON for backup or to transfer to another device.
               </p>
               <div className="flex flex-wrap gap-3">
@@ -252,7 +303,7 @@ export function Settings() {
                     <span className="font-medium text-slate-700">Backup Data (copy or download)</span>
                     <button
                       onClick={() => { setShowExportData(false); }}
-                      className="btn-ghost !p-1 text-slate-400 hover:text-slate-600"
+                      className="btn-ghost !p-1 text-muted hover:text-slate-600"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -311,7 +362,7 @@ export function Settings() {
                   <Car className="w-10 h-10 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-slate-900">DriveLog</h3>
-                <p className="text-slate-500 mt-1">Teen Driving Hours Tracker</p>
+                <p className="text-muted mt-1">Teen Driving Hours Tracker</p>
                 <span className="badge-primary mt-2">Version 1.0.0</span>
               </div>
 

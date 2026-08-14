@@ -1,12 +1,14 @@
 import { Plus, Car, MapPin, Sun, Moon, Clock, CheckCircle, AlertCircle, ChevronRight, Download, Settings } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DriveTimer } from '../components/DriveTimer';
 import { DriveSummary } from '../components/DriveSummary';
 import { DriveLogEntry } from '../components/DriveLogEntry';
 import { StateSelector } from '../components/StateSelector';
 import { useDriveLog } from '../hooks/useDriveLog';
 import { useNightDetection } from '../hooks/useNightDetection';
+import { useTheme } from '../hooks/useTheme';
 import { US_STATES } from '../types';
+import { useSearchParams } from 'react-router-dom';
 
 export function Home() {
   const { 
@@ -21,17 +23,63 @@ export function Home() {
     addDrive,
     refresh,
   } = useDriveLog();
+  const { resolvedTheme } = useTheme();
   
+  const [searchParams, setSearchParams] = useSearchParams();
   const { isNight } = useNightDetection();
   const [selectedState, setSelectedState] = useState(() => {
-    // Try to get saved state from localStorage
     if (typeof window !== 'undefined') {
       return localStorage.getItem('drivelog-state') || 'CA';
     }
     return 'CA';
   });
-  const [showLogEntry, setShowLogEntry] = useState(false);
-  const [editingDrive, setEditingDrive] = useState<typeof drives[0] | null>(null);
+  
+  // Deep linking: parse URL params for modals
+  const [showLogEntry, setShowLogEntry] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return searchParams.get('modal') === 'log-entry';
+    }
+    return false;
+  });
+  const [editingDrive, setEditingDrive] = useState<typeof drives[0] | null>(() => {
+    if (typeof window !== 'undefined') {
+      const editId = searchParams.get('edit');
+      if (editId) {
+        return drives.find(d => d.id === editId) || null;
+      }
+    }
+    return null;
+  });
+
+  // Sync modal state with URL
+  useEffect(() => {
+    const modal = searchParams.get('modal');
+    const editId = searchParams.get('edit');
+    
+    if (modal === 'log-entry') {
+      setShowLogEntry(true);
+      if (editId) {
+        const drive = drives.find(d => d.id === editId);
+        if (drive) setEditingDrive(drive);
+      }
+    } else {
+      setShowLogEntry(false);
+      setEditingDrive(null);
+    }
+  }, [searchParams, drives]);
+
+  const updateModalUrl = (modal: string | null, editId?: string | null) => {
+    const params = new URLSearchParams(searchParams);
+    if (modal) {
+      params.set('modal', modal);
+      if (editId) params.set('edit', editId);
+      else params.delete('edit');
+    } else {
+      params.delete('modal');
+      params.delete('edit');
+    }
+    setSearchParams(params, { replace: true });
+  };
 
   // Save state preference
   const handleStateChange = (stateCode: string) => {
@@ -42,6 +90,7 @@ export function Home() {
   const handleTimerComplete = (data: { durationMinutes: number; startTime: Date; endTime: Date }) => {
     setShowLogEntry(true);
     setEditingDrive(null);
+    updateModalUrl('log-entry');
     // Pre-fill the form with timer data
     const today = new Date().toISOString().split('T')[0];
     const primaryDriver = drivers.find(d => d.isPrimaryDriver) || drivers[0];
@@ -61,33 +110,35 @@ export function Home() {
   const handleLogEntrySave = (entry: any) => {
     addDrive(entry);
     setShowLogEntry(false);
+    setEditingDrive(null);
+    updateModalUrl(null);
     sessionStorage.removeItem('timer-drive-data');
   };
 
   const handleLogEntryCancel = () => {
     setShowLogEntry(false);
     setEditingDrive(null);
+    updateModalUrl(null);
   };
 
   const handleEditDrive = (drive: any) => {
     setEditingDrive(drive);
     setShowLogEntry(true);
+    updateModalUrl('log-entry', drive.id);
   };
 
   const handleDeleteDrive = async (id: string) => {
     if (confirm('Delete this drive entry?')) {
-      // We need to use the removeDrive from useDriveLog
-      // For now, just refresh
       refresh();
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading your driving log...</p>
+      <div className={`min-h-screen ${resolvedTheme === 'dark' ? 'bg-slate-950' : 'bg-slate-50'} flex items-center justify-center safe-top safe-bottom`}>
+        <div className="text-center animate-fade-in">
+          <div className="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600 font-medium">Loading...</p>
         </div>
       </div>
     );
@@ -97,18 +148,18 @@ export function Home() {
   const state = US_STATES.find(s => s.code === selectedState) || US_STATES[4];
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 safe-bottom">
+      <div className={`min-h-screen ${resolvedTheme === 'dark' ? 'bg-slate-950' : 'bg-slate-50'} pb-20 safe-top safe-bottom`}>
       {/* Header */}
       <header className="glass-header">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center gradient-primary shadow-glow">
-                <Car className="w-6 h-6 text-white" />
+                <Car className="w-6 h-6 text-white" aria-hidden="true" />
               </div>
               <div>
                 <h1 className="text-xl font-bold gradient-text">DriveLog</h1>
-                <p className="text-xs text-slate-500">Teen Driving Hours Tracker</p>
+                <p className="text-xs text-muted">Teen Driving Hours Tracker</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -134,7 +185,7 @@ export function Home() {
         <section aria-labelledby="today-heading">
           <div className="flex items-center justify-between mb-4">
             <h2 id="today-heading" className="text-lg font-semibold text-slate-900 flex items-center gap-2">
-              <Sun className="w-5 h-5 text-yellow-500" />
+              <Sun className="w-5 h-5 text-yellow-500" aria-hidden="true" />
               Today's Progress
             </h2>
             {todaysDrives.length > 0 && (
@@ -146,45 +197,48 @@ export function Home() {
             <div className="stat-card shadow-card">
               <div className="flex items-center justify-between mb-2">
                 <span className="p-2 rounded-lg bg-slate-100 text-slate-700">
-                  <Clock className="w-5 h-5" />
+                  <Clock className="w-5 h-5" aria-hidden="true" />
                 </span>
               </div>
               <p className="stat-value tabular-nums">{todaysDrives.reduce((sum, d) => sum + d.durationMinutes, 0) > 0
                 ? `${Math.floor(todaysDrives.reduce((sum, d) => sum + d.durationMinutes, 0) / 60)}h ${todaysDrives.reduce((sum, d) => sum + d.durationMinutes, 0) % 60}m`
                 : '0m'}</p>
-              <p className="text-xs text-slate-500 mt-1">Total Today</p>
+              <p className="text-xs text-muted mt-1">Total Today</p>
             </div>
             <div className="stat-card shadow-card">
               <div className="flex items-center justify-between mb-2">
                 <span className="p-2 rounded-lg bg-yellow-100 text-yellow-700">
-                  <Sun className="w-5 h-5" />
+                  <Sun className="w-5 h-5" aria-hidden="true" />
                 </span>
               </div>
               <p className="stat-value tabular-nums">{todaysDrives.filter(d => d.dayNight === 'day').reduce((sum, d) => sum + d.durationMinutes, 0) > 0
                 ? `${Math.floor(todaysDrives.filter(d => d.dayNight === 'day').reduce((sum, d) => sum + d.durationMinutes, 0) / 60)}h ${todaysDrives.filter(d => d.dayNight === 'day').reduce((sum, d) => sum + d.durationMinutes, 0) % 60}m`
                 : '0m'}</p>
-              <p className="text-xs text-slate-500 mt-1">Day</p>
+              <p className="text-xs text-muted mt-1">Day</p>
             </div>
             <div className="stat-card shadow-card">
               <div className="flex items-center justify-between mb-2">
                 <span className="p-2 rounded-lg bg-blue-100 text-blue-700">
-                  <Moon className="w-5 h-5" />
+                  <Moon className="w-5 h-5" aria-hidden="true" />
                 </span>
               </div>
               <p className="stat-value tabular-nums">{todaysDrives.filter(d => d.dayNight === 'night').reduce((sum, d) => sum + d.durationMinutes, 0) > 0
                 ? `${Math.floor(todaysDrives.filter(d => d.dayNight === 'night').reduce((sum, d) => sum + d.durationMinutes, 0) / 60)}h ${todaysDrives.filter(d => d.dayNight === 'night').reduce((sum, d) => sum + d.durationMinutes, 0) % 60}m`
                 : '0m'}</p>
-              <p className="text-xs text-slate-500 mt-1">Night</p>
+              <p className="text-xs text-muted mt-1">Night</p>
             </div>
           </div>
         </section>
 
         {/* Overall Progress Summary */}
-        <DriveSummary 
-          drives={drives} 
-          selectedState={selectedState} 
-          primaryDriver={primaryDriver || null} 
-        />
+        <section aria-labelledby="progress-heading">
+          <h2 id="progress-heading" className="sr-only">Overall Progress Summary</h2>
+          <DriveSummary 
+            drives={drives} 
+            selectedState={selectedState} 
+            primaryDriver={primaryDriver || null} 
+          />
+        </section>
 
         {/* Quick Actions */}
         <section aria-labelledby="actions-heading">
@@ -199,7 +253,7 @@ export function Home() {
             >
               <div className="p-2 bg-indigo-100 rounded-lg text-indigo-600 mb-3 w-fit"><Plus className="w-5 h-5" /></div>
               <h3 className="font-medium text-slate-900 mb-1">Log Drive Manually</h3>
-              <p className="text-sm text-slate-500">Add a past drive entry</p>
+              <p className="text-sm text-muted">Add a past drive entry</p>
             </button>
             <button
               onClick={() => { /* Navigate to export */ }}
@@ -207,7 +261,7 @@ export function Home() {
             >
               <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600 mb-3 w-fit"><Download className="w-5 h-5" /></div>
               <h3 className="font-medium text-slate-900 mb-1">Export PDF</h3>
-              <p className="text-sm text-slate-500">Generate DMV log</p>
+              <p className="text-sm text-muted">Generate DMV log</p>
             </button>
             <button
               onClick={() => { /* State selector is in header */ }}
@@ -215,7 +269,7 @@ export function Home() {
             >
               <div className="p-2 bg-slate-100 rounded-lg text-slate-600 mb-3 w-fit"><MapPin className="w-5 h-5" /></div>
               <h3 className="font-medium text-slate-900 mb-1">Change State</h3>
-              <p className="text-sm text-slate-500">Current: {state.name}</p>
+              <p className="text-sm text-muted">Current: {state.name}</p>
             </button>
             <button
               onClick={() => { /* Navigate to settings */ }}
@@ -223,7 +277,7 @@ export function Home() {
             >
               <div className="p-2 bg-slate-100 rounded-lg text-slate-600 mb-3 w-fit"><Settings className="w-5 h-5" /></div>
               <h3 className="font-medium text-slate-900 mb-1">Settings</h3>
-              <p className="text-sm text-slate-500">Drivers, vehicles, preferences</p>
+              <p className="text-sm text-muted">Drivers, vehicles, preferences</p>
             </button>
           </div>
         </section>
@@ -248,11 +302,11 @@ export function Home() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${drive.dayNight === 'night' ? 'bg-blue-100 text-blue-600' : 'bg-yellow-100 text-yellow-600'}`}>
-                          {drive.dayNight === 'night' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+                          {drive.dayNight === 'night' ? <Moon className="w-4 h-4" aria-hidden="true" /> : <Sun className="w-4 h-4" aria-hidden="true" />}
                         </div>
                         <div>
                           <p className="font-medium text-slate-900">{driver?.name || 'Unknown'}</p>
-                          <p className="text-sm text-slate-500">
+                          <p className="text-sm text-muted">
                             {new Date(drive.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} •
                             {drive.durationMinutes} min •
                             {vehicle ? `${vehicle.make} ${vehicle.model}` : 'Unknown vehicle'}
@@ -272,7 +326,7 @@ export function Home() {
               })}
               {drives.length > 5 && (
                 <div className="px-4 py-3 border-t border-slate-100 text-center">
-                  <span className="text-sm text-slate-500">+ {drives.length - 5} more entries</span>
+                  <span className="text-sm text-muted">+ {drives.length - 5} more entries</span>
                 </div>
               )}
             </div>
@@ -283,10 +337,10 @@ export function Home() {
         {drives.length === 0 && (
           <section className="text-center py-12">
             <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Car className="w-10 h-10 text-slate-400" />
+              <Car className="w-10 h-10 text-muted" aria-hidden="true" />
             </div>
             <h3 className="text-lg font-medium text-slate-900 mb-2">No drives logged yet</h3>
-            <p className="text-slate-500 mb-6">Start your first drive using the timer above, or log a past drive manually.</p>
+            <p className="text-muted mb-6">Start your first drive using the timer above, or log a past drive manually.</p>
             <button
               onClick={() => { setShowLogEntry(true); setEditingDrive(null); }}
               className="btn-primary mx-auto"
@@ -340,11 +394,11 @@ function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label:
     <div className="p-4 rounded-xl border border-slate-200 bg-white">
       <div className="flex items-center justify-between mb-2">
         <span className={`p-2 rounded-lg ${colorClasses[color as keyof typeof colorClasses] || colorClasses.slate}`}>
-          {icon}
+          {React.isValidElement(icon) ? React.cloneElement(icon, { 'aria-hidden': 'true' }) : icon}
         </span>
       </div>
       <p className="text-xl font-bold text-slate-900 tabular-nums">{value}</p>
-      <p className="text-xs text-slate-500">{label}</p>
+      <p className="text-xs text-muted">{label}</p>
     </div>
   );
 }
@@ -355,9 +409,11 @@ function ActionCard({ icon, title, description, onClick }: { icon: React.ReactNo
       onClick={onClick}
       className="p-4 rounded-xl border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 transition-colors text-left"
     >
-      <div className="p-2 bg-slate-100 rounded-lg text-slate-600 mb-3">{icon}</div>
+      <div className="p-2 bg-slate-100 rounded-lg text-slate-600 mb-3">
+        {React.isValidElement(icon) ? React.cloneElement(icon, { 'aria-hidden': 'true' }) : icon}
+      </div>
       <h3 className="font-medium text-slate-900 mb-1">{title}</h3>
-      <p className="text-sm text-slate-500">{description}</p>
+      <p className="text-sm text-muted">{description}</p>
     </button>
   );
 }
@@ -371,11 +427,11 @@ function DriveRow({ drive, drivers, vehicles, onEdit, onDelete }: { drive: any; 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center ${drive.dayNight === 'night' ? 'bg-blue-100 text-blue-600' : 'bg-yellow-100 text-yellow-600'}`}>
-            {drive.dayNight === 'night' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+            {drive.dayNight === 'night' ? <Moon className="w-4 h-4" aria-hidden="true" /> : <Sun className="w-4 h-4" aria-hidden="true" />}
           </div>
           <div>
             <p className="font-medium text-slate-900">{driver?.name || 'Unknown'}</p>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted">
               {new Date(drive.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} • 
               {drive.durationMinutes} min • 
               {vehicle ? `${vehicle.make} ${vehicle.model}` : 'Unknown vehicle'}
@@ -385,7 +441,7 @@ function DriveRow({ drive, drivers, vehicles, onEdit, onDelete }: { drive: any; 
         <div className="flex items-center gap-2">
           <button
             onClick={() => onEdit(drive)}
-            className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded"
+            className="p-1.5 text-muted hover:text-slate-600 hover:bg-slate-100 rounded"
             aria-label="Edit"
           >
             <ChevronRight className="w-4 h-4" />

@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { Play, Pause, StopCircle, RotateCcw, Sun, Moon, AlertCircle } from 'lucide-react';
 import { useDriveTimer } from '../hooks/useDriveTimer';
 import { useNightDetection } from '../hooks/useNightDetection';
+import { useTheme } from '../hooks/useTheme';
 
 export function DriveTimer({ onDriveComplete }: { onDriveComplete?: (data: { durationMinutes: number; startTime: Date; endTime: Date }) => void }) {
   const { isRunning, isPaused, elapsedSeconds, startTime, formatTime, start, pause, resume, stop, reset } = useDriveTimer();
   const { isNight, manualOverride, setManualDayNight, sunsetTime, legalNightStart } = useNightDetection();
+  const { resolvedTheme } = useTheme();
   const [showConfirm, setShowConfirm] = useState(false);
 
   const handleStop = async () => {
@@ -53,24 +55,24 @@ export function DriveTimer({ onDriveComplete }: { onDriveComplete?: (data: { dur
   return (
     <div className="card-gradient animate-fade-in overflow-hidden">
       {/* Timer Display */}
-      <div className={`relative p-8 text-center rounded-t-2xl ${isNight ? 'glass-dark text-white' : 'bg-slate-50 text-slate-900'}`}>
+      <div className={`relative p-8 text-center rounded-t-2xl ${isNight || resolvedTheme === 'dark' ? 'glass-dark text-white' : 'bg-slate-50 text-slate-900'}`}>
         {/* Day/Night Indicator with manual override */}
         <div className="flex items-center justify-center gap-2 mb-4 flex-wrap">
           <span className={`badge ${isNight ? 'badge-primary bg-indigo-500/20 text-indigo-300' : 'badge-warning'}`}>
             {isNight ? (
               <>
-                <Moon className="w-3 h-3" /> Legal Night
+                <Moon className="w-3 h-3" aria-hidden="true" /> Legal Night
               </>
             ) : (
               <>
-                <Sun className="w-3 h-3" /> Daytime
+                <Sun className="w-3 h-3" aria-hidden="true" /> Daytime
               </>
             )}
           </span>
           {/* Manual override indicator */}
           {manualOverride && (
             <span className="badge badge-warning flex items-center gap-1">
-              <AlertCircle className="w-3 h-3" />
+              <AlertCircle className="w-3 h-3" aria-hidden="true" />
               Manual: {manualOverride === 'night' ? 'Night' : 'Day'}
               <button
                 type="button"
@@ -120,7 +122,7 @@ export function DriveTimer({ onDriveComplete }: { onDriveComplete?: (data: { dur
             onClick={start}
             className="btn-primary col-span-3 py-4 text-lg touch-target no-tap-highlight rounded-none rounded-b-2xl"
           >
-            <Play className="w-5 h-5" />
+            <Play className="w-5 h-5" aria-hidden="true" />
             Start Drive
           </button>
         ) : isPaused ? (
@@ -129,14 +131,14 @@ export function DriveTimer({ onDriveComplete }: { onDriveComplete?: (data: { dur
               onClick={resume}
               className="btn-primary gradient-success col-span-2 py-4 touch-target no-tap-highlight rounded-none rounded-bl-2xl"
             >
-              <Play className="w-5 h-5" />
+              <Play className="w-5 h-5" aria-hidden="true" />
               Resume
             </button>
             <button
               onClick={handleStop}
               className="btn-primary gradient-danger py-4 touch-target no-tap-highlight rounded-none rounded-br-2xl"
             >
-              <StopCircle className="w-5 h-5" />
+              <StopCircle className="w-5 h-5" aria-hidden="true" />
               Stop
             </button>
           </>
@@ -146,14 +148,14 @@ export function DriveTimer({ onDriveComplete }: { onDriveComplete?: (data: { dur
               onClick={pause}
               className="btn-primary gradient-warning col-span-2 py-4 touch-target no-tap-highlight rounded-none"
             >
-              <Pause className="w-5 h-5" />
+              <Pause className="w-5 h-5" aria-hidden="true" />
               Pause
             </button>
             <button
               onClick={handleStop}
               className="btn-primary gradient-danger py-4 touch-target no-tap-highlight rounded-none"
             >
-              <StopCircle className="w-5 h-5" />
+              <StopCircle className="w-5 h-5" aria-hidden="true" />
               Stop
             </button>
           </>
