@@ -1,8 +1,7 @@
-import { useState, useRef } from 'react';
-import { Plus, User, Car, Trash2, X, Save, Edit2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Plus, User, Car, Trash2, X, Save, Edit2, Check } from 'lucide-react';
 import type { DriverProfile, VehicleProfile } from '../types';
 
-// Focus trap hook for modals/bottom sheets
 function useFocusTrap(isActive: boolean) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -60,7 +59,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
 
   const [driverForm, setDriverForm] = useState({
     name: '',
-    role: 'teen' as 'parent' | 'teen',
+    role: 'parent' as 'parent' | 'teen',
     phone: '',
     isPrimaryDriver: false,
   });
@@ -74,7 +73,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
   });
 
   const resetDriverForm = () => {
-    setDriverForm({ name: '', role: 'teen', phone: '', isPrimaryDriver: false });
+    setDriverForm({ name: '', role: 'parent', phone: '', isPrimaryDriver: false });
     setEditingDriver(null);
     setShowAddDriver(false);
   };
@@ -87,7 +86,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
 
   const handleDriverSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!driverForm.name.trim() || !driverForm.phone.trim()) return;
+    if (!driverForm.name.trim()) return;
 
     if (editingDriver) {
       const updated = drivers.map(d => d.id === editingDriver.id ? { ...driverForm, id: editingDriver.id } : d);
@@ -104,7 +103,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
 
   const handleVehicleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!vehicleForm.name.trim() || !vehicleForm.make.trim() || !vehicleForm.model.trim()) return;
+    if (!vehicleForm.name.trim() || !vehicleForm.make.trim()) return;
 
     if (editingVehicle) {
       const updated = vehicles.map(v => v.id === editingVehicle.id ? { ...vehicleForm, id: editingVehicle.id } : v);
@@ -121,19 +120,19 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
 
   const handleEditDriver = (driver: DriverProfile) => {
     setEditingDriver(driver);
-    setDriverForm({ name: driver.name, role: driver.role, phone: driver.phone, isPrimaryDriver: driver.isPrimaryDriver });
+    setDriverForm({ name: driver.name, role: driver.role, phone: driver.phone || '', isPrimaryDriver: Boolean(driver.isPrimaryDriver) });
     setShowAddDriver(true);
   };
 
   const handleEditVehicle = (vehicle: VehicleProfile) => {
     setEditingVehicle(vehicle);
-    setVehicleForm({ name: vehicle.name, make: vehicle.make, model: vehicle.model, year: vehicle.year, licensePlate: vehicle.licensePlate });
+    setVehicleForm({ name: vehicle.name, make: vehicle.make, model: vehicle.model, year: vehicle.year || '', licensePlate: vehicle.licensePlate || '' });
     setShowAddVehicle(true);
   };
 
   const handleDeleteDriver = (id: string) => {
     if (drivers.length <= 1) {
-      alert('You need at least one driver');
+      alert('You need at least one supervisor or driver profile.');
       return;
     }
     onDriversChange(drivers.filter(d => d.id !== id));
@@ -141,142 +140,138 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
 
   const handleDeleteVehicle = (id: string) => {
     if (vehicles.length <= 1) {
-      alert('You need at least one vehicle');
+      alert('You need at least one vehicle profile.');
       return;
     }
     onVehiclesChange(vehicles.filter(v => v.id !== id));
   };
 
   return (
-    <div className="card-gradient-accent space-y-8">
-      {/* Drivers Section */}
-      <section>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
-            <User className="w-5 h-5" /> Drivers
+    <div className="space-y-6">
+      
+      {/* 1. Drivers Section */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+            <User className="w-4 h-4 text-teal-600" /> Drivers & Supervisors
           </h3>
           <button
+            type="button"
             onClick={() => { resetDriverForm(); setShowAddDriver(true); }}
-            className="btn-primary text-sm px-4 py-2 touch-target no-tap-highlight"
+            className="btn-primary py-1.5 px-3 text-xs font-bold"
           >
-            <Plus className="w-4 h-4" /> Add Driver
+            <Plus className="w-3.5 h-3.5" /> Add Driver
           </button>
         </div>
 
-        {drivers.length === 0 ? (
-          <div className="text-center py-8 text-muted">
-            <p>No drivers added yet. Click "Add Driver" to get started.</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {drivers.map(driver => (
-              <div key={driver.id} className="card-gradient flex items-center justify-between transition-smooth">
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-smooth ${driver.role === 'teen' ? 'bg-indigo-100 text-indigo-600' : 'bg-emerald-100 text-emerald-600'}`}>
-                    <User className="w-5 h-5" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-slate-900">{driver.name}</p>
-                    <p className="text-sm text-muted flex items-center gap-2">
-                      {driver.role === 'teen' ? 'Student Driver' : 'Supervising Adult'}
-                      {driver.isPrimaryDriver && <span className="badge badge-primary">Primary</span>}
-                    </p>
-                    <p className="text-xs text-muted">{driver.phone}</p>
-                  </div>
+        <div className="space-y-2">
+          {drivers.map(driver => (
+            <div key={driver.id} className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs ${
+                  driver.role === 'teen' ? 'bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-300' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200'
+                }`}>
+                  {driver.name ? driver.name[0].toUpperCase() : 'D'}
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleEditDriver(driver)}
-                    className="btn-ghost touch-target no-tap-highlight"
-                    aria-label="Edit driver"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteDriver(driver.id)}
-                    className="btn-ghost text-red-500 hover:text-red-600 hover:bg-red-50 touch-target no-tap-highlight"
-                    aria-label="Delete driver"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                <div>
+                  <p className="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+                    {driver.name}
+                    {driver.isPrimaryDriver && <span className="badge-teal text-[10px]">Primary</span>}
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 capitalize">
+                    {driver.role === 'teen' ? 'Student Driver' : 'Supervising Adult'} {driver.phone ? `• ${driver.phone}` : ''}
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
 
-        {/* Add/Edit Driver Bottom Sheet */}
-        {showAddDriver && (
-          <div ref={driverSheetRef} className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={resetDriverForm} role="dialog" aria-modal="true" aria-label={editingDriver ? 'Edit Driver' : 'Add New Driver'}>
-            <div
-              className="bottom-sheet safe-top p-6 animate-slide-up max-h-[90vh] overflow-y-auto"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="w-12 h-1 bg-slate-300 rounded-full mx-auto mb-4" />
-              <div className="flex items-center justify-between mb-6">
-                <h4 className="text-lg font-semibold text-slate-900">{editingDriver ? 'Edit Driver' : 'Add New Driver'}</h4>
-                <button onClick={resetDriverForm} className="btn-ghost touch-target no-tap-highlight">
-                  <X className="w-5 h-5" />
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => handleEditDriver(driver)}
+                  className="btn-ghost p-1.5"
+                  aria-label="Edit driver"
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteDriver(driver.id)}
+                  className="btn-ghost p-1.5 text-red-500 hover:text-red-600"
+                  aria-label="Delete driver"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
-              <form onSubmit={handleDriverSubmit} className="space-y-4">
+            </div>
+          ))}
+        </div>
+
+        {/* Add/Edit Driver Modal */}
+        {showAddDriver && (
+          <div ref={driverSheetRef} className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
+            <div className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-bold text-sm text-slate-900 dark:text-white">
+                  {editingDriver ? 'Edit Driver Profile' : 'Add New Driver / Supervisor'}
+                </h4>
+                <button type="button" onClick={resetDriverForm} className="btn-ghost p-1.5">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <form onSubmit={handleDriverSubmit} className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Name *</label>
+                  <label className="form-label">Full Name *</label>
                   <input
                     type="text"
+                    required
                     value={driverForm.name}
                     onChange={e => setDriverForm(prev => ({ ...prev, name: e.target.value }))}
-                    className="input-field touch-target no-tap-highlight"
-                    required
+                    placeholder="e.g. Alex Smith"
+                    className="form-input"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Role *</label>
+                  <label className="form-label">Role</label>
                   <select
                     value={driverForm.role}
                     onChange={e => setDriverForm(prev => ({ ...prev, role: e.target.value as 'parent' | 'teen' }))}
-                    className="input-field touch-target no-tap-highlight"
-                    required
+                    className="form-input"
                   >
+                    <option value="parent">Supervising Adult (Parent/Guardian)</option>
                     <option value="teen">Student Driver (Teen)</option>
-                    <option value="parent">Supervising Adult (Parent)</option>
                   </select>
                 </div>
+
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Phone *</label>
+                  <label className="form-label">Phone Number</label>
                   <input
                     type="tel"
-                    inputMode="tel"
                     value={driverForm.phone}
                     onChange={e => setDriverForm(prev => ({ ...prev, phone: e.target.value }))}
                     placeholder="(555) 123-4567"
-                    className="input-field touch-target no-tap-highlight"
-                    required
+                    className="form-input"
                   />
                 </div>
-                <label className="flex items-center gap-3 text-sm text-slate-700 cursor-pointer touch-target no-tap-highlight">
+
+                <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer pt-1">
                   <input
                     type="checkbox"
                     checked={driverForm.isPrimaryDriver}
                     onChange={e => setDriverForm(prev => ({ ...prev, isPrimaryDriver: e.target.checked }))}
-                    className="w-5 h-5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500"
+                    className="w-4 h-4 text-teal-600 rounded"
                   />
-                  Set as primary driver
+                  Set as primary default driver
                 </label>
-                <div className="flex gap-3 pt-4 safe-bottom">
-                  <button
-                    type="button"
-                    onClick={resetDriverForm}
-                    className="btn-secondary flex-1 touch-target no-tap-highlight"
-                  >
+
+                <div className="flex gap-2 pt-3">
+                  <button type="button" onClick={resetDriverForm} className="btn-secondary flex-1 py-2.5 text-xs font-bold">
                     Cancel
                   </button>
-                  <button
-                    type="submit"
-                    className="btn-primary flex-1 touch-target no-tap-highlight"
-                  >
-                    <Save className="w-4 h-4" />
-                    {editingDriver ? 'Update' : 'Add'} Driver
+                  <button type="submit" className="btn-primary flex-1 py-2.5 text-xs font-bold">
+                    <Save className="w-3.5 h-3.5" />
+                    {editingDriver ? 'Save Changes' : 'Add Profile'}
                   </button>
                 </div>
               </form>
@@ -285,148 +280,141 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
         )}
       </section>
 
-      {/* Vehicles Section */}
-      <section>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
-            <Car className="w-5 h-5" /> Vehicles
+      {/* 2. Vehicles Section */}
+      <section className="space-y-3 pt-2">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Car className="w-4 h-4 text-teal-600" /> Vehicle Profiles
           </h3>
           <button
+            type="button"
             onClick={() => { resetVehicleForm(); setShowAddVehicle(true); }}
-            className="btn-primary text-sm px-4 py-2 touch-target no-tap-highlight"
+            className="btn-primary py-1.5 px-3 text-xs font-bold"
           >
-            <Plus className="w-4 h-4" /> Add Vehicle
+            <Plus className="w-3.5 h-3.5" /> Add Vehicle
           </button>
         </div>
 
-        {vehicles.length === 0 ? (
-          <div className="text-center py-8 text-muted">
-            <p>No vehicles added yet. Click "Add Vehicle" to get started.</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {vehicles.map(vehicle => (
-              <div key={vehicle.id} className="card-gradient-success flex items-center justify-between transition-smooth">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
-                    <Car className="w-5 h-5 text-indigo-600" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-slate-900">{vehicle.name}</p>
-                    <p className="text-sm text-muted">{vehicle.year} {vehicle.make} {vehicle.model}</p>
-                    <p className="text-xs text-muted">Plate: {vehicle.licensePlate}</p>
-                  </div>
+        <div className="space-y-2">
+          {vehicles.map(vehicle => (
+            <div key={vehicle.id} className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-xs">
+                  <Car className="w-4 h-4" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleEditVehicle(vehicle)}
-                    className="btn-ghost touch-target no-tap-highlight"
-                    aria-label="Edit vehicle"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteVehicle(vehicle.id)}
-                    className="btn-ghost text-red-500 hover:text-red-600 hover:bg-red-50 touch-target no-tap-highlight"
-                    aria-label="Delete vehicle"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                <div>
+                  <p className="font-bold text-xs text-slate-900 dark:text-white">
+                    {vehicle.name}
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {vehicle.year ? `${vehicle.year} ` : ''}{vehicle.make} {vehicle.model} {vehicle.licensePlate ? `• ${vehicle.licensePlate}` : ''}
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
 
-        {/* Add/Edit Vehicle Bottom Sheet */}
-        {showAddVehicle && (
-          <div ref={vehicleSheetRef} className="fixed inset-0 bg-black/50 z-50 animate-fade-in" onClick={resetVehicleForm} role="dialog" aria-modal="true" aria-label={editingVehicle ? 'Edit Vehicle' : 'Add New Vehicle'}>
-            <div
-              className="bottom-sheet safe-top p-6 animate-slide-up max-h-[90vh] overflow-y-auto"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="w-12 h-1 bg-slate-300 rounded-full mx-auto mb-4" />
-              <div className="flex items-center justify-between mb-6">
-                <h4 className="text-lg font-semibold text-slate-900">{editingVehicle ? 'Edit Vehicle' : 'Add New Vehicle'}</h4>
-                <button onClick={resetVehicleForm} className="btn-ghost touch-target no-tap-highlight">
-                  <X className="w-5 h-5" />
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => handleEditVehicle(vehicle)}
+                  className="btn-ghost p-1.5"
+                  aria-label="Edit vehicle"
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteVehicle(vehicle.id)}
+                  className="btn-ghost p-1.5 text-red-500 hover:text-red-600"
+                  aria-label="Delete vehicle"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
-              <form onSubmit={handleVehicleSubmit} className="space-y-4">
+            </div>
+          ))}
+        </div>
+
+        {/* Add/Edit Vehicle Modal */}
+        {showAddVehicle && (
+          <div ref={vehicleSheetRef} className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
+            <div className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-bold text-sm text-slate-900 dark:text-white">
+                  {editingVehicle ? 'Edit Vehicle Profile' : 'Add New Vehicle'}
+                </h4>
+                <button type="button" onClick={resetVehicleForm} className="btn-ghost p-1.5">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <form onSubmit={handleVehicleSubmit} className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Nickname *</label>
+                  <label className="form-label">Vehicle Nickname *</label>
                   <input
                     type="text"
+                    required
                     value={vehicleForm.name}
                     onChange={e => setVehicleForm(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Mom's Honda"
-                    className="input-field touch-target no-tap-highlight"
-                    required
+                    placeholder="e.g. Family SUV"
+                    className="form-input"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+
+                <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Make *</label>
+                    <label className="form-label">Make *</label>
                     <input
                       type="text"
+                      required
                       value={vehicleForm.make}
                       onChange={e => setVehicleForm(prev => ({ ...prev, make: e.target.value }))}
-                      placeholder="Honda"
-                      className="input-field touch-target no-tap-highlight"
-                      required
+                      placeholder="e.g. Toyota"
+                      className="form-input"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Model *</label>
+                    <label className="form-label">Model *</label>
                     <input
                       type="text"
+                      required
                       value={vehicleForm.model}
                       onChange={e => setVehicleForm(prev => ({ ...prev, model: e.target.value }))}
-                      placeholder="CR-V"
-                      className="input-field touch-target no-tap-highlight"
-                      required
+                      placeholder="e.g. RAV4"
+                      className="form-input"
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+
+                <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Year *</label>
+                    <label className="form-label">Year</label>
                     <input
                       type="text"
-                      inputMode="numeric"
                       value={vehicleForm.year}
                       onChange={e => setVehicleForm(prev => ({ ...prev, year: e.target.value }))}
-                      placeholder="2020"
-                      className="input-field touch-target no-tap-highlight"
-                      required
+                      placeholder="e.g. 2022"
+                      className="form-input"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">License Plate</label>
+                    <label className="form-label">License Plate</label>
                     <input
                       type="text"
-                      inputMode="text"
                       value={vehicleForm.licensePlate}
                       onChange={e => setVehicleForm(prev => ({ ...prev, licensePlate: e.target.value.toUpperCase() }))}
-                      placeholder="ABC1234"
-                      className="input-field touch-target no-tap-highlight uppercase"
+                      placeholder="e.g. 7XYZ123"
+                      className="form-input uppercase"
                     />
                   </div>
                 </div>
-                <div className="flex gap-3 pt-4 safe-bottom">
-                  <button
-                    type="button"
-                    onClick={resetVehicleForm}
-                    className="btn-secondary flex-1 touch-target no-tap-highlight"
-                  >
+
+                <div className="flex gap-2 pt-3">
+                  <button type="button" onClick={resetVehicleForm} className="btn-secondary flex-1 py-2.5 text-xs font-bold">
                     Cancel
                   </button>
-                  <button
-                    type="submit"
-                    className="btn-primary flex-1 touch-target no-tap-highlight"
-                  >
-                    <Save className="w-4 h-4" />
-                    {editingVehicle ? 'Update' : 'Add'} Vehicle
+                  <button type="submit" className="btn-primary flex-1 py-2.5 text-xs font-bold">
+                    <Save className="w-3.5 h-3.5" />
+                    {editingVehicle ? 'Save Changes' : 'Add Vehicle'}
                   </button>
                 </div>
               </form>
@@ -434,6 +422,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
           </div>
         )}
       </section>
+
     </div>
   );
 }

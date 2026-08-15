@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /settings
+Disallow: /*?*modal=*
+Disallow: /*?*payment=*
+Disallow: /*?*edit=*
 
 Sitemap: https://drivelog-app.vercel.app/sitemap.xml

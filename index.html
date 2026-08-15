@@ -2,100 +2,105 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DriveLog — Teen Driving Hours Tracker</title>
-    <meta name="theme-color" content="#006a61" />
-    <meta name="description" content="Offline-first supervised driving log with DMV-ready PDF export" />
-    <meta name="robots" content="index, follow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>DriveLog — Supervised Teen Driving Hours Tracker & DMV Log</title>
+    <meta name="title" content="DriveLog — Supervised Teen Driving Hours Tracker & DMV Log" />
+    <meta name="description" content="Free offline-first supervised driving practice log for teen drivers and parents. Automatically track legal day & night hours, manage multiple supervisors, and export official DMV-ready PDFs for all 50 US states." />
+    <meta name="keywords" content="teen driving log, supervised driving hours tracker, DMV driving log PDF, 50 hours driving log app, learner permit driving log, California DMV DL-236, Texas driving log, Florida 50 hour log, night driving practice tracker" />
+    <meta name="author" content="DriveLog" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <link rel="canonical" href="https://drivelog-app.vercel.app/" />
+
+    <!-- Mobile & PWA Theme -->
+    <meta name="theme-color" content="#0D9488" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="DriveLog" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+
+    <!-- Performance: Google Fonts Preconnect & Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+    <!-- PWA Install Interception Script -->
     <script>
-      // Early capture of beforeinstallprompt before React mounts
       window.__drivelogPwaDeferredPrompt = null;
       window.addEventListener('beforeinstallprompt', (e) => {
-        console.log('[DriveLog PWA] ⚡ beforeinstallprompt event fired and captured globally');
         e.preventDefault();
         window.__drivelogPwaDeferredPrompt = e;
         window.dispatchEvent(new CustomEvent('drivelog-pwa-prompt-available'));
       });
       window.addEventListener('appinstalled', () => {
-        console.log('[DriveLog PWA] 🎉 appinstalled event fired — app is now installed');
         window.__drivelogPwaDeferredPrompt = null;
         window.dispatchEvent(new CustomEvent('drivelog-pwa-installed'));
       });
     </script>
 
-    <!-- Open Graph -->
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://drivelog-app.vercel.app/" />
-    <meta property="og:title" content="DriveLog — Teen Driving Hours Tracker" />
-    <meta property="og:description" content="Offline-first supervised driving log with DMV-ready PDF export. Track supervised driving hours, log conditions, and generate DMV-ready reports." />
-    <meta property="og:image" content="https://drivelog-app.vercel.app/og-image.png" />
+    <meta property="og:title" content="DriveLog — Supervised Teen Driving Hours Tracker & DMV Log" />
+    <meta property="og:description" content="Offline-first supervised driving practice log for teen drivers. Track day & night hours, manage supervisors, and export official DMV-ready PDFs for all 50 states." />
+    <meta property="og:image" content="https://drivelog-app.vercel.app/pwa-512x512.png" />
+    <meta property="og:image:alt" content="DriveLog Teen Driving Practice Tracker App Preview" />
     <meta property="og:site_name" content="DriveLog" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://drivelog-app.vercel.app/" />
-    <meta name="twitter:title" content="DriveLog — Teen Driving Hours Tracker" />
-    <meta name="twitter:description" content="Offline-first supervised driving log with DMV-ready PDF export. Track supervised driving hours, log conditions, and generate DMV-ready reports." />
-    <meta name="twitter:image" content="https://drivelog-app.vercel.app/twitter-image.png" />
+    <meta name="twitter:title" content="DriveLog — Supervised Teen Driving Hours Tracker & DMV Log" />
+    <meta name="twitter:description" content="Offline-first supervised driving practice log for teen drivers. Track day & night hours, manage supervisors, and export official DMV-ready PDFs." />
+    <meta name="twitter:image" content="https://drivelog-app.vercel.app/pwa-512x512.png" />
 
-    <!-- JSON-LD Structured Data -->
+    <!-- JSON-LD Structured Data: WebApplication -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
+      "@id": "https://drivelog-app.vercel.app/#webapp",
       "name": "DriveLog — Teen Driving Hours Tracker",
-      "description": "Offline-first supervised driving log with DMV-ready PDF export. Track your teen's driving practice hours, log different driving conditions, and generate DMV-ready reports for license requirements.",
+      "alternateName": "DriveLog",
+      "description": "Offline-first supervised driving log with DMV-ready PDF export. Track supervised driving practice hours, day/night conditions, and generate official DMV reports.",
       "url": "https://drivelog-app.vercel.app/",
       "applicationCategory": "UtilitiesApplication",
-      "operatingSystem": "Any (Web-based PWA)",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "featureList": [
-        "Track supervised driving hours",
-        "Log driving conditions (day/night, weather, road types)",
-        "DMV-ready PDF export",
-        "Offline-first functionality",
-        "Progress tracking toward license requirements"
+      "operatingSystem": "iOS, Android, Windows, macOS, ChromeOS (PWA)",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Free Tier",
+          "price": "0",
+          "priceCurrency": "USD",
+          "description": "First 20 supervised practice hours logged for free."
+        },
+        {
+          "@type": "Offer",
+          "name": "Lifetime Pro",
+          "price": "4.99",
+          "priceCurrency": "USD",
+          "description": "Unlimited supervised driving hours logging with official DMV PDF exports."
+        }
       ],
-      "browserRequirements": "Requires JavaScript. Requires HTML5.",
-      "softwareVersion": "1.0"
+      "featureList": [
+        "100% Offline-first IndexedDB storage",
+        "Automatic legal night detection by state coordinates",
+        "50-state DMV driving hour compliance targets",
+        "Official DMV-ready PDF log export",
+        "Multi-supervisor and vehicle profile management",
+        "Distraction-free live driving timer"
+      ],
+      "browserRequirements": "Requires HTML5 JavaScript-enabled browser",
+      "softwareVersion": "1.0.0"
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "DriveLog",
-      "applicationCategory": "UtilitiesApplication",
-      "operatingSystem": "Web, iOS, Android (PWA)",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "description": "Free teen driving hours tracker with offline support and DMV-ready PDF exports for supervised driving practice logs.",
-      "downloadUrl": "https://drivelog-app.vercel.app/",
-      "installUrl": "https://drivelog-app.vercel.app/",
-      "softwareVersion": "1.0",
-      "fileSize": "PWA (Progressive Web App)",
-      "releaseNotes": "Offline-first architecture for reliable logging anywhere",
-      "softwareHelp": {
-        "@type": "CreativeWork",
-        "url": "https://drivelog-app.vercel.app/help"
-      }
-    }
-    </script>
+
+    <!-- JSON-LD Structured Data: FAQPage -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -103,133 +108,37 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "How many supervised driving hours do teens need before getting a license?",
+          "name": "How many supervised driving hours do teens need before taking the DMV road test?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Requirements vary by state. Most states require 40-60 hours of supervised driving practice, with 10-15 hours of night driving. DriveLog helps you track and document all required hours for DMV submission."
+            "text": "Most US states require 40 to 50 hours of supervised driving practice, including at least 10 hours of certified night driving (e.g. California requires 50 hours total with 10 night hours). DriveLog preconfigures legal targets for all 50 states."
           }
         },
         {
           "@type": "Question",
-          "name": "Does DriveLog work offline?",
+          "name": "Does DriveLog work completely offline while driving?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes, DriveLog is an offline-first progressive web app. You can log driving hours without internet connectivity, and your data will sync when you're back online."
+            "text": "Yes, DriveLog is an offline-first Progressive Web App (PWA). All timer calculations and trip records are securely stored on your device using IndexedDB without requiring active cellular data."
           }
         },
         {
           "@type": "Question",
-          "name": "Can I export my driving log for the DMV?",
+          "name": "Can I export an official PDF log sheet for my DMV licensing appointment?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes, DriveLog generates DMV-ready PDF exports that meet state requirements for supervised driving documentation. Export includes total hours, driving conditions, and supervisor signatures."
+            "text": "Yes, DriveLog compiles all practice sessions into a formatted DMV-compliant driving log PDF complete with supervisor names, dates, road conditions, and signature initials."
           }
         },
         {
           "@type": "Question",
-          "name": "Is DriveLog free to use?",
+          "name": "How does DriveLog determine legal night driving hours?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes, DriveLog is completely free. It's a progressive web app that works on any device with a web browser—no download required."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What driving conditions should I track?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "DriveLog helps you track day and night driving, different weather conditions (rain, snow, clear), various road types (highway, city, rural), and other important scenarios most states require for teen driver practice."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can parents monitor their teen's driving progress?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, DriveLog provides progress tracking so parents can see how many hours have been logged, what conditions have been practiced, and how close the teen is to meeting state requirements."
+            "text": "DriveLog calculates legal twilight and sunset hours based on geographic location and time of day, automatically categorizing sessions as day or night practice according to DMV standards."
           }
         }
       ]
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "HowTo",
-      "name": "How to Track Teen Driving Hours with DriveLog",
-      "description": "Learn how to use DriveLog to track supervised driving practice for your teen driver",
-      "totalTime": "PT5M",
-      "estimatedCost": {
-        "@type": "MonetaryAmount",
-        "currency": "USD",
-        "value": "0"
-      },
-      "step": [
-        {
-          "@type": "HowToStep",
-          "position": 1,
-          "name": "Open DriveLog",
-          "text": "Visit drivelog-app.vercel.app on any device with a web browser. No download or installation required.",
-          "image": "https://drivelog-app.vercel.app/screenshots/step-1-open.png"
-        },
-        {
-          "@type": "HowToStep",
-          "position": 2,
-          "name": "Create a New Driving Session",
-          "text": "Click 'Add Session' to log a new driving practice session. Enter the date, duration, and driving conditions.",
-          "image": "https://drivelog-app.vercel.app/screenshots/step-2-add.png"
-        },
-        {
-          "@type": "HowToStep",
-          "position": 3,
-          "name": "Select Driving Conditions",
-          "text": "Choose relevant conditions: day or night driving, weather conditions, road types, and any notable experiences.",
-          "image": "https://drivelog-app.vercel.app/screenshots/step-3-conditions.png"
-        },
-        {
-          "@type": "HowToStep",
-          "position": 4,
-          "name": "Add Supervisor Details",
-          "text": "Enter the supervising driver's name and relationship (parent, guardian, or licensed adult).",
-          "image": "https://drivelog-app.vercel.app/screenshots/step-4-supervisor.png"
-        },
-        {
-          "@type": "HowToStep",
-          "position": 5,
-          "name": "Track Progress",
-          "text": "View your dashboard to see total hours logged, progress toward state requirements, and driving condition breakdown.",
-          "image": "https://drivelog-app.vercel.app/screenshots/step-5-progress.png"
-        },
-        {
-          "@type": "HowToStep",
-          "position": 6,
-          "name": "Export for DMV",
-          "text": "When ready, export your complete driving log as a DMV-ready PDF for license application submission.",
-          "image": "https://drivelog-app.vercel.app/screenshots/step-6-export.png"
-        }
-      ]
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "DriveLog",
-      "url": "https://drivelog-app.vercel.app/",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://drivelog-app.vercel.app/favicon.svg"
-      },
-      "description": "Free teen driving hours tracking application for supervised driving practice documentation",
-      "sameAs": [
-        "https://twitter.com/drivelogapp",
-        "https://github.com/drivelogapp"
-      ],
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "contactType": "customer support",
-        "email": "support@drivelog-app.vercel.app"
-      }
     }
     </script>
   </head>
@@ -237,6 +146,6 @@
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-white focus:text-slate-900">Skip to main content</a>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <noscript>You must enable JavaScript to run this app.</noscript>
+    <noscript>You must enable JavaScript to run DriveLog.</noscript>
   </body>
 </html>

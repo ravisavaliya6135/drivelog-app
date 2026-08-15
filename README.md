@@ -1,6 +1,6 @@
 # 🚗 DriveLog — Teen Driving Hours Tracker
 
-> **PWA Progressive Web App | Offline-first | DMV-Ready PDF | Parent-Teen Friendly**
+> **PWA Progressive Web App | Offline-First | DMV-Ready PDF | Parent-Teen Friendly**
 
 ---
 
@@ -15,29 +15,30 @@ US teens must log **40–60 supervised driving hours** before getting a license.
 
 ## ✅ The Solution
 
-**DriveLog** — a simple, offline-first, parent-friendly driving log app that works like a **website you install on your phone**. No ads, no subscriptions, no data loss.
+**DriveLog** — a simple, offline-first, parent-friendly driving log app that works like a **native app you install on your phone**. No ads, no recurring subscriptions, no data loss.
 
 **Key features:**
-- **Timer** (Start/Pause/Resume/Stop) — works offline
-- **Auto night detection** — calculates legal night hours per state
-- **Multi-driver** — parents and teens log separately
-- **50-state DMV PDF export** — printable, ready for DMV forms
-- **PWA** — add to home screen, works without internet
-- **Zero cost** — free for first 20 hours, then $4.99 lifetime
+- **Distraction-Free Timer** (Start/Pause/Resume/Stop) — 100% offline
+- **Auto Night Detection** — calculates legal twilight & sunset hours per state
+- **Multi-Driver & Vehicles** — parents and teens log separately with vehicle tags
+- **50-State DMV PDF Export** — printable, formatted for state DMV licensing requirements
+- **PWA Installation** — install on iOS Safari and Android with offline caching
+- **Fair Pricing** — free for first 20 hours, then $4.99 one-time Lifetime Pro
 
 ---
 
 ## 🛠️ Tech Stack
 
 | Layer | Technology |
-|-------|-------------|
+|---|---|
 | **Frontend** | React 18 + Vite + TypeScript + Tailwind CSS |
-| **Storage** | `idb` (IndexedDB) — offline persistence |
-| **PDF** | `@react-pdf/renderer` — client-side generation |
-| **Time** | `SunCalc` (sunrise/sunset per state) |
-| **Icons** | `lucide-react` |
-| **PWA** | Vite PWA plugin + Workbox |
-| **Deployment** | Vercel / Netlify |
+| **Icons** | Lucide React |
+| **Storage** | `idb` (IndexedDB) — 100% offline persistence |
+| **Backend & Auth** | Supabase Auth (Passwordless Magic Link) + PostgreSQL RLS |
+| **Payments** | Stripe Checkout ($4.99 one-time) + Server-side Webhook |
+| **PDF** | `@react-pdf/renderer` (Lazy-loaded client-side generation) |
+| **Solar Calc** | `SunCalc` (legal twilight/sunset per state coordinates) |
+| **PWA** | Vite PWA Plugin + Workbox Service Worker |
 
 ---
 
@@ -45,7 +46,7 @@ US teens must log **40–60 supervised driving hours** before getting a license.
 
 ```bash
 # 1. Clone the project
-git clone <your-repo-url>
+git clone https://github.com/ravisavaliya6135/drivelog-app.git
 cd drivelog-app
 
 # 2. Install dependencies
@@ -66,37 +67,47 @@ npm run build
 ```
 src/
 ├── components/
-│   ├── DriveTimer.tsx          # Start/Pause/Resume/Stop
-│   ├── DriveLogEntry.tsx        # Single drive log entry
-│   ├── MultiDriverForm.tsx      # Parent/teen selector
-│   ├── StateSelector.tsx        # 50-state selector
-│   ├── DriveSummary.tsx         # Day/night split display
-│   └── PdfExport.tsx            # DMV PDF generation
+│   ├── DriveTimer.tsx          # High-contrast live driving clock & telemetry
+│   ├── DriveLogEntry.tsx       # Celebratory save drive & condition selector
+│   ├── MultiDriverForm.tsx     # Supervisor and vehicle manager
+│   ├── StateSelector.tsx       # 50-state DMV target selector
+│   ├── PwaInstallPrompt.tsx    # iOS 3-step & Android native install sheet
+│   ├── AuthModal.tsx           # Passwordless magic-link sign-in dialog
+│   └── UpgradeModal.tsx        # Lifetime Pro ($4.99) checkout modal
+├── contexts/
+│   ├── AuthContext.tsx         # Supabase Auth provider
+│   └── EntitlementContext.tsx  # Free vs Lifetime Pro state & caching
 ├── hooks/
-│   ├── useDriveTimer.ts         # Timer logic with IndexedDB persistence
-│   ├── useDriveLog.ts           # CRUD for drive entries
-│   └── useNightDetection.ts      # Sunset/sunrise calculations
+│   ├── useDriveLog.ts          # IndexedDB CRUD state
+│   ├── useNightDetection.ts    # Legal night solar calculations
+│   ├── usePwaInstall.ts        # beforeinstallprompt & standalone detection
+│   ├── useSeo.ts               # Dynamic route metadata & canonical tags
+│   └── useTheme.ts             # Light / Dark / System theme switcher
 ├── pages/
-│   ├── Home.tsx                 # Dashboard (today's hours)
-│   ├── LogDrive.tsx             # Log a new drive session
-│   ├── ExportDocs.tsx           # Export PDF to print
-│   └── Settings.tsx             # App preferences
+│   ├── Home.tsx                # Dashboard, hero progress & start drive CTA
+│   ├── LogDrive.tsx            # Driving History hub with search & filters
+│   ├── ExportDocs.tsx          # DMV PDF generator & compliance check
+│   └── Settings.tsx            # Account, state goals, backup & appearance
 ├── utils/
-│   ├── sunCalc.ts               # State-based sunset/sunrise
-│   ├── db.ts                    # IndexedDB wrapper
-│   └── pdf.ts                   # PDF generation
-├── public/
-│   ├── manifest.json
-│   └── sw.js                    # Service Worker
+│   ├── db.ts                   # IndexedDB database wrapper
+│   ├── pdf.tsx                 # DMV PDF export layout (on-demand chunk)
+│   └── sunCalc.ts              # State-based astronomical calculations
+supabase/
+├── functions/
+│   ├── create-checkout-session # Secure Stripe checkout session creator
+│   └── stripe-webhook          # Cryptographic Stripe webhook processor
+└── migrations/
+    ├── 20260815_profiles_auth.sql # Profiles schema with Row Level Security
+    └── 20260815_monetization_schema.sql # Entitlements schema & triggers
 ```
 
 ---
 
 ## 🎨 Design Language
 
-- **Color:** Navy blue + warm white + accent teal (#0D9488)
-- **Font:** Inter (system font stack)
-- **Tone:** Clean, calm, trustworthy — no medical jargon
+- **Color:** Deep Navy (`#0F172A`) + Warm Slate (`#334155`) + Accent Teal (`#0D9488`)
+- **Font:** Inter (system font stack) + Tabular Mono numbers
+- **Tone:** Clean, calm, trustworthy, high contrast for outdoor use
 - **Mood:** "It's not complicated, it's just a log"
 
 ---
@@ -107,4 +118,4 @@ MIT
 
 ---
 
-*Built for parents who want to keep their teen driver safe — no ads, no bugs, no lost data.*
+*Built for parents and teen drivers — no ads, no recurring subscriptions, no lost data.*

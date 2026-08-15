@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Sparkles, Check, Lock, ShieldCheck, X, ArrowRight, Zap, RefreshCw } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useEntitlement, PRO_LIFETIME_PRICE } from '../contexts/EntitlementContext';
 import { AuthModal } from './AuthModal';
@@ -46,167 +47,141 @@ export function UpgradeModal({
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
-        <div className="bg-surface-container-lowest max-w-md w-full rounded-t-[28px] sm:rounded-[28px] p-6 card-shadow border border-outline-variant/30 flex flex-col gap-4 animate-slide-up">
+      <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
+        <div className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col gap-4 animate-slide-up">
           
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-600 text-white flex items-center justify-center shadow-md shadow-amber-500/20">
-                <span className="material-symbols-outlined text-xl" data-weight="fill">
-                  workspace_premium
-                </span>
+              <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+                <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-headline-md text-base font-bold text-primary">DriveLog Lifetime</h3>
-                <p className="text-[11px] text-on-surface-variant">One-time payment • Never expires</p>
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white">
+                  Unlock DriveLog Lifetime Pro
+                </h3>
+                <p className="text-[11px] text-teal-600 dark:text-teal-400 font-bold">
+                  {PRO_LIFETIME_PRICE} One-Time • No Recurring Fees
+                </p>
               </div>
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-surface-container-highest transition-colors"
+              className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white"
             >
-              <span className="material-symbols-outlined text-lg">close</span>
+              <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Reason Alert (if user reached free 20h limit) */}
+          {/* Reason Banner if applicable */}
           {reason && (
-            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-800 dark:text-amber-300 font-medium">
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300">
               {reason}
             </div>
           )}
 
-          {/* Pricing Hero Box */}
-          <div className="p-5 rounded-2xl bg-gradient-to-br from-secondary-container/40 to-surface-container-low border border-secondary/20 text-center relative overflow-hidden">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary text-on-secondary text-[11px] font-bold uppercase tracking-wider mb-2">
-              <span className="material-symbols-outlined text-sm" data-weight="fill">star</span>
-              Lifetime Pro Access
+          {/* Feature List Bento */}
+          <div className="space-y-2 py-1">
+            <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+              <div className="w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
+                <Check className="w-3.5 h-3.5" />
+              </div>
+              <span><strong>Unlimited driving hours</strong> (Free tier capped at 20h)</span>
             </div>
-            <div className="flex items-baseline justify-center gap-1 my-1">
-              <span className="font-display text-3xl font-extrabold text-primary">{PRO_LIFETIME_PRICE}</span>
-              <span className="text-xs text-on-surface-variant font-semibold">one-time</span>
-            </div>
-            <p className="text-xs text-on-surface-variant font-medium">
-              No monthly subscriptions • No recurring fees • No ads
-            </p>
-          </div>
 
-          {/* Feature List */}
-          <div className="space-y-2.5 py-1">
-            <div className="flex items-center gap-3">
-              <span className="w-5 h-5 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs flex-shrink-0">
-                <span className="material-symbols-outlined text-sm font-bold">check</span>
-              </span>
-              <span className="text-xs font-semibold text-on-surface">Unlimited driving practice logs</span>
+            <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+              <div className="w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
+                <Check className="w-3.5 h-3.5" />
+              </div>
+              <span><strong>Official DMV PDF export</strong> for all 50 states</span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="w-5 h-5 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs flex-shrink-0">
-                <span className="material-symbols-outlined text-sm font-bold">check</span>
-              </span>
-              <span className="text-xs font-semibold text-on-surface">Official DMV-ready PDF log export for all 50 states</span>
+
+            <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+              <div className="w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
+                <Check className="w-3.5 h-3.5" />
+              </div>
+              <span><strong>Multiple supervisors & vehicles</strong> tracking</span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="w-5 h-5 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs flex-shrink-0">
-                <span className="material-symbols-outlined text-sm font-bold">check</span>
-              </span>
-              <span className="text-xs font-semibold text-on-surface">Multi-driver & multi-vehicle accounts</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-5 h-5 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs flex-shrink-0">
-                <span className="material-symbols-outlined text-sm font-bold">check</span>
-              </span>
-              <span className="text-xs font-semibold text-on-surface">100% offline functionality & local privacy</span>
+
+            <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+              <div className="w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
+                <Check className="w-3.5 h-3.5" />
+              </div>
+              <span><strong>100% Offline & Private</strong> — never expires</span>
             </div>
           </div>
 
           {error && (
-            <div className="p-3 rounded-xl bg-error/10 border border-error/30 text-error text-xs font-medium flex items-center gap-2">
-              <span className="material-symbols-outlined text-base flex-shrink-0">error</span>
-              <span>{error}</span>
+            <div className="p-2.5 rounded-xl bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 text-xs font-medium border border-red-200 dark:border-red-800">
+              {error}
             </div>
           )}
 
-          {/* CTA Action */}
-          {isPro ? (
-            <div className="p-3 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold text-center flex items-center justify-center gap-2">
-              <span className="material-symbols-outlined text-base" data-weight="fill">verified</span>
-              You have Lifetime Pro!
-            </div>
-          ) : (
+          {/* Pricing & Checkout Action */}
+          <div className="pt-2 space-y-2">
             <button
               type="button"
-              onClick={handleUnlock}
               disabled={loading}
-              className="w-full py-4 rounded-full bg-secondary text-on-secondary font-headline-md text-xs font-bold uppercase tracking-wider btn-3d shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+              onClick={handleUnlock}
+              className="btn-primary w-full h-14 text-base font-bold shadow-teal flex items-center justify-center gap-2"
             >
               {loading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Connecting to Checkout...
-                </>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
-                  <span className="material-symbols-outlined text-base" data-weight="fill">bolt</span>
-                  Unlock Lifetime Pro — {PRO_LIFETIME_PRICE}
+                  <ShieldCheck className="w-5 h-5" />
+                  <span>Get Lifetime Pro for {PRO_LIFETIME_PRICE}</span>
                 </>
               )}
             </button>
-          )}
 
-          <p className="text-[10px] text-center text-on-surface-variant">
-            Secure payment powered by Stripe. All driving logs stay safe on your device.
-          </p>
+            <p className="text-[10px] text-center text-slate-400">
+              Secure checkout via Stripe • One-time payment • Never charged again
+            </p>
+          </div>
 
         </div>
       </div>
 
-      {/* Auth Modal if user needs to login before payment */}
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
-        onSuccess={() => setShowAuthModal(false)}
-        title="Sign In to Purchase Lifetime Pro"
-        subtitle="We will link your Lifetime Pro entitlement to your email so you can restore it anytime."
+        onSuccess={() => {
+          setShowAuthModal(false);
+          handleUnlock();
+        }}
+        title="Sign In to Continue"
+        subtitle="Sign in with your email to attach your Lifetime Pro purchase to your account."
       />
     </>
   );
 }
 
 export function UpgradeCard({ onUpgradeClick }: { onUpgradeClick: () => void }) {
-  const { isPro, totalHoursLogged, freeHoursRemaining, isLimitReached, isApproachingLimit } = useEntitlement();
-
-  if (isPro) return null;
-
   return (
-    <div className="bg-surface-container-lowest rounded-2xl p-4 card-shadow border border-secondary/30 flex flex-col gap-3 relative overflow-hidden">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-amber-500/15 text-amber-600 flex items-center justify-center">
-            <span className="material-symbols-outlined text-lg" data-weight="fill">workspace_premium</span>
-          </div>
-          <div>
-            <h4 className="font-headline-md text-xs font-bold text-primary">
-              {isLimitReached ? 'Free 20-Hour Limit Reached' : 'DriveLog Lifetime Pro'}
-            </h4>
-            <p className="text-[11px] text-on-surface-variant font-medium">
-              {isLimitReached
-                ? 'Unlock unlimited hours for just $4.99 one-time'
-                : isApproachingLimit
-                ? `${freeHoursRemaining}h remaining on Free tier`
-                : `${totalHoursLogged}/20 hours logged on Free tier`}
-            </p>
-          </div>
+    <div className="p-4 rounded-2xl bg-teal-50/70 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 flex items-center justify-between gap-3 animate-fade-in">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+          <Sparkles className="w-5 h-5" />
         </div>
-        <button
-          type="button"
-          onClick={onUpgradeClick}
-          className="px-3.5 py-1.5 rounded-full bg-secondary text-on-secondary text-xs font-label-bold font-bold btn-3d"
-        >
-          {PRO_LIFETIME_PRICE} One-Time
-        </button>
+        <div>
+          <h4 className="font-bold text-xs text-slate-900 dark:text-white">
+            Approaching 20h Free Limit
+          </h4>
+          <p className="text-[11px] text-slate-600 dark:text-slate-400">
+            Unlock unlimited supervised hours with Lifetime Pro for {PRO_LIFETIME_PRICE}.
+          </p>
+        </div>
       </div>
+
+      <button
+        type="button"
+        onClick={onUpgradeClick}
+        className="btn-primary py-2 px-3.5 text-xs font-bold whitespace-nowrap shadow-teal flex-shrink-0"
+      >
+        Upgrade
+      </button>
     </div>
   );
 }

@@ -7,8 +7,8 @@ const manifest: VitePWAOptions['manifest'] = {
   name: 'DriveLog',
   short_name: 'DriveLog',
   description: 'Offline-first supervised driving log with DMV-ready PDF export',
-  theme_color: '#006a61',
-  background_color: '#f9f9f8',
+  theme_color: '#0D9488',
+  background_color: '#F8FAFC',
   display: 'standalone',
   orientation: 'portrait-primary',
   scope: '/',
@@ -81,10 +81,14 @@ export default defineConfig({
     target: 'esnext',
     minify: 'esbuild',
     sourcemap: false,
+    chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
         manualChunks: {
-          pdf: ['@react-pdf/renderer'],
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-icons': ['lucide-react'],
+          'vendor-supabase': ['@supabase/supabase-js'],
+          'pdf': ['@react-pdf/renderer'],
         },
       },
     },

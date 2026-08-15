@@ -1,13 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Play, Sun, Moon, Clock, Calendar, ChevronRight, Award, Plus, CheckCircle2, ShieldCheck, Car, X } from 'lucide-react';
 import { useDriveLog } from '../hooks/useDriveLog';
 import { useEntitlement } from '../contexts/EntitlementContext';
 import { UpgradeCard, UpgradeModal } from '../components/UpgradeModal';
 import { US_STATES } from '../types';
 import { DriveTimer } from '../components/DriveTimer';
 import { DriveLogEntry } from '../components/DriveLogEntry';
+import { useSeo } from '../hooks/useSeo';
 
 export function Home() {
+  useSeo({
+    title: 'DriveLog — Supervised Teen Driving Hours Tracker & DMV Log',
+    description: 'Track supervised teen driving practice hours, automatic day & night detection, and 50-state DMV license targets.',
+    canonicalUrl: 'https://drivelog-app.vercel.app/',
+  });
+
   const navigate = useNavigate();
   const { isPro, isLimitReached, isApproachingLimit } = useEntitlement();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -30,6 +38,8 @@ export function Home() {
     }
     return 'CA';
   });
+
+  const state = US_STATES.find(s => s.code === selectedState) || US_STATES[4];
 
   // Modal deep links
   const [showTimerModal, setShowTimerModal] = useState(false);
@@ -102,127 +112,162 @@ export function Home() {
     updateModalUrl(null);
   };
 
-  const state = US_STATES.find(s => s.code === selectedState) || US_STATES[4];
-  const requiredHours = state.requiredHours || 50;
-  const currentTotalHours = Math.round(totalHours);
-  const dayHoursVal = Math.round(dayMinutes / 60);
-  const nightHoursVal = Math.round(nightMinutes / 60);
+  // Calculations
+  const totalHoursVal = Number(totalHours.toFixed(1));
+  const dayHoursVal = Number((dayMinutes / 60).toFixed(1));
+  const nightHoursVal = Number((nightMinutes / 60).toFixed(1));
+  
+  const totalProgress = Math.min(100, Math.round((totalHoursVal / (state.requiredHours || 50)) * 100));
+  const dayProgress = Math.min(100, Math.round((dayHoursVal / Math.max(1, state.requiredHours - state.requiredNightHours)) * 100));
+  const nightProgress = state.requiredNightHours > 0 ? Math.min(100, Math.round((nightHoursVal / state.requiredNightHours) * 100)) : 100;
+  
+  const remainingTotal = Math.max(0, state.requiredHours - totalHoursVal).toFixed(1);
+  const isTotalComplete = totalHoursVal >= state.requiredHours && nightHoursVal >= state.requiredNightHours;
 
-  // SVG Progress Ring calculations
-  const circumference = 251.2;
-  const dayProgressRatio = Math.min((dayMinutes / 60) / requiredHours, 1);
-  const dayOffset = circumference - dayProgressRatio * circumference;
-  const totalProgressRatio = Math.min(totalHours / requiredHours, 1);
-  const totalOffset = circumference - totalProgressRatio * circumference;
-
-  const milestoneText = totalProgressRatio >= 1
-    ? 'All 50 Hours Completed! 🎉'
-    : totalProgressRatio >= 0.5
-    ? 'Over halfway there! 🚀'
-    : totalProgressRatio >= 0.25
-    ? 'Great start, keep it up! 💪'
-    : 'Almost halfway! 🎉';
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-secondary/20 border-t-secondary rounded-full animate-spin" />
-      </div>
-    );
-  }
+  const primaryDriver = drivers.find(d => d.isPrimaryDriver) || drivers[0];
 
   return (
-    <main className="flex-1 px-margin-mobile flex flex-col gap-stack-lg max-w-md mx-auto overflow-y-auto">
+    <div className="space-y-5 animate-fade-in">
       
-      {/* Progress Section */}
-      <section className="bg-surface-container-lowest rounded-[24px] p-6 card-shadow flex flex-col items-center justify-center mt-2 border border-surface-container-high/40">
-        <div className="relative w-[200px] h-[200px] flex items-center justify-center mb-4">
-          {/* SVG Ring */}
-          <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-            {/* Background Ring */}
-            <circle
-              className="text-surface-container-high stroke-current"
-              cx="50"
-              cy="50"
-              fill="transparent"
-              r="40"
-              strokeWidth="12"
-            />
-            {/* Progress Ring (Day) */}
-            <circle
-              className="text-secondary stroke-current progress-ring__circle"
-              cx="50"
-              cy="50"
-              fill="transparent"
-              r="40"
-              strokeDasharray="251.2"
-              strokeDashoffset={dayOffset}
-              strokeLinecap="round"
-              strokeWidth="12"
-            />
-            {/* Progress Ring (Night - Stacked) */}
-            <circle
-              className="text-primary-container stroke-current progress-ring__circle"
-              cx="50"
-              cy="50"
-              fill="transparent"
-              r="40"
-              strokeDasharray="251.2"
-              strokeDashoffset={totalOffset}
-              strokeLinecap="round"
-              strokeWidth="12"
-            />
-          </svg>
-          <div className="flex flex-col items-center text-center z-10">
-            <span className="font-display-mobile text-display-mobile text-primary font-extrabold">{currentTotalHours}</span>
-            <span className="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wider">/ {requiredHours} hrs</span>
+      {/* 1. Main Overall Progress Card */}
+      <section className="app-card p-5 sm:p-6 space-y-4">
+        {/* Card Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="p-1.5 rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400">
+              <ShieldCheck className="w-4 h-4" />
+            </span>
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              {state.name} Requirement
+            </span>
           </div>
+          
+          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+            isTotalComplete
+              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
+              : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+          }`}>
+            {isTotalComplete ? 'Goal Met ✓' : `${totalProgress}% Complete`}
+          </span>
         </div>
 
-        <div className="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full font-label-bold text-label-bold inline-flex items-center gap-2 mb-6 shadow-sm">
-          <span>{milestoneText}</span>
+        {/* Hero Hours Display */}
+        <div className="flex items-baseline justify-between pt-1">
+          <div className="flex items-baseline gap-2">
+            <span className="font-mono text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tabular-nums tracking-tight">
+              {totalHoursVal}
+            </span>
+            <span className="text-lg sm:text-xl font-bold text-slate-400 dark:text-slate-500">
+              / {state.requiredHours} hrs
+            </span>
+          </div>
+          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            {remainingTotal}h left
+          </span>
         </div>
 
-        {/* Stats Breakdown */}
-        <div className="flex w-full justify-around gap-4 border-t border-surface-container pt-6">
-          <div className="flex flex-col items-center gap-1">
-            <div className="w-12 h-12 rounded-full bg-secondary-fixed-dim/20 flex items-center justify-center text-secondary mb-1">
-              <span className="material-symbols-outlined material-symbols-fill text-2xl">light_mode</span>
+        {/* Progress Bar */}
+        <div className="w-full h-3.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-200/60 dark:border-slate-700/60">
+          <div
+            className={`h-full rounded-full transition-all duration-700 ${
+              isTotalComplete
+                ? 'bg-emerald-500'
+                : 'bg-gradient-to-r from-teal-500 to-teal-600'
+            }`}
+            style={{ width: `${totalProgress}%` }}
+          />
+        </div>
+
+        {/* Day & Night Breakdown Bento */}
+        <div className="grid grid-cols-2 gap-3 pt-2">
+          {/* Day */}
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                <Sun className="w-3.5 h-3.5 text-amber-500" /> Day
+              </span>
+              <span className="text-[11px] font-bold text-slate-500">{dayProgress}%</span>
             </div>
-            <span className="font-headline-md text-headline-md text-primary font-bold">{dayHoursVal}h</span>
-            <span className="font-label-sm text-label-sm text-on-surface-variant uppercase font-medium">Day</span>
+            <div className="flex items-baseline gap-1">
+              <span className="font-mono text-xl font-bold text-slate-900 dark:text-white tabular-nums">{dayHoursVal}h</span>
+              <span className="text-xs text-slate-400">/ {state.requiredHours - state.requiredNightHours}h</span>
+            </div>
+            <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div className="h-full bg-amber-500 rounded-full transition-all" style={{ width: `${dayProgress}%` }} />
+            </div>
           </div>
-          <div className="w-px bg-surface-container self-stretch" />
-          <div className="flex flex-col items-center gap-1">
-            <div className="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container mb-1">
-              <span className="material-symbols-outlined material-symbols-fill text-2xl">dark_mode</span>
+
+          {/* Night */}
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                <Moon className="w-3.5 h-3.5 text-indigo-500" /> Night
+              </span>
+              <span className="text-[11px] font-bold text-slate-500">{nightProgress}%</span>
             </div>
-            <span className="font-headline-md text-headline-md text-primary font-bold">{nightHoursVal}h</span>
-            <span className="font-label-sm text-label-sm text-on-surface-variant uppercase font-medium">Night</span>
+            <div className="flex items-baseline gap-1">
+              <span className="font-mono text-xl font-bold text-slate-900 dark:text-white tabular-nums">{nightHoursVal}h</span>
+              <span className="text-xs text-slate-400">/ {state.requiredNightHours}h</span>
+            </div>
+            <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div className="h-full bg-indigo-500 rounded-full transition-all" style={{ width: `${nightProgress}%` }} />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Tasteful Upgrade Card when approaching or reached 20 hours */}
+      {/* 2. Primary Start Drive Action */}
+      <section className="space-y-2">
+        <button
+          type="button"
+          onClick={() => {
+            setShowTimerModal(true);
+            updateModalUrl('timer');
+          }}
+          className="w-full h-14 rounded-2xl bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white font-bold text-base shadow-teal flex items-center justify-center gap-3 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-slate-950"
+        >
+          <Play className="w-5 h-5 fill-white" />
+          <span>Start Driving Session</span>
+        </button>
+
+        <div className="flex justify-between items-center px-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Supervisor: <strong className="text-slate-700 dark:text-slate-300">{primaryDriver?.name || 'Primary Supervisor'}</strong>
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setShowLogEntry(true);
+              updateModalUrl('log-entry');
+            }}
+            className="text-xs font-semibold text-teal-600 dark:text-teal-400 hover:underline inline-flex items-center gap-1"
+          >
+            <Plus className="w-3.5 h-3.5" /> Log past trip manually
+          </button>
+        </div>
+      </section>
+
+      {/* 3. Tasteful Upgrade Card (only if approaching / at 20h limit) */}
       {(isApproachingLimit || isLimitReached) && (
         <UpgradeCard onUpgradeClick={() => setShowUpgradeModal(true)} />
       )}
 
-      {/* Recent Drives Carousel */}
-      <section className="flex flex-col gap-stack-sm mt-2">
-        <div className="flex justify-between items-end mb-2">
-          <h2 className="font-headline-md text-headline-md text-primary font-bold">Recent Drives</h2>
+      {/* 4. Recent Drives List */}
+      <section className="space-y-3 pt-2">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Recent Drives</h2>
           <button
+            type="button"
             onClick={() => navigate('/log')}
-            className="font-label-bold text-label-bold text-secondary flex items-center hover:opacity-80 transition-opacity"
+            className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline flex items-center gap-1"
           >
-            View All <span className="material-symbols-outlined text-[16px] ml-1">chevron_right</span>
+            View All ({drives.length}) <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
         {drives.length > 0 ? (
-          <div className="flex overflow-x-auto hide-scrollbar gap-gutter pb-4 -mx-margin-mobile px-margin-mobile snap-x snap-mandatory">
-            {drives.slice(0, 5).map((drive) => {
+          <div className="space-y-2.5">
+            {drives.slice(0, 4).map((drive) => {
               const driver = drivers.find(d => d.id === drive.driverId);
               const durationHours = Math.floor(drive.durationMinutes / 60);
               const durationMins = drive.durationMinutes % 60;
@@ -236,71 +281,64 @@ export function Home() {
                     setShowLogEntry(true);
                     updateModalUrl('log-entry', drive.id);
                   }}
-                  className="bg-surface-container-lowest rounded-[20px] p-5 min-w-[260px] max-w-[280px] snap-center card-shadow border border-surface-container-high/50 flex-shrink-0 cursor-pointer hover:border-secondary transition-all"
+                  className="app-card p-3.5 flex items-center justify-between cursor-pointer hover:border-teal-500/50 transition-all"
                 >
-                  <div className="flex justify-between items-start mb-4">
-                    <div className={`rounded-lg px-3 py-1 font-label-sm text-label-sm flex items-center gap-1 font-bold ${
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
                       drive.dayNight === 'night'
-                        ? 'bg-primary-container/10 text-primary-container'
-                        : 'bg-secondary-container/30 text-on-secondary-container'
+                        ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400'
+                        : 'bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400'
                     }`}>
-                      <span className="material-symbols-outlined text-[14px]">
-                        {drive.dayNight === 'night' ? 'dark_mode' : 'sunny'}
-                      </span>{' '}
-                      {drive.dayNight === 'night' ? 'Night' : 'Day'}
+                      {drive.dayNight === 'night' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
                     </div>
-                    <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">
-                      {new Date(drive.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    </span>
+                    <div>
+                      <div className="font-bold text-sm text-slate-900 dark:text-white">
+                        {formattedDuration}
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                        <span>{new Date(drive.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                        <span>•</span>
+                        <span>{driver?.name || 'Supervisor'}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="font-headline-lg text-headline-lg text-primary font-bold mb-1">{formattedDuration}</div>
-                  <div className="flex items-center gap-2 mt-4 pt-4 border-t border-surface-container">
-                    <div className="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-xs font-bold text-on-surface-variant">
-                      {driver?.name ? driver.name[0].toUpperCase() : 'D'}
-                    </div>
-                    <span className="font-body-md text-sm text-on-surface-variant font-medium">
-                      {driver?.name || 'Driver'}
-                    </span>
+
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+                    <span className="capitalize text-slate-600 dark:text-slate-300">{drive.weather || 'Clear'}</span>
+                    <ChevronRight className="w-4 h-4" />
                   </div>
                 </div>
               );
             })}
           </div>
         ) : (
-          <div className="bg-surface-container-lowest rounded-[20px] p-6 text-center card-shadow border border-surface-container-high/50">
-            <p className="text-on-surface-variant text-sm">No drives logged yet. Start your first supervised trip below!</p>
+          <div className="app-card p-8 text-center space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 dark:bg-teal-950/50 dark:text-teal-400 flex items-center justify-center mx-auto">
+              <Car className="w-6 h-6" />
+            </div>
+            <h3 className="font-bold text-sm text-slate-900 dark:text-white">No drives logged yet</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
+              Tap "Start Driving Session" above or log a previous drive to start tracking towards your {state.requiredHours}h state license goal.
+            </p>
           </div>
         )}
       </section>
 
-      {/* 3D CTA Button Zone */}
-      <div className="mt-auto pt-4 pb-2 flex justify-center sticky bottom-[90px] z-30">
-        <button
-          onClick={() => {
-            setShowTimerModal(true);
-            updateModalUrl('timer');
-          }}
-          className="bg-[#0D9488] text-white w-full max-w-sm rounded-[24px] h-[72px] flex items-center justify-center gap-3 font-headline-md text-headline-md font-bold transition-all duration-200 btn-3d shadow-lg"
-        >
-          <span className="material-symbols-outlined material-symbols-fill text-3xl">play_arrow</span>
-          Start Drive
-        </button>
-      </div>
-
-      {/* Live Driving Timer Modal / Sheet */}
+      {/* Timer Modal */}
       {showTimerModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
-          <div className="bg-background max-w-md w-full rounded-t-[32px] sm:rounded-[32px] max-h-[95vh] overflow-y-auto p-4 sm:p-6 shadow-2xl relative">
-            <div className="flex justify-between items-center mb-2">
-              <span className="font-headline-md text-headline-md text-primary font-bold">Live Driving Session</span>
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] max-h-[95vh] overflow-y-auto p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
+            <div className="flex justify-between items-center mb-4">
+              <span className="font-bold text-base text-slate-900 dark:text-white">Live Driving Session</span>
               <button
+                type="button"
                 onClick={() => {
                   setShowTimerModal(false);
                   updateModalUrl(null);
                 }}
-                className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-primary"
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900"
               >
-                <span className="material-symbols-outlined text-lg">close</span>
+                <X className="w-5 h-5" />
               </button>
             </div>
             <DriveTimer onDriveComplete={handleTimerComplete} />
@@ -308,17 +346,20 @@ export function Home() {
         </div>
       )}
 
-      {/* Celebratory Summary & Save Drive Modal */}
+      {/* Save Drive Modal */}
       {showLogEntry && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
-          <div className="bg-background max-w-md w-full rounded-t-[32px] sm:rounded-[32px] max-h-[95vh] overflow-y-auto p-4 sm:p-6 shadow-2xl relative">
-            <div className="flex justify-between items-center mb-2">
-              <span className="font-headline-md text-headline-md text-primary font-bold">Drive Summary</span>
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] max-h-[95vh] overflow-y-auto p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
+            <div className="flex justify-between items-center mb-4">
+              <span className="font-bold text-base text-slate-900 dark:text-white">
+                {editingDrive ? 'Edit Drive' : 'Log Drive Summary'}
+              </span>
               <button
+                type="button"
                 onClick={handleLogEntryCancel}
-                className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-primary"
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900"
               >
-                <span className="material-symbols-outlined text-lg">close</span>
+                <X className="w-5 h-5" />
               </button>
             </div>
             <DriveLogEntry
@@ -347,11 +388,11 @@ export function Home() {
         onClose={() => setShowUpgradeModal(false)}
         reason={
           isLimitReached 
-            ? 'You have tracked 20 hours on the free tier. Unlock Lifetime Pro for unlimited driving logs.' 
+            ? 'You have logged 20 hours on the free tier. Unlock Lifetime Pro for unlimited driving logs.' 
             : undefined
         }
       />
 
-    </main>
+    </div>
   );
 }
