@@ -1,0 +1,1052 @@
+<!-- Design System -->
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>DriveLog - Log Drive</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "secondary-fixed-dim": "#6bd8cb",
+                        "tertiary": "#000000",
+                        "surface-container-low": "#f3f4f3",
+                        "tertiary-fixed": "#ffddb8",
+                        "on-primary-container": "#778598",
+                        "on-secondary-fixed-variant": "#005049",
+                        "secondary": "#006a61",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#bac8dc",
+                        "on-tertiary-container": "#b87500",
+                        "on-secondary-container": "#006f66",
+                        "on-primary-fixed-variant": "#3a4859",
+                        "primary-fixed": "#d6e4f9",
+                        "on-secondary": "#ffffff",
+                        "background": "#f9f9f8",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c4c6cc",
+                        "surface-tint": "#525f71",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#1a1c1c",
+                        "surface-bright": "#f9f9f8",
+                        "on-surface-variant": "#44474c",
+                        "secondary-container": "#86f2e4",
+                        "surface-container-high": "#e8e8e7",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2f3130",
+                        "surface-container": "#eeeeed",
+                        "on-primary-fixed": "#0f1c2c",
+                        "surface": "#f9f9f8",
+                        "primary-fixed-dim": "#bac8dc",
+                        "surface-dim": "#dadad9",
+                        "tertiary-container": "#2a1700",
+                        "surface-container-highest": "#e2e2e2",
+                        "outline": "#74777d",
+                        "error-container": "#ffdad6",
+                        "primary": "#000000",
+                        "on-background": "#1a1c1c",
+                        "surface-variant": "#e2e2e2",
+                        "on-secondary-fixed": "#00201d",
+                        "primary-container": "#0f1c2c",
+                        "on-tertiary-fixed": "#2a1700",
+                        "inverse-on-surface": "#f1f1f0",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#89f5e7",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "4xl": "2rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "margin-mobile": "20px",
+                        "stack-lg": "24px",
+                        "gutter": "16px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "safe": "env(safe-area-inset-bottom)"
+                    },
+                    "fontFamily": {
+                        "label-bold": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "display": ["Inter", "sans-serif"],
+                        "label-sm": ["Inter", "sans-serif"],
+                        "display-mobile": ["Inter", "sans-serif"],
+                        "headline-lg": ["Inter", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "headline-md": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "label-bold": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "display": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "display-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "800"}],
+                        "headline-lg": ["24px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.5", "fontWeight": "500"}],
+                        "headline-md": ["20px", {"lineHeight": "1.4", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .bottom-shadow-primary { box-shadow: 0 4px 0 0 #0f1c2c; }
+        .bottom-shadow-secondary { box-shadow: 0 4px 0 0 #005049; }
+        .bottom-shadow-surface { box-shadow: 0 4px 0 0 #e2e2e2; }
+        
+        /* Subtle animated background pattern */
+        .bg-pattern {
+            background-image: radial-gradient(#c4c6cc 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen relative pb-[100px] overflow-x-hidden selection:bg-secondary selection:text-on-secondary">
+<!-- Decorative Background -->
+<div class="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
+<div class="absolute inset-0 bg-pattern"></div>
+<div class="absolute top-[-10%] right-[-10%] w-[60%] h-[40%] bg-secondary-container/20 rounded-full blur-3xl"></div>
+<div class="absolute bottom-[20%] left-[-10%] w-[50%] h-[30%] bg-primary-fixed/30 rounded-full blur-3xl"></div>
+</div>
+<!-- TopAppBar -->
+<header class="bg-background dark:bg-background w-full top-0 pt-safe flex justify-between items-center px-margin-mobile h-16 bg-surface dark:bg-surface flat no shadows sticky z-40">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container relative">
+<img alt="Teen Profile" class="w-full h-full object-cover" data-alt="A smiling teenager with short hair, wearing a casual light blue hoodie, looking directly at the camera in a bright, well-lit environment. The background is a soft, blurred white wall to keep the focus on the subject's face. Modern, friendly, and approachable styling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRPmfijFgWI_L0imCLyjnq2Uzs6ucGsT0cyvi_enj7Zve0elET3DceRAGRoNX79RjeIbtr0NyQm4mm8m_-avkc4WDR4CYxNhHg0uo58_e0gUr6kJsFvQtKCUUfBMYlddRTbzdj2Bgo9-PIrEeCgCxFY53JnrA832HGJ_GfAo0Q0wzqMJQP6sRPTjJMxau58yxSR7pHAt1T2L0dECD6mrSo0N0Y0RIIe6AYYH59uVTVgOYTN5aMP7i0"/>
+</div>
+</div>
+<!-- Role Toggle -->
+<div class="bg-surface-container-high rounded-full p-1 flex items-center shadow-inner relative">
+<!-- Active sliding background pill -->
+<div class="absolute w-[80px] h-[32px] bg-surface-container-lowest rounded-full shadow-sm transition-transform duration-300 ease-in-out left-1" id="role-pill"></div>
+<button class="relative z-10 w-[80px] py-1.5 font-label-bold text-label-bold text-primary text-center transition-colors">
+                Teen
+            </button>
+<button class="relative z-10 w-[80px] py-1.5 font-label-bold text-label-bold text-on-surface-variant text-center transition-colors">
+                Parent
+            </button>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-primary dark:text-primary-fixed hover:opacity-90 transition-transform active:scale-95 duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</header>
+<!-- Main Canvas -->
+<main class="px-margin-mobile mt-stack-lg flex flex-col items-center max-w-md mx-auto">
+<!-- Supervisor Selector -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 w-full shadow-[0px_4px_20px_rgba(13,27,42,0.05)] mb-stack-lg border border-outline-variant/20 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-1">Current Supervisor</span>
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md-mobile text-primary">Dad</span>
+<span class="material-symbols-outlined text-outline text-[18px]">expand_more</span>
+</div>
+</div>
+<div class="w-12 h-12 rounded-full overflow-hidden bg-primary-container relative">
+<img alt="Supervisor Profile" class="w-full h-full object-cover" data-alt="A middle-aged man with glasses and a short beard, wearing a casual navy polo shirt, smiling warmly. The setting is bright and cheerful with a soft, out-of-focus interior background. High quality, friendly, and trustworthy appearance suitable for a parent profile picture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq-pfF7SXYiYc0MNY-Rpjc2J5GnYjWhwLI0oST7jNwbbnFfw-kWHUpeALZI5Xm9vwqYUgFoNnIS8am6vFbFQZXol_OpHl7SQCwqNONZCwSgmB6Sc0M1eDdqEfXWGsN56ZkSHs6psZythPrlFkeWHUoI-CWeeb2nhwEok-X-o3xx7rQL4QhaHsuzwlPspheUCtXywTopvM5Zy1pJYvT03a9KcGbjVvx5lLo0fkCuL5tlTtZTcDncndT"/>
+</div>
+</div>
+<!-- Driving Conditions Badge -->
+<div class="bg-surface-container-lowest px-4 py-2 rounded-full shadow-[0px_4px_20px_rgba(13,27,42,0.05)] border border-outline-variant/20 flex items-center gap-2 mb-stack-md mx-auto mt-4 transition-transform active:scale-95 cursor-pointer hover:bg-surface-container-low">
+<span class="material-symbols-outlined text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">light_mode</span>
+<span class="font-label-bold text-label-bold text-primary">Day driving</span>
+<span class="material-symbols-outlined text-outline text-[16px] ml-1">sync</span>
+</div>
+<!-- Timer Display Area -->
+<div class="relative w-full aspect-square max-w-[320px] mx-auto flex items-center justify-center my-stack-lg">
+<!-- Progress Ring Background -->
+<svg class="absolute inset-0 w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="45" stroke="#e8e8e7" stroke-linecap="round" stroke-width="6"></circle>
+<!-- Animated Progress Ring -->
+<circle class="transition-all duration-1000 ease-linear" cx="50" cy="50" fill="none" r="45" stroke="#006a61" stroke-dasharray="283" stroke-dashoffset="150" stroke-linecap="round" stroke-width="6"></circle>
+</svg>
+<div class="flex flex-col items-center z-10 text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Current Drive</span>
+<div class="font-display-mobile text-display-mobile md:font-display md:text-display text-primary-container tracking-tighter" style="font-variant-numeric: tabular-nums;">
+                    00:15:24
+                </div>
+<div class="flex items-center gap-1 mt-2 text-secondary">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-label-bold text-label-bold">Recording</span>
+</div>
+</div>
+</div>
+<!-- Controls -->
+<div class="flex items-center justify-center gap-6 mt-8 w-full">
+<!-- Pause Button -->
+<button class="w-16 h-16 rounded-full bg-surface-container-lowest border border-outline-variant/30 flex items-center justify-center text-primary-container bottom-shadow-surface active:translate-y-1 active:shadow-none transition-all">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+<!-- Stop Button (Primary) -->
+<button class="w-24 h-24 rounded-full bg-secondary text-on-secondary flex flex-col items-center justify-center bottom-shadow-secondary active:translate-y-1 active:shadow-none transition-all hover:brightness-110 group relative overflow-hidden">
+<div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-symbols-outlined text-[40px] mb-1" style="font-variation-settings: 'FILL' 1;">stop</span>
+<span class="font-label-bold text-label-bold text-xs uppercase tracking-wider">Finish</span>
+</button>
+<!-- Add Event/Note Button -->
+<button class="w-16 h-16 rounded-full bg-surface-container-lowest border border-outline-variant/30 flex items-center justify-center text-primary-container bottom-shadow-surface active:translate-y-1 active:shadow-none transition-all">
+<span class="material-symbols-outlined text-[28px]">add_location</span>
+</button>
+</div>
+<!-- Quick Stats Bento -->
+<div class="grid grid-cols-2 gap-4 w-full mt-stack-lg mb-8">
+<div class="bg-surface-container-lowest p-4 rounded-2xl shadow-[0px_4px_20px_rgba(13,27,42,0.05)] border border-outline-variant/20 flex flex-col">
+<span class="material-symbols-outlined text-outline mb-2">speed</span>
+<span class="font-headline-md text-headline-md-mobile text-primary">32<span class="text-label-sm text-outline ml-1">mph</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1">Avg Speed</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-2xl shadow-[0px_4px_20px_rgba(13,27,42,0.05)] border border-outline-variant/20 flex flex-col">
+<span class="material-symbols-outlined text-outline mb-2">route</span>
+<span class="font-headline-md text-headline-md-mobile text-primary">8.4<span class="text-label-sm text-outline ml-1">mi</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1">Distance</span>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe bg-surface/80 dark:bg-surface/80 backdrop-blur-md h-[80px] rounded-t-xl border-t border-outline-variant/30 shadow-[0px_-4px_20px_rgba(13,27,42,0.05)] md:hidden">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low active:scale-90 transition-all duration-300 ease-out w-16 h-full" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<!-- Record (Active Semantic Match for Log Drive / Timer) -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim font-label-bold hover:bg-surface-container-low active:scale-90 transition-all duration-300 ease-out w-16 h-full relative" href="#">
+<div class="absolute -top-6 bg-secondary text-on-secondary rounded-full w-14 h-14 flex items-center justify-center shadow-lg border-4 border-background">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">radio_button_checked</span>
+</div>
+<span class="font-label-sm text-label-sm mt-8">Record</span>
+</a>
+<!-- History -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low active:scale-90 transition-all duration-300 ease-out w-16 h-full" href="#">
+<span class="material-symbols-outlined mb-1">history</span>
+<span class="font-label-sm text-label-sm">History</span>
+</a>
+<!-- Export -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low active:scale-90 transition-all duration-300 ease-out w-16 h-full" href="#">
+<span class="material-symbols-outlined mb-1">share</span>
+<span class="font-label-sm text-label-sm">Export</span>
+</a>
+<!-- Settings -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low active:scale-90 transition-all duration-300 ease-out w-16 h-full" href="#">
+<span class="material-symbols-outlined mb-1">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</a>
+</nav>
+<!-- Desktop Navigation Cluster (Hidden on Mobile, Visible on Desktop as per rules) -->
+<div class="hidden md:flex fixed top-0 right-0 h-16 items-center px-margin-mobile gap-6 z-50">
+<a class="text-on-surface-variant dark:text-on-surface-variant px-6 py-1 hover:opacity-90 transition-transform active:scale-95 duration-200" href="#">Home</a>
+<a class="bg-surface-container-lowest dark:bg-surface-container-lowest text-primary shadow-sm rounded-full px-6 py-1 hover:opacity-90 transition-transform active:scale-95 duration-200 font-label-bold" href="#">Record</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant px-6 py-1 hover:opacity-90 transition-transform active:scale-95 duration-200" href="#">History</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant px-6 py-1 hover:opacity-90 transition-transform active:scale-95 duration-200" href="#">Export</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant px-6 py-1 hover:opacity-90 transition-transform active:scale-95 duration-200" href="#">Settings</a>
+</div>
+</body></html>
+
+<!-- Timer / Record Drive -->
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Drive Summary - DriveLog</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "secondary-fixed-dim": "#6bd8cb",
+                        "tertiary": "#000000",
+                        "surface-container-low": "#f3f4f3",
+                        "tertiary-fixed": "#ffddb8",
+                        "on-primary-container": "#778598",
+                        "on-secondary-fixed-variant": "#005049",
+                        "secondary": "#006a61",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#bac8dc",
+                        "on-tertiary-container": "#b87500",
+                        "on-secondary-container": "#006f66",
+                        "on-primary-fixed-variant": "#3a4859",
+                        "primary-fixed": "#d6e4f9",
+                        "on-secondary": "#ffffff",
+                        "background": "#f9f9f8",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c4c6cc",
+                        "surface-tint": "#525f71",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#1a1c1c",
+                        "surface-bright": "#f9f9f8",
+                        "on-surface-variant": "#44474c",
+                        "secondary-container": "#86f2e4",
+                        "surface-container-high": "#e8e8e7",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2f3130",
+                        "surface-container": "#eeeeed",
+                        "on-primary-fixed": "#0f1c2c",
+                        "surface": "#f9f9f8",
+                        "primary-fixed-dim": "#bac8dc",
+                        "surface-dim": "#dadad9",
+                        "tertiary-container": "#2a1700",
+                        "surface-container-highest": "#e2e2e2",
+                        "outline": "#74777d",
+                        "error-container": "#ffdad6",
+                        "primary": "#000000",
+                        "on-background": "#1a1c1c",
+                        "surface-variant": "#e2e2e2",
+                        "on-secondary-fixed": "#00201d",
+                        "primary-container": "#0f1c2c",
+                        "on-tertiary-fixed": "#2a1700",
+                        "inverse-on-surface": "#f1f1f0",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#89f5e7",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "margin-mobile": "20px",
+                        "stack-lg": "24px",
+                        "gutter": "16px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "label-bold": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-bold": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "display": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "500" }],
+                        "display-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "800" }],
+                        "headline-lg": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.5", "fontWeight": "500" }],
+                        "headline-md": ["20px", { "lineHeight": "1.4", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .btn-primary {
+            border-bottom-width: 4px;
+            border-bottom-color: #005049; /* Darker secondary for 2.5D effect */
+        }
+        .btn-primary:active {
+            border-bottom-width: 0px;
+            transform: translateY(4px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body-md pb-24 md:pb-0">
+<!-- Top App Bar (Suppressing Navigation Shell as requested for focused flow, but keeping a contextual back/close header) -->
+<header class="w-full top-0 pt-safe bg-background dark:bg-background bg-surface dark:bg-surface flat no shadows transition-transform active:scale-95 duration-200 flex justify-between items-center px-margin-mobile h-16 w-full md:hidden sticky z-50">
+<button aria-label="Close summary" class="p-2 -ml-2 text-primary">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<span class="font-headline-md text-headline-md-mobile text-primary dark:text-primary-fixed">Summary</span>
+<div class="w-10"></div> <!-- Spacer for alignment -->
+</header>
+<main class="px-margin-mobile max-w-md mx-auto pt-4 md:pt-12 space-y-stack-lg">
+<!-- Celebratory Header -->
+<section class="text-center space-y-stack-sm animate-[bounce_1s_ease-in-out]">
+<h1 class="font-display-mobile text-display-mobile text-primary">Great job, Alex!</h1>
+<div class="inline-flex items-center gap-2 bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-on-secondary-container" data-icon="social_leaderboard" data-weight="fill">social_leaderboard</span>
+<span class="font-label-bold text-label-bold">10 Hours Milestone!</span>
+</div>
+</section>
+<!-- Playful Illustration -->
+<div class="w-full h-48 bg-surface-container-lowest rounded-[20px] shadow-[0px_4px_20px_rgba(13,27,42,0.05)] overflow-hidden flex items-center justify-center border border-surface-variant relative">
+<div class="absolute inset-0 bg-gradient-to-br from-secondary-container/30 to-surface-container-lowest"></div>
+<!-- Placeholder for a celebratory 3D rendering or illustration -->
+<img class="w-3/4 h-3/4 object-contain relative z-10" data-alt="A playful, high-quality 3D render of a colorful trophy cup sitting next to a cute, stylized cartoonish car on a bright white studio background. The scene is lit with soft, flattering light and has a cheerful, encouraging mood typical of a modern educational app. Subtle teal and navy accents match the global UI theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuByikw_JenbU_kexfdVI0vXwLsE_4XLwsCl-fIQ8EumCjJ4feak_5nbix4LS-KoHeVK8v9Gvy_P3i9ZLKMjFL7dEUkakN-t_K73RYK9rW1gV9woQy1Ec2V4XI7qsAiLpprn4a1ZZuhjpDQ8hjsa6fK_m94vV2d_cAIV0BmFb7c-TOgqKbWlHO_GgXbnDBNCYkqMoqJdbSCT_6To6Vd8TH9QzDK1aqbnecBr9qaEkj6McXPtKQgyhnEb"/>
+</div>
+<!-- Summary Details Card -->
+<section class="bg-surface-container-lowest rounded-[20px] p-6 shadow-[0px_4px_20px_rgba(13,27,42,0.05)] space-y-stack-md border border-surface-variant">
+<div class="flex justify-between items-end border-b border-surface-variant pb-4">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Total Drive Time</p>
+<p class="font-display-mobile text-display-mobile text-secondary">01:20:00</p>
+</div>
+<div class="text-right">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Oct 24, 2023</p>
+<p class="font-body-md text-body-md text-on-surface">4:15 PM - 5:35 PM</p>
+</div>
+</div>
+<div class="flex justify-around items-center pt-2">
+<div class="text-center">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-3xl mb-1" data-icon="light_mode" data-weight="fill">light_mode</span>
+<p class="font-body-md text-body-md text-on-surface">01:00:00</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Day</p>
+</div>
+<div class="h-10 w-px bg-surface-variant"></div>
+<div class="text-center">
+<span class="material-symbols-outlined text-primary-fixed-dim text-3xl mb-1" data-icon="dark_mode" data-weight="fill">dark_mode</span>
+<p class="font-body-md text-body-md text-on-surface">00:20:00</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Night</p>
+</div>
+</div>
+</section>
+<!-- Editable Fields -->
+<section class="space-y-stack-lg">
+<!-- Weather Chips -->
+<div class="space-y-stack-sm">
+<label class="font-label-bold text-label-bold text-on-surface">Weather Conditions</label>
+<div class="flex flex-wrap gap-2">
+<button class="px-4 py-2 rounded-full border-2 border-secondary bg-secondary-container text-on-secondary-container font-label-bold text-label-bold flex items-center gap-2 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="sunny">sunny</span> Sunny
+                    </button>
+<button class="px-4 py-2 rounded-full border-2 border-outline-variant bg-surface-container-lowest text-on-surface-variant font-label-bold text-label-bold flex items-center gap-2 transition-all hover:bg-surface-container-low">
+<span class="material-symbols-outlined text-sm" data-icon="cloud">cloud</span> Cloudy
+                    </button>
+<button class="px-4 py-2 rounded-full border-2 border-outline-variant bg-surface-container-lowest text-on-surface-variant font-label-bold text-label-bold flex items-center gap-2 transition-all hover:bg-surface-container-low">
+<span class="material-symbols-outlined text-sm" data-icon="rainy">rainy</span> Rainy
+                    </button>
+</div>
+</div>
+<!-- Route Notes -->
+<div class="space-y-stack-sm">
+<label class="font-label-bold text-label-bold text-on-surface" for="route-notes">Route Notes</label>
+<textarea class="w-full bg-surface-container-lowest border border-outline-variant rounded-[16px] p-4 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-all resize-none shadow-sm" id="route-notes" placeholder="How did the drive go? e.g., Practiced parallel parking..." rows="3"></textarea>
+</div>
+</section>
+<!-- Bottom Action Button (Fixed to bottom for mobile reachability) -->
+<div class="fixed bottom-0 left-0 w-full p-4 bg-background/90 backdrop-blur-md border-t border-surface-variant/30 md:static md:bg-transparent md:border-none md:p-0 md:mt-8 z-40 pb-safe pb-8 md:pb-0">
+<button class="w-full bg-secondary text-on-secondary font-headline-md text-headline-md-mobile py-4 rounded-full btn-primary flex items-center justify-center gap-2 transition-transform shadow-md">
+<span class="material-symbols-outlined" data-icon="save">save</span>
+                 Save Drive
+             </button>
+</div>
+<!-- Spacer for mobile fixed bottom bar -->
+<div class="h-16 md:hidden"></div>
+</main>
+<script>
+        // Simple interactivity for Weather Chips
+        document.addEventListener('DOMContentLoaded', () => {
+            const weatherChips = document.querySelectorAll('.flex-wrap > button');
+            
+            weatherChips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    // Deselect all
+                    weatherChips.forEach(c => {
+                        c.classList.remove('border-secondary', 'bg-secondary-container', 'text-on-secondary-container');
+                        c.classList.add('border-outline-variant', 'bg-surface-container-lowest', 'text-on-surface-variant');
+                    });
+                    
+                    // Select clicked
+                    chip.classList.remove('border-outline-variant', 'bg-surface-container-lowest', 'text-on-surface-variant');
+                    chip.classList.add('border-secondary', 'bg-secondary-container', 'text-on-secondary-container');
+                });
+            });
+        });
+    </script>
+</body></html>
+
+<!-- Drive Summary -->
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>DriveLog - Teen Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "secondary-fixed-dim": "#6bd8cb",
+                        "tertiary": "#000000",
+                        "surface-container-low": "#f3f4f3",
+                        "tertiary-fixed": "#ffddb8",
+                        "on-primary-container": "#778598",
+                        "on-secondary-fixed-variant": "#005049",
+                        "secondary": "#006a61",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#bac8dc",
+                        "on-tertiary-container": "#b87500",
+                        "on-secondary-container": "#006f66",
+                        "on-primary-fixed-variant": "#3a4859",
+                        "primary-fixed": "#d6e4f9",
+                        "on-secondary": "#ffffff",
+                        "background": "#f9f9f8",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c4c6cc",
+                        "surface-tint": "#525f71",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#1a1c1c",
+                        "surface-bright": "#f9f9f8",
+                        "on-surface-variant": "#44474c",
+                        "secondary-container": "#86f2e4",
+                        "surface-container-high": "#e8e8e7",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2f3130",
+                        "surface-container": "#eeeeed",
+                        "on-primary-fixed": "#0f1c2c",
+                        "surface": "#f9f9f8",
+                        "primary-fixed-dim": "#bac8dc",
+                        "surface-dim": "#dadad9",
+                        "tertiary-container": "#2a1700",
+                        "surface-container-highest": "#e2e2e2",
+                        "outline": "#74777d",
+                        "error-container": "#ffdad6",
+                        "primary": "#000000",
+                        "on-background": "#1a1c1c",
+                        "surface-variant": "#e2e2e2",
+                        "on-secondary-fixed": "#00201d",
+                        "primary-container": "#0f1c2c",
+                        "on-tertiary-fixed": "#2a1700",
+                        "inverse-on-surface": "#f1f1f0",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#89f5e7",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "margin-mobile": "20px",
+                        "stack-lg": "24px",
+                        "gutter": "16px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "safe": "env(safe-area-inset-bottom)"
+                    },
+                    "fontFamily": {
+                        "label-bold": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-bold": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "display": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "500" }],
+                        "display-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "800" }],
+                        "headline-lg": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.5", "fontWeight": "500" }],
+                        "headline-md": ["20px", { "lineHeight": "1.4", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .progress-ring__circle {
+            transition: stroke-dashoffset 1s ease-in-out;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .btn-3d {
+            box-shadow: 0 4px 0 0 #005049; /* Darker secondary for depth */
+        }
+        .btn-3d:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 0 #005049;
+        }
+        .card-shadow {
+            box-shadow: 0px 4px 20px rgba(13, 27, 42, 0.05);
+        }
+        .bg-teal-gradient {
+            background: linear-gradient(135deg, #0D9488 0%, #006a61 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased pb-[100px]">
+<!-- TopAppBar -->
+<header class="bg-background dark:bg-background text-primary dark:text-primary-fixed w-full top-0 pt-safe bg-surface dark:bg-surface flat no shadows flex justify-between items-center px-margin-mobile h-16 w-full sticky z-40">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high border-2 border-surface-container-lowest shadow-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-variation-settings: 'FILL' 1;">face</span>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold tracking-tight">Teen</h1>
+</div>
+<!-- Role Toggle (Custom Addition per prompt) -->
+<div class="absolute left-1/2 transform -translate-x-1/2 flex items-center bg-surface-container-high rounded-full p-1 shadow-inner h-10">
+<button class="bg-surface-container-lowest text-primary shadow-sm rounded-full px-4 py-1 font-label-bold text-label-bold h-full flex items-center transition-transform active:scale-95 duration-200">Teen</button>
+<button class="text-on-surface-variant px-4 py-1 font-label-bold text-label-bold h-full flex items-center hover:opacity-90 transition-transform active:scale-95 duration-200">Parent</button>
+</div>
+<button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-lowest text-on-surface-variant hover:opacity-90 transition-transform active:scale-95 duration-200 shadow-sm">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 px-margin-mobile flex flex-col gap-stack-lg pt-stack-sm overflow-y-auto">
+<!-- Progress Section -->
+<section class="bg-surface-container-lowest rounded-[24px] p-6 card-shadow flex flex-col items-center justify-center mt-4">
+<div class="relative w-[200px] h-[200px] flex items-center justify-center mb-4">
+<!-- SVG Ring -->
+<svg class="absolute inset-0 w-full h-full" viewbox="0 0 100 100">
+<!-- Background Ring -->
+<circle class="text-surface-container-high stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="12"></circle>
+<!-- Progress Ring (Day) -->
+<circle class="text-secondary stroke-current progress-ring__circle" cx="50" cy="50" fill="transparent" r="40" stroke-dasharray="251.2" stroke-dashoffset="130" stroke-linecap="round" stroke-width="12"></circle>
+<!-- Progress Ring (Night - Stacked on top visually) -->
+<!-- In a real app this would be calculated to offset correctly, simplified here for visual effect -->
+<circle class="text-primary-container stroke-current progress-ring__circle" cx="50" cy="50" fill="transparent" r="40" stroke-dasharray="251.2" stroke-dashoffset="220" stroke-linecap="round" stroke-width="12"></circle>
+</svg>
+<div class="flex flex-col items-center text-center z-10">
+<span class="font-display-mobile text-display-mobile text-primary">24</span>
+<span class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wider">/ 50 hrs</span>
+</div>
+</div>
+<div class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full font-label-bold text-label-bold inline-flex items-center gap-2 mb-6">
+<span>Almost halfway! 🎉</span>
+</div>
+<!-- Stats Breakdown -->
+<div class="flex w-full justify-around gap-4 border-t border-surface-container pt-6">
+<div class="flex flex-col items-center gap-1">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed-dim/20 flex items-center justify-center text-secondary mb-1">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">light_mode</span>
+</div>
+<span class="font-headline-md text-headline-md text-primary">18h</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Day</span>
+</div>
+<div class="w-px bg-surface-container self-stretch"></div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container mb-1">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dark_mode</span>
+</div>
+<span class="font-headline-md text-headline-md text-primary">6h</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Night</span>
+</div>
+</div>
+</section>
+<!-- Recent Drives -->
+<section class="flex flex-col gap-stack-sm mt-4">
+<div class="flex justify-between items-end mb-2">
+<h2 class="font-headline-md text-headline-md text-primary">Recent Drives</h2>
+<button class="font-label-bold text-label-bold text-secondary flex items-center hover:opacity-80">
+                    View All <span class="material-symbols-outlined text-[16px] ml-1">chevron_right</span>
+</button>
+</div>
+<div class="flex overflow-x-auto hide-scrollbar gap-gutter pb-4 -mx-margin-mobile px-margin-mobile snap-x snap-mandatory">
+<!-- Drive Card 1 -->
+<div class="bg-surface-container-lowest rounded-[20px] p-5 min-w-[260px] max-w-[280px] snap-center card-shadow border border-surface-container-high/50 flex-shrink-0">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-secondary-container/30 text-on-secondary-container rounded-lg px-3 py-1 font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sunny</span> Day
+                        </div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Today</span>
+</div>
+<div class="font-headline-lg text-headline-lg text-primary mb-1">1h 15m</div>
+<div class="flex items-center gap-2 mt-4 pt-4 border-t border-surface-container">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-xs font-bold text-on-surface-variant">M</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Mom</span>
+</div>
+</div>
+<!-- Drive Card 2 -->
+<div class="bg-surface-container-lowest rounded-[20px] p-5 min-w-[260px] max-w-[280px] snap-center card-shadow border border-surface-container-high/50 flex-shrink-0">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-primary-container/10 text-primary-container rounded-lg px-3 py-1 font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">dark_mode</span> Night
+                        </div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Oct 12</span>
+</div>
+<div class="font-headline-lg text-headline-lg text-primary mb-1">45m</div>
+<div class="flex items-center gap-2 mt-4 pt-4 border-t border-surface-container">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-xs font-bold text-on-surface-variant">D</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Dad</span>
+</div>
+</div>
+<!-- Drive Card 3 -->
+<div class="bg-surface-container-lowest rounded-[20px] p-5 min-w-[260px] max-w-[280px] snap-center card-shadow border border-surface-container-high/50 flex-shrink-0">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-secondary-container/30 text-on-secondary-container rounded-lg px-3 py-1 font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sunny</span> Day
+                        </div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Oct 10</span>
+</div>
+<div class="font-headline-lg text-headline-lg text-primary mb-1">2h 00m</div>
+<div class="flex items-center gap-2 mt-4 pt-4 border-t border-surface-container">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-xs font-bold text-on-surface-variant">I</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Instructor Dan</span>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Button Zone -->
+<div class="mt-auto pt-8 pb-4 flex justify-center sticky bottom-[90px] z-30">
+<button class="bg-[#0D9488] text-white w-full max-w-sm rounded-[24px] h-[72px] flex items-center justify-center gap-3 font-headline-md text-headline-md transition-all duration-200 btn-3d shadow-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 700; font-size: 28px;">play_arrow</span>
+                Start Drive
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-surface/80 dark:bg-surface/80 backdrop-blur-md fixed bottom-0 w-full h-[80px] rounded-t-xl border-t border-outline-variant/30 shadow-[0px_-4px_20px_rgba(13,27,42,0.05)] fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim font-label-bold active:scale-90 transition-all duration-300 ease-out hover:bg-surface-container-low w-16 h-16 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<!-- Record -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant active:scale-90 transition-all duration-300 ease-out hover:bg-surface-container-low w-16 h-16 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">radio_button_checked</span>
+<span class="font-label-sm text-label-sm">Record</span>
+</a>
+<!-- History -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant active:scale-90 transition-all duration-300 ease-out hover:bg-surface-container-low w-16 h-16 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">history</span>
+<span class="font-label-sm text-label-sm">History</span>
+</a>
+<!-- Export -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant active:scale-90 transition-all duration-300 ease-out hover:bg-surface-container-low w-16 h-16 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">share</span>
+<span class="font-label-sm text-label-sm">Export</span>
+</a>
+<!-- Settings -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant active:scale-90 transition-all duration-300 ease-out hover:bg-surface-container-low w-16 h-16 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for the start button
+        document.querySelector('.btn-3d').addEventListener('touchstart', function() {
+            this.style.transform = 'translateY(4px)';
+            this.style.boxShadow = '0 0px 0 0 #005049';
+        });
+        document.querySelector('.btn-3d').addEventListener('touchend', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 4px 0 0 #005049';
+        });
+    </script>
+</body></html>
+
+<!-- Home Dashboard -->
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>DriveLog - Export</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "secondary-fixed-dim": "#6bd8cb",
+                    "tertiary": "#000000",
+                    "surface-container-low": "#f3f4f3",
+                    "tertiary-fixed": "#ffddb8",
+                    "on-primary-container": "#778598",
+                    "on-secondary-fixed-variant": "#005049",
+                    "secondary": "#006a61",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-primary": "#bac8dc",
+                    "on-tertiary-container": "#b87500",
+                    "on-secondary-container": "#006f66",
+                    "on-primary-fixed-variant": "#3a4859",
+                    "primary-fixed": "#d6e4f9",
+                    "on-secondary": "#ffffff",
+                    "background": "#f9f9f8",
+                    "on-primary": "#ffffff",
+                    "outline-variant": "#c4c6cc",
+                    "surface-tint": "#525f71",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "on-tertiary": "#ffffff",
+                    "on-surface": "#1a1c1c",
+                    "surface-bright": "#f9f9f8",
+                    "on-surface-variant": "#44474c",
+                    "secondary-container": "#86f2e4",
+                    "surface-container-high": "#e8e8e7",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#2f3130",
+                    "surface-container": "#eeeeed",
+                    "on-primary-fixed": "#0f1c2c",
+                    "surface": "#f9f9f8",
+                    "primary-fixed-dim": "#bac8dc",
+                    "surface-dim": "#dadad9",
+                    "tertiary-container": "#2a1700",
+                    "surface-container-highest": "#e2e2e2",
+                    "outline": "#74777d",
+                    "error-container": "#ffdad6",
+                    "primary": "#000000",
+                    "on-background": "#1a1c1c",
+                    "surface-variant": "#e2e2e2",
+                    "on-secondary-fixed": "#00201d",
+                    "primary-container": "#0f1c2c",
+                    "on-tertiary-fixed": "#2a1700",
+                    "inverse-on-surface": "#f1f1f0",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#89f5e7",
+                    "on-error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "margin-mobile": "20px",
+                    "stack-lg": "24px",
+                    "gutter": "16px",
+                    "stack-sm": "8px",
+                    "stack-md": "16px"
+            },
+            "fontFamily": {
+                    "label-bold": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display-mobile": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                    "label-bold": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "display": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "display-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "800"}],
+                    "headline-lg": ["24px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.5", "fontWeight": "500"}],
+                    "headline-md": ["20px", {"lineHeight": "1.4", "fontWeight": "700"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .pt-safe { padding-top: max(env(safe-area-inset-top), 20px); }
+        .pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 20px); }
+        .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        
+        /* Custom Scrollbar for hidden scroll effect */
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Tactile Button Effects */
+        .btn-tactile {
+            position: relative;
+            transform: translateY(0);
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-tactile:active {
+            transform: translateY(2px);
+        }
+        .btn-tactile::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            box-shadow: inset 0 -4px 0 0 rgba(0,0,0,0.15);
+            pointer-events: none;
+            transition: box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-tactile:active::after {
+            box-shadow: inset 0 -2px 0 0 rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col md:max-w-[480px] mx-auto md:shadow-2xl md:border-x border-outline-variant/30 relative overflow-hidden">
+<!-- Top App Bar -->
+<header class="w-full top-0 pt-safe bg-background text-primary font-headline-md text-headline-md-mobile flex justify-between items-center px-margin-mobile h-16 bg-surface shadow-sm sticky z-40">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center overflow-hidden border-2 border-surface">
+<img class="w-full h-full object-cover" data-alt="A small, stylized profile avatar of a confident teenager in a modern, flat vector illustration style. The colors are bright and engaging, fitting a playful UI for learning to drive. The background of the avatar is a soft teal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3vtlNfoKORFjK_FESaVEiBT-SqhMg_SWvX8OMNfLqleZBRLEq8sBVedQErjNLHX2Njt7-SsJi2LUrUcqTIHLGNvPkYJGwG8IHYpBysnaSWQZ0d6JJ4Duu_TC5cdUzORvI5Dnpkyex9YwttwNaCUgt8Sv1A1VDoWyPyMVee5DjfwCL3MZBte9B5jfyNkfTxWNgf-OAUYpjdHxMUk-jKOBkch8gh09dy6nzLmwK-cUyiW8pFllV2jRE"/>
+</div>
+<span class="font-display-mobile text-display-mobile text-primary tracking-tight">Teen</span>
+</div>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-primary transition-transform active:scale-95 duration-200 hover:opacity-90 bg-surface-container-lowest shadow-[0_2px_8px_rgba(13,27,42,0.05)]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto px-margin-mobile pb-[100px] pt-stack-md flex flex-col gap-stack-lg relative z-10">
+<!-- Header & State Selector -->
+<section class="flex flex-col gap-stack-sm">
+<h1 class="font-display-mobile text-display-mobile text-on-surface">Export Log</h1>
+<p class="text-on-surface-variant font-body-md">Generate official DMV driving logs.</p>
+<div class="mt-2 bg-surface-container-lowest rounded-xl p-4 shadow-[0px_4px_20px_rgba(13,27,42,0.05)] flex items-center justify-between border border-outline-variant/20">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container/30 text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">DMV Format</span>
+<span class="font-label-bold text-label-bold text-on-surface">California (DL-236)</span>
+</div>
+</div>
+<button class="text-secondary p-2 rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</section>
+<!-- Preview Card -->
+<section class="relative">
+<div class="absolute -inset-1 bg-gradient-to-r from-secondary-container to-primary-fixed rounded-2xl blur opacity-30"></div>
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-[0px_8px_30px_rgba(13,27,42,0.08)] relative overflow-hidden border border-surface-container-high flex flex-col items-center justify-center min-h-[220px]">
+<!-- Stylized Document Graphic -->
+<div class="w-32 h-40 bg-background border-2 border-outline-variant/30 rounded-lg shadow-sm relative flex flex-col items-center p-3 transform rotate-[-2deg] transition-transform hover:rotate-0 duration-300">
+<div class="w-full h-2 bg-secondary-container rounded-sm mb-4"></div>
+<div class="w-full space-y-2">
+<div class="w-3/4 h-1.5 bg-outline-variant/40 rounded-full"></div>
+<div class="w-full h-1.5 bg-outline-variant/40 rounded-full"></div>
+<div class="w-5/6 h-1.5 bg-outline-variant/40 rounded-full"></div>
+</div>
+<div class="mt-auto w-full flex justify-between items-end border-t border-outline-variant/20 pt-2">
+<div class="w-8 h-8 rounded bg-surface-container"></div>
+<div class="w-12 h-1.5 bg-outline-variant/60 rounded-full"></div>
+</div>
+<!-- PDF Badge -->
+<div class="absolute -bottom-3 -right-3 w-10 h-10 bg-error text-on-error rounded-full flex items-center justify-center shadow-md border-2 border-surface-container-lowest z-10">
+<span class="font-label-bold text-[10px]">PDF</span>
+</div>
+</div>
+<div class="mt-6 text-center z-10">
+<h3 class="font-headline-md text-headline-md-mobile text-on-surface">Ready to Print</h3>
+<p class="font-body-md text-on-surface-variant text-sm">Includes all mandatory fields and signatures.</p>
+</div>
+</div>
+</section>
+<!-- Bento Stats Grid -->
+<section class="grid grid-cols-2 gap-gutter">
+<!-- Total Hours (Hero) -->
+<div class="col-span-2 bg-surface-container-lowest rounded-2xl p-5 shadow-[0px_4px_20px_rgba(13,27,42,0.05)] border border-outline-variant/20 flex items-center justify-between relative overflow-hidden">
+<div class="absolute right-[-20px] top-[-20px] w-24 h-24 bg-primary-fixed/30 rounded-full blur-2xl"></div>
+<div class="flex flex-col z-10">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Total Logged</span>
+<span class="font-display-mobile text-display-mobile text-primary">24<span class="text-body-lg text-on-surface-variant ml-1">hrs</span></span>
+</div>
+<div class="w-14 h-14 rounded-full border-4 border-secondary border-t-outline-variant flex items-center justify-center transform rotate-45 z-10">
+<span class="material-symbols-outlined transform -rotate-45 text-secondary" style="font-variation-settings: 'FILL' 1;">done_all</span>
+</div>
+</div>
+<!-- Day Hours -->
+<div class="bg-surface-container-lowest rounded-xl p-4 shadow-[0px_4px_20px_rgba(13,27,42,0.05)] border border-outline-variant/20 flex flex-col gap-2">
+<div class="w-8 h-8 rounded-full bg-[#FFF3E0] text-[#E65100] flex items-center justify-center">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">light_mode</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md-mobile text-on-surface">18<span class="text-sm text-on-surface-variant">h</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Daytime</span>
+</div>
+</div>
+<!-- Night Hours -->
+<div class="bg-surface-container-lowest rounded-xl p-4 shadow-[0px_4px_20px_rgba(13,27,42,0.05)] border border-outline-variant/20 flex flex-col gap-2">
+<div class="w-8 h-8 rounded-full bg-primary-container text-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">dark_mode</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md-mobile text-on-surface">6<span class="text-sm text-on-surface-variant">h</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Nighttime</span>
+</div>
+</div>
+</section>
+<!-- Actions -->
+<section class="flex flex-col gap-stack-md mt-2">
+<button class="btn-tactile w-full h-14 rounded-full bg-secondary text-on-secondary font-headline-md text-body-lg flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(0,106,97,0.25)]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">picture_as_pdf</span>
+                Generate PDF
+            </button>
+<button class="w-full h-14 rounded-full bg-transparent text-primary-container font-headline-md text-body-lg flex items-center justify-center gap-2 border-2 border-outline-variant/50 hover:bg-surface-container-low transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined">ios_share</span>
+                Share Log
+            </button>
+</section>
+</main>
+<!-- Bottom Nav Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe bg-surface/80 backdrop-blur-md h-[80px] rounded-t-xl shadow-[0px_-4px_20px_rgba(13,27,42,0.05)] border-t-0 md:max-w-[480px] md:left-auto md:right-auto">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low active:scale-90 transition-all duration-300 ease-out w-16 h-16 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-label-sm text-[10px]">Home</span>
+</a>
+<!-- Record (Center FAB style) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low active:scale-90 transition-all duration-300 ease-out w-16 h-16 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">radio_button_checked</span>
+<span class="font-label-sm text-[10px]">Record</span>
+</a>
+<!-- History -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low active:scale-90 transition-all duration-300 ease-out w-16 h-16 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">history</span>
+<span class="font-label-sm text-[10px]">History</span>
+</a>
+<!-- Export (Active) -->
+<a class="flex flex-col items-center justify-center text-secondary font-label-bold w-16 h-16 rounded-xl relative" href="#">
+<div class="absolute -top-2 w-8 h-1 bg-secondary rounded-full"></div>
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">share</span>
+<span class="font-label-sm text-[10px]">Export</span>
+</a>
+<!-- Settings -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low active:scale-90 transition-all duration-300 ease-out w-16 h-16 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">settings</span>
+<span class="font-label-sm text-[10px]">Settings</span>
+</a>
+</nav>
+</body></html>

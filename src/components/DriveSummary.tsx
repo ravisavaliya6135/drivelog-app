@@ -1,5 +1,5 @@
-import { Sun, Moon, MapPin, Clock, CheckCircle, AlertCircle, ClipboardList, AlertTriangle } from 'lucide-react';
-import type { DriveEntry, StateInfo } from '../types';
+import { Sun, Moon, MapPin, Clock, CheckCircle2, Award, Route, ShieldCheck, Zap } from 'lucide-react';
+import type { DriveEntry } from '../types';
 import { US_STATES } from '../types';
 
 interface DriveSummaryProps {
@@ -19,23 +19,30 @@ export function DriveSummary({ drives, selectedState, primaryDriver }: DriveSumm
         acc.night += entry.durationMinutes;
       }
       acc.total += entry.durationMinutes;
-      acc.miles += entry.miles;
+      acc.miles += entry.miles || 0;
       return acc;
     },
     { day: 0, night: 0, total: 0, miles: 0 }
   );
 
-  const dayHours = (totals.day / 60).toFixed(1);
-  const nightHours = (totals.night / 60).toFixed(1);
-  const totalHours = (totals.total / 60).toFixed(1);
+  const dayHoursVal = totals.day / 60;
+  const nightHoursVal = totals.night / 60;
+  const totalHoursVal = totals.total / 60;
 
-  const dayProgress = Math.min((totals.day / 60) / state.requiredHours, 1);
-  const nightProgress = state.requiredNightHours > 0 ? Math.min((totals.night / 60) / state.requiredNightHours, 1) : 1;
-  const totalProgress = Math.min((totals.total / 60) / state.requiredHours, 1);
+  const dayHours = dayHoursVal.toFixed(1);
+  const nightHours = nightHoursVal.toFixed(1);
+  const totalHours = totalHoursVal.toFixed(1);
 
-  const isDayComplete = totals.day / 60 >= state.requiredHours;
-  const isNightComplete = totals.night / 60 >= state.requiredNightHours;
-  const isTotalComplete = totals.total / 60 >= state.requiredHours && isNightComplete;
+  const dayProgress = Math.min(dayHoursVal / (state.requiredHours || 1), 1);
+  const nightProgress = state.requiredNightHours > 0 ? Math.min(nightHoursVal / state.requiredNightHours, 1) : 1;
+  const totalProgress = Math.min(totalHoursVal / (state.requiredHours || 1), 1);
+
+  const isDayComplete = dayHoursVal >= state.requiredHours;
+  const isNightComplete = nightHoursVal >= state.requiredNightHours;
+  const isTotalComplete = totalHoursVal >= state.requiredHours && isNightComplete;
+
+  const remainingTotalHours = Math.max(0, state.requiredHours - totalHoursVal).toFixed(1);
+  const remainingNightHours = Math.max(0, state.requiredNightHours - nightHoursVal).toFixed(1);
 
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -45,152 +52,176 @@ export function DriveSummary({ drives, selectedState, primaryDriver }: DriveSumm
   };
 
   return (
-    <div className="card-gradient space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-indigo-500" aria-hidden="true" />
-            {state.name} Progress
-          </h2>
-          {primaryDriver && (
-            <p className="text-sm text-muted mt-1">Primary driver: {primaryDriver.name}</p>
-          )}
-        </div>
-        <StateBadge state={state} />
-      </div>
-
-      {/* Overall Progress */}
-      <div className={`card-gradient-accent ${isTotalComplete ? 'card-gradient-success' : ''}`}>
-        <div className="flex items-center justify-between mb-3">
-          <span className="font-medium text-slate-700">Total Progress</span>
-          <span className="stat-value text-lg">{totalHours}h / {state.requiredHours}h</span>
-        </div>
-        <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
-          <div
-            className={`h-full rounded-full transition-smooth ${
-              isTotalComplete ? 'gradient-success' : 'gradient-primary'
-            }`}
-            style={{ width: `${totalProgress * 100}%` }}
-          />
-        </div>
-        <p className="mt-2 text-sm text-muted">
-          {isTotalComplete ? (
-            <span className="badge-success flex items-center gap-1 w-fit"><CheckCircle className="w-4 h-4" /> Requirements met!</span>
-          ) : (
-            `${((1 - totalProgress) * 100).toFixed(0)}% to go`
-          )}
-        </p>
-      </div>
-
-      {/* Day / Night Split */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Day Hours */}
-        <div className={`card-gradient ${isDayComplete ? 'card-gradient-warning' : ''}`}>
-          <div className="flex items-center gap-2 mb-2">
-            <Sun className="w-5 h-5 text-amber-500" aria-hidden="true" />
-            <span className="font-medium text-slate-700">Daytime Hours</span>
+    <div className="space-y-4 animate-fade-in">
+      {/* Main Overall Progress Panel */}
+      <div className={`glass-panel p-6 md:p-8 border ${isTotalComplete ? 'border-emerald-500/40 glow-emerald' : 'border-indigo-500/20'}`}>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                <MapPin className="w-4 h-4" />
+              </span>
+              <h2 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white">
+                {state.name} DMV Requirements
+              </h2>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {primaryDriver ? `Tracking progress for ${primaryDriver.name}` : 'Supervised driving hour compliance'}
+            </p>
           </div>
-          <div className="stat-value text-3xl tabular-nums">{dayHours}h</div>
-          <div className="text-sm text-muted">Required: {state.requiredHours}h</div>
-          <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden mt-2">
+
+          <div className="flex items-center gap-2">
+            <span className="glass-pill text-indigo-700 dark:text-indigo-300 bg-indigo-500/10 border-indigo-500/30">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              State Goal: {state.requiredHours}h Total ({state.requiredNightHours}h Night)
+            </span>
+          </div>
+        </div>
+
+        {/* Primary Glow Progress Bar */}
+        <div className="space-y-2 mb-6">
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+              <Zap className="w-4 h-4 text-indigo-500" />
+              Overall Completion
+            </span>
+            <span className="font-mono font-bold text-base text-slate-900 dark:text-white">
+              {totalHours} <span className="text-xs font-normal text-muted">/ {state.requiredHours} hrs</span>
+              <span className="ml-2 text-xs px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 font-sans">
+                {Math.round(totalProgress * 100)}%
+              </span>
+            </span>
+          </div>
+
+          <div className="w-full h-4 bg-slate-200/80 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-300/40 dark:border-slate-700/50">
             <div
-              className={`h-full rounded-full transition-smooth ${isDayComplete ? 'gradient-warning' : 'gradient-primary'}`}
-              style={{ width: `${dayProgress * 100}%` }}
+              className={`h-full rounded-full transition-all duration-700 shadow-sm ${
+                isTotalComplete
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-emerald-500/50'
+                  : 'bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-400 shadow-indigo-500/50'
+              }`}
+              style={{ width: `${totalProgress * 100}%` }}
             />
           </div>
-          <p className="mt-1 text-xs text-muted">
-            {isDayComplete ? (
-              <span className="badge-success flex items-center gap-1 w-fit">✓ Complete</span>
-            ) : (
-              `${(state.requiredHours - totals.day / 60).toFixed(1)}h remaining`
-            )}
-          </p>
+
+          <div className="flex justify-between items-center text-xs text-muted pt-1">
+            <span>{isTotalComplete ? '🎉 100% DMV Supervised Requirements Met!' : `${remainingTotalHours} hours remaining`}</span>
+            <span>{drives.length} total logged sessions</span>
+          </div>
         </div>
 
-        {/* Night Hours */}
-        <div className={`card-gradient ${isNightComplete ? 'card-gradient-success' : ''}`}>
-          <div className="flex items-center gap-2 mb-2">
-            <Moon className="w-5 h-5 text-indigo-500" aria-hidden="true" />
-            <span className="font-medium text-slate-700">Legal Night Hours</span>
+        {/* Dual Day vs Night Breakdown Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Day Card */}
+          <div className={`p-4 rounded-xl border transition-all ${
+            isDayComplete
+              ? 'bg-amber-500/10 border-amber-500/30 dark:bg-amber-500/5'
+              : 'bg-slate-100/70 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800'
+          }`}>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                  <Sun className="w-4 h-4" />
+                </div>
+                <span className="font-semibold text-sm text-slate-800 dark:text-slate-200">Daytime Hours</span>
+              </div>
+              {isDayComplete ? (
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Met
+                </span>
+              ) : (
+                <span className="text-[11px] text-muted">{Math.round(dayProgress * 100)}%</span>
+              )}
+            </div>
+
+            <div className="flex items-baseline gap-2 mb-2">
+              <span className="font-mono text-2xl font-bold text-slate-900 dark:text-white tabular-nums">{dayHours}h</span>
+              <span className="text-xs text-muted">/ {state.requiredHours - state.requiredNightHours}h day target</span>
+            </div>
+
+            <div className="w-full h-2 bg-slate-200 dark:bg-slate-700/60 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all duration-500"
+                style={{ width: `${dayProgress * 100}%` }}
+              />
+            </div>
           </div>
-          <div className="stat-value text-3xl tabular-nums">{nightHours}h</div>
-          <div className="text-sm text-muted">Required: {state.requiredNightHours}h</div>
-          <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden mt-2">
-            <div
-              className={`h-full rounded-full transition-smooth ${isNightComplete ? 'gradient-success' : 'gradient-primary'}`}
-              style={{ width: `${nightProgress * 100}%` }}
-            />
+
+          {/* Night Card */}
+          <div className={`p-4 rounded-xl border transition-all ${
+            isNightComplete
+              ? 'bg-indigo-500/10 border-indigo-500/30 dark:bg-indigo-500/5'
+              : 'bg-slate-100/70 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800'
+          }`}>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                  <Moon className="w-4 h-4" />
+                </div>
+                <span className="font-semibold text-sm text-slate-800 dark:text-slate-200">Legal Night Hours</span>
+              </div>
+              {isNightComplete ? (
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Met
+                </span>
+              ) : (
+                <span className="text-[11px] text-muted">{remainingNightHours}h left</span>
+              )}
+            </div>
+
+            <div className="flex items-baseline gap-2 mb-2">
+              <span className="font-mono text-2xl font-bold text-slate-900 dark:text-white tabular-nums">{nightHours}h</span>
+              <span className="text-xs text-muted">/ {state.requiredNightHours}h mandatory</span>
+            </div>
+
+            <div className="w-full h-2 bg-slate-200 dark:bg-slate-700/60 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-full transition-all duration-500"
+                style={{ width: `${nightProgress * 100}%` }}
+              />
+            </div>
           </div>
-          <p className="mt-1 text-xs text-muted">
-            {isNightComplete ? (
-              <span className="badge-success flex items-center gap-1 w-fit">✓ Complete</span>
-            ) : (
-              `${(state.requiredNightHours - totals.night / 60).toFixed(1)}h remaining`
-            )}
-          </p>
         </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="stat-card">
-          <div className="flex items-center justify-between mb-2">
-            <span className="p-2 rounded-lg bg-indigo-100 text-indigo-700">
-              <Clock className="w-5 h-5" aria-hidden="true" />
-            </span>
+      {/* Quick Telemetry Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="glass-panel p-3.5 text-center">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 mx-auto mb-2">
+            <Clock className="w-4 h-4" />
           </div>
-          <p className="stat-value text-2xl tabular-nums">{formatDuration(totals.total)}</p>
-          <p className="text-xs text-muted">Total Time</p>
+          <p className="font-mono text-lg md:text-xl font-bold text-slate-900 dark:text-white tabular-nums">{formatDuration(totals.total)}</p>
+          <p className="text-[11px] text-muted uppercase font-medium">Logged Time</p>
         </div>
-        <div className="stat-card">
-          <div className="flex items-center justify-between mb-2">
-            <span className="p-2 rounded-lg bg-indigo-100 text-indigo-700">
-              <MapPin className="w-5 h-5" aria-hidden="true" />
-            </span>
+
+        <div className="glass-panel p-3.5 text-center">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 mx-auto mb-2">
+            <Route className="w-4 h-4" />
           </div>
-          <p className="stat-value text-2xl tabular-nums">{totals.miles} mi</p>
-          <p className="text-xs text-muted">Total Miles</p>
+          <p className="font-mono text-lg md:text-xl font-bold text-slate-900 dark:text-white tabular-nums">{totals.miles.toFixed(1)} mi</p>
+          <p className="text-[11px] text-muted uppercase font-medium">Total Distance</p>
         </div>
-        <div className="stat-card">
-          <div className="flex items-center justify-between mb-2">
-            <span className="p-2 rounded-lg bg-indigo-100 text-indigo-700">
-              <ClipboardList className="w-5 h-5" aria-hidden="true" />
-            </span>
+
+        <div className="glass-panel p-3.5 text-center">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 mx-auto mb-2">
+            <Award className="w-4 h-4" />
           </div>
-          <p className="stat-value text-2xl tabular-nums">{drives.length}</p>
-          <p className="text-xs text-muted">Entries</p>
+          <p className="font-mono text-lg md:text-xl font-bold text-slate-900 dark:text-white tabular-nums">{drives.length}</p>
+          <p className="text-[11px] text-muted uppercase font-medium">Trips Logged</p>
         </div>
-        <div className="stat-card">
-          <div className="flex items-center justify-between mb-2">
-            <span className={`p-2 rounded-lg ${isTotalComplete ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-              {isTotalComplete ? <CheckCircle className="w-5 h-5" aria-hidden="true" /> : <AlertCircle className="w-5 h-5" aria-hidden="true" />}
-            </span>
+
+        <div className="glass-panel p-3.5 text-center">
+          <div className={`flex items-center justify-center w-8 h-8 rounded-lg mx-auto mb-2 ${
+            isTotalComplete ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
+          }`}>
+            {isTotalComplete ? <CheckCircle2 className="w-4 h-4" /> : <ShieldCheck className="w-4 h-4" />}
           </div>
-          <p className={`text-2xl font-bold tabular-nums ${isTotalComplete ? 'text-emerald-600' : 'text-amber-600'}`}>{isTotalComplete ? 'Ready for DMV' : 'In Progress'}</p>
-          <p className="text-xs text-muted">Status</p>
+          <p className={`text-sm md:text-base font-bold truncate ${isTotalComplete ? 'text-emerald-600 dark:text-emerald-400' : 'text-indigo-600 dark:text-indigo-400'}`}>
+            {isTotalComplete ? 'DMV Ready' : 'In Training'}
+          </p>
+          <p className="text-[11px] text-muted uppercase font-medium">License Status</p>
         </div>
       </div>
-
-      {/* State Requirements Notice */}
-      {state.requiresSpecificApp && (
-        <div className="card-gradient-warning flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-amber-800">
-            <p className="font-medium">State-specific requirement:</p>
-            <p>{state.name} may require using their official app ({state.appName}). Check your DMV.</p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Helper components
-function StateBadge({ state }: { state: StateInfo }) {
-  return (
-    <div className="badge badge-primary">
-      {state.code} — {state.requiredHours}h / {state.requiredNightHours}h night
     </div>
   );
 }

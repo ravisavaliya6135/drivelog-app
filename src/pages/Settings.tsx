@@ -4,11 +4,14 @@ import { MultiDriverForm } from '../components/MultiDriverForm';
 import { StateSelector } from '../components/StateSelector';
 import { useDriveLog } from '../hooks/useDriveLog';
 import { useTheme } from '../hooks/useTheme';
+import { usePwaInstall } from '../hooks/usePwaInstall';
+import { PwaInstallPrompt } from '../components/PwaInstallPrompt';
 import { US_STATES } from '../types';
 
 export function Settings() {
   const { drivers, vehicles, loading, refresh } = useDriveLog();
   const { theme, resolvedTheme, setTheme } = useTheme();
+  const pwa = usePwaInstall();
   const [selectedState, setSelectedState] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('drivelog-state') || 'CA';
@@ -250,6 +253,41 @@ export function Settings() {
                         Current: <span className="font-medium capitalize">{theme}</span> 
                         {theme === 'system' && <span className="text-muted"> ({resolvedTheme})</span>}
                       </p>
+                    </div>
+
+                    {/* PWA App Installation */}
+                    <div className="card-gradient">
+                      <h3 className="text-md font-medium text-slate-900 mb-2 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-secondary">
+                          {pwa.isStandalone ? 'check_circle' : 'install_mobile'}
+                        </span>
+                        App Installation (PWA)
+                      </h3>
+                      <p className="text-sm text-muted mb-4">
+                        {pwa.isStandalone 
+                          ? 'DriveLog is running as an installed standalone app with full offline capabilities.' 
+                          : pwa.isIOS
+                          ? 'Add DriveLog to your iPhone Home Screen for fast offline logging without a browser bar.'
+                          : 'Install DriveLog to your device for instant offline access and home screen launching.'}
+                      </p>
+
+                      {pwa.isStandalone ? (
+                        <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 text-xs font-bold">
+                          <span className="material-symbols-outlined text-base" data-weight="fill">verified</span>
+                          DriveLog is Installed
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={pwa.triggerInstall}
+                          className="btn-primary inline-flex items-center gap-2 py-2.5 px-5 text-sm font-bold shadow-md"
+                        >
+                          <span className="material-symbols-outlined text-base" data-weight="fill">
+                            {pwa.isIOS ? 'add_to_home_screen' : 'download'}
+                          </span>
+                          {pwa.isIOS ? 'Add to Home Screen Instructions' : 'Install DriveLog App'}
+                        </button>
+                      )}
                     </div>
 
                     {/* Default State */}

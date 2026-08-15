@@ -1,49 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
-import { Calendar, MapPin, Cloud, Road, ClipboardList, UserCheck, Truck, Car, Save, X, AlertCircle, Sun, Moon, RotateCcw } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import type { DriveEntry, DriverProfile, VehicleProfile } from '../types';
-import { WEATHER_OPTIONS, ROAD_TYPE_OPTIONS, SKILLS_OPTIONS, US_STATES } from '../types';
 import { useNightDetection } from '../hooks/useNightDetection';
-
-// Focus trap hook for modals/bottom sheets
-function useFocusTrap(isActive: boolean) {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isActive || !containerRef.current) return;
-
-    const container = containerRef.current;
-    const focusableElements = container.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
-
-      if (e.shiftKey) {
-        if (document.activeElement === firstElement) {
-          e.preventDefault();
-          lastElement?.focus();
-        }
-      } else {
-        if (document.activeElement === lastElement) {
-          e.preventDefault();
-          firstElement?.focus();
-        }
-      }
-    };
-
-    container.addEventListener('keydown', handleKeyDown);
-    firstElement?.focus();
-
-    return () => {
-      container.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isActive]);
-
-  return containerRef;
-}
 
 interface DriveLogEntryProps {
   initialData?: Partial<DriveEntry>;
@@ -64,377 +21,253 @@ export function DriveLogEntry({
   onCancel,
   isEditing = false,
 }: DriveLogEntryProps) {
-  const { getNightStatus, manualOverride, setManualDayNight } = useNightDetection(selectedState);
-  const focusTrapRef = useFocusTrap(true);
+  const { isNight: autoIsNight } = useNightDetection(selectedState);
 
   const [formData, setFormData] = useState<Partial<DriveEntry>>({
     date: new Date().toISOString().split('T')[0],
-    startTime: new Date().toISOString(),
+    startTime: new Date(Date.now() - 3600000).toISOString(),
     endTime: new Date().toISOString(),
-    durationMinutes: 0,
-    miles: 0,
-    dayNight: 'day',
-    weather: 'Clear',
-    roadType: 'Residential',
+    durationMinutes: 60,
+    miles: 15,
+    dayNight: autoIsNight ? 'night' : 'day',
+    weather: 'Sunny',
+    roadType: 'City / Residential',
     notes: '',
-    isVerified: false,
+    isVerified: true,
     driverId: drivers[0]?.id || '',
     vehicleId: vehicles[0]?.id || '',
-    initials: '',
+    initials: 'DAD',
     state: selectedState,
     ...initialData,
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [showSkills, setShowSkills] = useState(false);
-
-  // Auto-calculate day/night based on start time (respects manual override)
-  useEffect(() => {
-    if (formData.startTime) {
-      const start = new Date(formData.startTime);
-      const result = getNightStatus(start, manualOverride === null); // useAuto = true only if no manual override
-      setFormData(prev => ({ ...prev, dayNight: result.isNight ? 'night' : 'day' }));
-    }
-  }, [formData.startTime, getNightStatus, manualOverride]);
-
-  // Auto-calculate duration when start/end times change
+  // Calculate duration from start and end time if available
   useEffect(() => {
     if (formData.startTime && formData.endTime) {
-      const start = new Date(formData.startTime);
-      const end = new Date(formData.endTime);
+      const start = new Date(formData.startTime).getTime();
+      const end = new Date(formData.endTime).getTime();
       if (end > start) {
-        const duration = Math.round((end.getTime() - start.getTime()) / 60000);
-        setFormData(prev => ({ ...prev, durationMinutes: duration }));
+        const mins = Math.round((end - start) / 60000);
+        setFormData(prev => ({ ...prev, durationMinutes: mins }));
       }
     }
   }, [formData.startTime, formData.endTime]);
 
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
+  const activeDriver = drivers.find(d => d.id === formData.driverId) || drivers[0] || { name: 'Alex' };
+  const durationHours = Math.floor((formData.durationMinutes || 0) / 60);
+  const durationMins = (formData.durationMinutes || 0) % 60;
+  const formattedDuration = `${durationHours.toString().padStart(2, '0')}:${durationMins.toString().padStart(2, '0')}:00`;
 
-    if (!formData.date) newErrors.date = 'Date is required';
-    if (!formData.startTime) newErrors.startTime = 'Start time is required';
-    if (!formData.endTime) newErrors.endTime = 'End time is required';
-    if (formData.startTime && formData.endTime && new Date(formData.endTime) <= new Date(formData.startTime)) {
-      newErrors.endTime = 'End time must be after start time';
-    }
-    if (!formData.driverId) newErrors.driverId = 'Select a driver';
-    if (!formData.vehicleId) newErrors.vehicleId = 'Select a vehicle';
-    if (!formData.initials.trim()) newErrors.initials = 'Supervising adult initials required';
-    if (formData.durationMinutes < 1) newErrors.durationMinutes = 'Minimum 1 minute required';
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const weatherOptions = [
+    { label: 'Sunny', icon: 'sunny' },
+    { label: 'Cloudy', icon: 'cloud' },
+    { label: 'Rainy', icon: 'rainy' },
+    { label: 'Night/Fog', icon: 'foggy' },
+  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
-      onSave(formData as DriveEntry);
-    }
-  };
-
-  const handleChange = (field: string, value: unknown) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
-    }
-  };
-
-  const formatTimeForInput = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toISOString().slice(0, 16);
+    const entryToSave: DriveEntry = {
+      id: formData.id || `drive_${Date.now()}`,
+      date: formData.date || new Date().toISOString().split('T')[0],
+      startTime: formData.startTime || new Date().toISOString(),
+      endTime: formData.endTime || new Date().toISOString(),
+      durationMinutes: formData.durationMinutes || 30,
+      miles: formData.miles || 10,
+      dayNight: formData.dayNight || 'day',
+      weather: formData.weather || 'Sunny',
+      roadType: formData.roadType || 'City',
+      notes: formData.notes || '',
+      isVerified: true,
+      driverId: formData.driverId || drivers[0]?.id || '',
+      vehicleId: formData.vehicleId || vehicles[0]?.id || '',
+      initials: formData.initials || 'SP',
+      state: selectedState,
+      skills: formData.skills || ['General Practice'],
+    };
+    onSave(entryToSave);
   };
 
   return (
-    <form ref={focusTrapRef} onSubmit={handleSubmit} className="card-gradient-accent safe-x safe-bottom" role="dialog" aria-modal="true" aria-label={isEditing ? 'Edit Drive Entry' : 'Log New Drive'}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-semibold text-slate-900">
-            {isEditing ? 'Edit Drive Entry' : 'Log New Drive'}
-          </h2>
-          <p className="text-muted text-sm">All fields required unless marked optional</p>
+    <form onSubmit={handleSubmit} className="px-2 sm:px-4 max-w-md mx-auto space-y-stack-md">
+      
+      {/* Celebratory Header */}
+      <section className="text-center space-y-stack-sm">
+        <h1 className="font-display-mobile text-display-mobile text-primary font-extrabold">
+          {isEditing ? 'Edit Drive' : `Great job, ${activeDriver.name}!`}
+        </h1>
+        <div className="inline-flex items-center gap-2 bg-secondary-container text-on-secondary-container px-4 py-1.5 rounded-full shadow-sm">
+          <span className="material-symbols-outlined text-on-secondary-container text-lg" data-weight="fill">
+            social_leaderboard
+          </span>
+          <span className="font-label-bold text-label-bold text-xs">Milestone Drive Logged!</span>
         </div>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="btn-ghost p-2"
-        >
-          <X className="w-5 h-5" />
-        </button>
+      </section>
+
+      {/* Playful 3D Illustration Banner */}
+      <div className="w-full h-40 bg-surface-container-lowest rounded-[20px] card-shadow overflow-hidden flex items-center justify-center border border-surface-variant relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-secondary-container/30 to-surface-container-lowest" />
+        <img
+          alt="Celebratory Trophy & Car"
+          className="w-3/4 h-3/4 object-contain relative z-10"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuByikw_JenbU_kexfdVI0vXwLsE_4XLwsCl-fIQ8EumCjJ4feak_5nbix4LS-KoHeVK8v9Gvy_P3i9ZLKMjFL7dEUkakN-t_K73RYK9rW1gV9woQy1Ec2V4XI7qsAiLpprn4a1ZZuhjpDQ8hjsa6fK_m94vV2d_cAIV0BmFb7c-TOgqKbWlHO_GgXbnDBNCYkqMoqJdbSCT_6To6Vd8TH9QzDK1aqbnecBr9qaEkj6McXPtKQgyhnEb"
+        />
       </div>
 
-      {/* Date & Time Section */}
-      <fieldset className="space-y-4 mb-6">
-        <legend className="text-sm font-semibold text-slate-900 flex items-center gap-2 mb-3">
-          <Calendar className="w-4 h-4 text-indigo-500" aria-hidden="true" /> Date & Time
-        </legend>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Summary Details Card */}
+      <section className="bg-surface-container-lowest rounded-[20px] p-5 card-shadow space-y-stack-md border border-surface-variant">
+        <div className="flex justify-between items-end border-b border-surface-variant pb-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Date *</label>
-            <input
-              type="date"
-              value={formData.date}
-              onChange={e => handleChange('date', e.target.value)}
-              className="input-field"
-              required
-            />
-            {errors.date && <p className="mt-1 text-sm text-red-600" role="alert">{errors.date}</p>}
+            <p className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1 font-medium">
+              Total Drive Time
+            </p>
+            <p className="font-display-mobile text-display-mobile text-secondary font-extrabold tabular-nums">
+              {formattedDuration}
+            </p>
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Start Time *</label>
-            <input
-              type="datetime-local"
-              value={formatTimeForInput(formData.startTime)}
-              onChange={e => handleChange('startTime', new Date(e.target.value).toISOString())}
-              className="input-field"
-              required
-            />
-            {errors.startTime && <p className="mt-1 text-sm text-red-600" role="alert">{errors.startTime}</p>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">End Time *</label>
-            <input
-              type="datetime-local"
-              value={formatTimeForInput(formData.endTime)}
-              onChange={e => handleChange('endTime', new Date(e.target.value).toISOString())}
-              className="input-field"
-              required
-            />
-            {errors.endTime && <p className="mt-1 text-sm text-red-600" role="alert">{errors.endTime}</p>}
+          <div className="text-right">
+            <p className="font-label-sm text-label-sm text-on-surface-variant mb-1 font-medium">
+              {new Date(formData.date || '').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </p>
+            <p className="font-body-md text-body-md text-on-surface text-sm font-semibold">
+              {formData.durationMinutes} mins practice
+            </p>
           </div>
         </div>
 
-        {/* Duration display */}
-        <div className="bg-gradient-to-r from-slate-50 to-indigo-50/50 rounded-xl p-4 flex items-center justify-between border border-slate-100">
-          <span className="text-sm font-medium text-slate-700">Duration</span>
-          <span className="text-lg font-mono font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            {formData.durationMinutes} min ({Math.floor(formData.durationMinutes / 60)}h {formData.durationMinutes % 60}m)
-          </span>
-        </div>
-      </fieldset>
-
-      {/* Driver & Vehicle Section */}
-      <fieldset className="space-y-4 mb-6">
-        <legend className="text-sm font-semibold text-slate-900 flex items-center gap-2 mb-3">
-          <UserCheck className="w-4 h-4 text-indigo-500" aria-hidden="true" /> Driver & Vehicle
-        </legend>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Who is driving? *</label>
-            <select
-              value={formData.driverId}
-              onChange={e => handleChange('driverId', e.target.value)}
-              className="input-field"
-              required
-            >
-              <option value="">Select driver</option>
-              {drivers.map(d => (
-                <option key={d.id} value={d.id}>
-                  {d.name} ({d.role === 'teen' ? 'Student' : 'Parent'})
-                </option>
-              ))}
-            </select>
-            {errors.driverId && <p className="mt-1 text-sm text-red-600" role="alert">{errors.driverId}</p>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Vehicle *</label>
-            <select
-              value={formData.vehicleId}
-              onChange={e => handleChange('vehicleId', e.target.value)}
-              className="input-field"
-              required
-            >
-              <option value="">Select vehicle</option>
-              {vehicles.map(v => (
-                <option key={v.id} value={v.id}>
-                  {v.name} — {v.year} {v.make} {v.model} ({v.licensePlate})
-                </option>
-              ))}
-            </select>
-            {errors.vehicleId && <p className="mt-1 text-sm text-red-600" role="alert">{errors.vehicleId}</p>}
-          </div>
-        </div>
-
-        {/* Supervising adult initials */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Supervising Adult Initials *</label>
-          <input
-            type="text"
-            inputMode="text"
-            maxLength={3}
-            value={formData.initials.toUpperCase()}
-            onChange={e => handleChange('initials', e.target.value.toUpperCase())}
-            placeholder="JD"
-            className="input-field max-w-xs text-center text-lg font-semibold tracking-wider uppercase"
-            required
-          />
-          {errors.initials && <p className="mt-1 text-sm text-red-600" role="alert">{errors.initials}</p>}
-          <p className="mt-1.5 text-xs text-muted">Required per entry for DMV compliance</p>
-        </div>
-      </fieldset>
-
-      {/* Conditions Section */}
-      <fieldset className="space-y-4 mb-6">
-        <legend className="text-sm font-semibold text-slate-900 flex items-center gap-2 mb-3">
-          <Cloud className="w-4 h-4 text-indigo-500" aria-hidden="true" /> Conditions (auto-detected where possible)
-        </legend>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Day / Night *</label>
-            <div className="space-y-2">
-              <select
-                value={formData.dayNight}
-                onChange={e => handleChange('dayNight', e.target.value)}
-                className="input-field"
-              >
-                <option value="day">☀️ Daytime</option>
-                <option value="night">🌙 Legal Night (30 min after sunset)</option>
-              </select>
-              {/* Manual override toggle when auto-detection might be wrong */}
-              <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-slate-50 to-slate-100/50 rounded-lg text-xs text-slate-600 border border-slate-100">
-                <RotateCcw className="w-3.5 h-3.5 text-muted" />
-                <span>Auto-detected from start time</span>
-                <button
-                  type="button"
-                  onClick={() => setManualDayNight(formData.dayNight === 'day' ? 'night' : 'day')}
-                  className="ml-auto text-indigo-500 hover:text-indigo-700 font-medium underline underline-offset-2 transition-smooth"
-                >
-                  Override
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Weather</label>
-            <select
-              value={formData.weather}
-              onChange={e => handleChange('weather', e.target.value)}
-              className="input-field"
-            >
-              {WEATHER_OPTIONS.map(w => (
-                <option key={w} value={w}>{w}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Road Type</label>
-            <select
-              value={formData.roadType}
-              onChange={e => handleChange('roadType', e.target.value)}
-              className="input-field"
-            >
-              {ROAD_TYPE_OPTIONS.map(r => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Miles Driven (optional)</label>
-          <input
-            type="number"
-            inputMode="decimal"
-            min={0}
-            step={0.1}
-            value={formData.miles}
-            onChange={e => handleChange('miles', parseFloat(e.target.value) || 0)}
-            className="input-field max-w-xs"
-          />
-        </div>
-      </fieldset>
-
-      {/* Skills & Notes Section */}
-      <fieldset className="space-y-4 mb-6">
-        <legend className="text-sm font-semibold text-slate-900 flex items-center gap-2 mb-3">
-          <ClipboardList className="w-4 h-4 text-indigo-500" aria-hidden="true" /> Skills Practiced & Notes
-        </legend>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Select skills practiced (optional)</label>
+        {/* Day / Night Breakdown Pill Switcher */}
+        <div className="flex justify-around items-center pt-2">
           <button
             type="button"
-            onClick={() => setShowSkills(!showSkills)}
-            className="btn-ghost text-sm mb-3"
+            onClick={() => setFormData(p => ({ ...p, dayNight: 'day' }))}
+            className={`flex-1 flex flex-col items-center p-2 rounded-xl transition-all ${
+              formData.dayNight === 'day' ? 'bg-secondary-container/30 border border-secondary text-secondary' : 'opacity-70'
+            }`}
           >
-            <ClipboardList className="w-4 h-4" />
-            {showSkills ? 'Hide' : 'Show'} Skills Checklist
+            <span className="material-symbols-outlined text-tertiary-fixed-dim text-2xl mb-1" data-weight="fill">
+              light_mode
+            </span>
+            <p className="font-body-md text-sm font-bold text-on-surface">
+              {formData.dayNight === 'day' ? formattedDuration : '00:00:00'}
+            </p>
+            <p className="font-label-sm text-xs text-on-surface-variant font-medium">Day</p>
           </button>
 
-          {showSkills && (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 p-4 bg-gradient-to-br from-slate-50 to-indigo-50/30 rounded-xl border border-slate-100">
-              {SKILLS_OPTIONS.map(skill => (
-                <label key={skill} className="flex items-center gap-2.5 text-sm text-slate-700 cursor-pointer p-2 rounded-lg hover:bg-white/60 transition-fast">
-                  <input
-                    type="checkbox"
-                    checked={formData.notes?.includes(skill) || false}
-                    onChange={e => {
-                      const currentNotes = formData.notes || '';
-                      const skills = currentNotes.split(', ').filter(s => s && SKILLS_OPTIONS.includes(s));
-                      if (e.target.checked) {
-                        skills.push(skill);
-                      } else {
-                        const idx = skills.indexOf(skill);
-                        if (idx > -1) skills.splice(idx, 1);
-                      }
-                      handleChange('notes', skills.join(', '));
-                    }}
-                    className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500"
-                  />
-                  {skill}
-                </label>
-              ))}
-            </div>
-          )}
+          <div className="h-10 w-px bg-surface-variant mx-2" />
+
+          <button
+            type="button"
+            onClick={() => setFormData(p => ({ ...p, dayNight: 'night' }))}
+            className={`flex-1 flex flex-col items-center p-2 rounded-xl transition-all ${
+              formData.dayNight === 'night' ? 'bg-primary-container/10 border border-primary-container text-primary-container' : 'opacity-70'
+            }`}
+          >
+            <span className="material-symbols-outlined text-primary-fixed-dim text-2xl mb-1" data-weight="fill">
+              dark_mode
+            </span>
+            <p className="font-body-md text-sm font-bold text-on-surface">
+              {formData.dayNight === 'night' ? formattedDuration : '00:00:00'}
+            </p>
+            <p className="font-label-sm text-xs text-on-surface-variant font-medium">Night</p>
+          </button>
+        </div>
+      </section>
+
+      {/* Editable Fields: Weather & Notes */}
+      <section className="space-y-stack-md">
+        
+        {/* Weather Chips */}
+        <div className="space-y-1.5">
+          <label className="font-label-bold text-label-bold text-on-surface font-bold text-sm">
+            Weather Conditions
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {weatherOptions.map((opt) => {
+              const isSelected = formData.weather === opt.label;
+              return (
+                <button
+                  key={opt.label}
+                  type="button"
+                  onClick={() => setFormData(p => ({ ...p, weather: opt.label }))}
+                  className={`px-3.5 py-1.5 rounded-full border-2 font-label-bold text-xs flex items-center gap-1.5 transition-all ${
+                    isSelected
+                      ? 'border-secondary bg-secondary-container text-on-secondary-container font-bold shadow-sm'
+                      : 'border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-low'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-base">{opt.icon}</span>
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Additional Notes (optional)</label>
+        {/* Route Notes */}
+        <div className="space-y-1.5">
+          <label className="font-label-bold text-label-bold text-on-surface font-bold text-sm" htmlFor="route-notes">
+            Route Notes
+          </label>
           <textarea
-            value={formData.notes}
-            onChange={e => handleChange('notes', e.target.value)}
-            rows={3}
-            placeholder="e.g., Practiced parallel parking on Main St, highway merge at exit 12..."
-            className="input-field resize-none"
+            id="route-notes"
+            rows={2}
+            value={formData.notes || ''}
+            onChange={(e) => setFormData(p => ({ ...p, notes: e.target.value }))}
+            placeholder="How did the drive go? e.g., Practiced parallel parking and lane changes..."
+            className="w-full bg-surface-container-lowest border border-outline-variant rounded-[16px] p-3 text-sm text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-all resize-none card-shadow"
           />
         </div>
-      </fieldset>
 
-      {/* Action Buttons */}
-      <div className="flex gap-3 justify-end pt-6 border-t border-slate-200/80">
+        {/* Supervisor Initials & Distance */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="font-label-bold text-label-bold text-on-surface font-bold text-xs mb-1 block">
+              Supervisor Initials *
+            </label>
+            <input
+              type="text"
+              required
+              maxLength={4}
+              value={formData.initials || ''}
+              onChange={(e) => setFormData(p => ({ ...p, initials: e.target.value.toUpperCase() }))}
+              placeholder="e.g. DAD"
+              className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-2.5 text-sm uppercase font-bold text-center"
+            />
+          </div>
+          <div>
+            <label className="font-label-bold text-label-bold text-on-surface font-bold text-xs mb-1 block">
+              Distance (Miles)
+            </label>
+            <input
+              type="number"
+              min="0"
+              step="0.1"
+              value={formData.miles || 0}
+              onChange={(e) => setFormData(p => ({ ...p, miles: parseFloat(e.target.value) || 0 }))}
+              className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-2.5 text-sm text-center font-bold"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Save Button */}
+      <div className="pt-2 pb-4 flex gap-3">
         <button
           type="button"
           onClick={onCancel}
-          className="btn-secondary"
+          className="flex-1 py-3.5 rounded-full border border-outline-variant text-slate-700 font-label-bold text-sm hover:bg-surface-container-low transition-colors"
         >
-          <X className="w-4 h-4" aria-hidden="true" />
           Cancel
         </button>
         <button
           type="submit"
-          className="btn-primary"
+          className="flex-2 w-full bg-secondary text-on-secondary font-headline-md text-sm font-bold py-3.5 rounded-full btn-primary flex items-center justify-center gap-2 transition-transform shadow-md btn-3d"
         >
-          <Save className="w-4 h-4" aria-hidden="true" />
-          {isEditing ? 'Update Drive' : 'Save Drive'}
+          <span className="material-symbols-outlined text-lg" data-weight="fill">save</span>
+          Save Drive
         </button>
       </div>
 
-      {errors.durationMinutes && (
-        <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50/80 backdrop-blur-sm px-4 py-3 rounded-xl border border-red-100 mt-4" role="alert">
-          <AlertCircle className="w-4 h-4" />
-          {errors.durationMinutes}
-        </div>
-      )}
     </form>
   );
 }
