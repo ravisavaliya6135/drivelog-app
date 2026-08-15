@@ -1,6 +1,8 @@
 import { useState, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import { ThemeProvider } from './hooks/useTheme';
+import { AuthProvider } from './contexts/AuthContext';
+import { EntitlementProvider } from './contexts/EntitlementContext';
 import { PwaInstallPrompt } from './components/PwaInstallPrompt';
 
 // Lazy load pages for code splitting
@@ -165,52 +167,56 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <ThemeProvider>
-        <div className="bg-background text-on-background font-body-md min-h-screen relative pb-[90px] md:pb-0 overflow-x-hidden selection:bg-secondary selection:text-on-secondary">
-          
-          {/* Decorative Background */}
-          <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
-            <div className="absolute inset-0 bg-pattern" />
-            <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[40%] bg-secondary-container/20 rounded-full blur-3xl" />
-            <div className="absolute bottom-[20%] left-[-10%] w-[50%] h-[30%] bg-primary-fixed/30 rounded-full blur-3xl" />
-          </div>
+      <AuthProvider>
+        <EntitlementProvider>
+          <ThemeProvider>
+            <div className="bg-background text-on-background font-body-md min-h-screen relative pb-[90px] md:pb-0 overflow-x-hidden selection:bg-secondary selection:text-on-secondary">
+              
+              {/* Decorative Background */}
+              <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
+                <div className="absolute inset-0 bg-pattern" />
+                <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[40%] bg-secondary-container/20 rounded-full blur-3xl" />
+                <div className="absolute bottom-[20%] left-[-10%] w-[50%] h-[30%] bg-primary-fixed/30 rounded-full blur-3xl" />
+              </div>
 
-          <TopHeader activeRole={activeRole} onToggleRole={setActiveRole} />
+              <TopHeader activeRole={activeRole} onToggleRole={setActiveRole} />
 
-          {/* Desktop Navigation Cluster */}
-          <div className="hidden md:flex fixed top-0 right-0 h-16 items-center px-margin-mobile gap-6 z-50">
-            <NavLink to="/" className={({ isActive }) => `px-5 py-1.5 rounded-full transition-all duration-200 font-label-bold text-sm ${isActive ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-primary'}`}>
-              Home
-            </NavLink>
-            <NavLink to="/?modal=timer" className={({ isActive }) => `px-5 py-1.5 rounded-full transition-all duration-200 font-label-bold text-sm text-on-surface-variant hover:text-primary`}>
-              Record
-            </NavLink>
-            <NavLink to="/log" className={({ isActive }) => `px-5 py-1.5 rounded-full transition-all duration-200 font-label-bold text-sm ${isActive ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-primary'}`}>
-              History
-            </NavLink>
-            <NavLink to="/export" className={({ isActive }) => `px-5 py-1.5 rounded-full transition-all duration-200 font-label-bold text-sm ${isActive ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-primary'}`}>
-              Export
-            </NavLink>
-            <NavLink to="/settings" className={({ isActive }) => `px-5 py-1.5 rounded-full transition-all duration-200 font-label-bold text-sm ${isActive ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-primary'}`}>
-              Settings
-            </NavLink>
-          </div>
+              {/* Desktop Navigation Cluster */}
+              <div className="hidden md:flex fixed top-0 right-0 h-16 items-center px-margin-mobile gap-6 z-50">
+                <NavLink to="/" className={({ isActive }) => `px-5 py-1.5 rounded-full transition-all duration-200 font-label-bold text-sm ${isActive ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-primary'}`}>
+                  Home
+                </NavLink>
+                <NavLink to="/?modal=timer" className={({ isActive }) => `px-5 py-1.5 rounded-full transition-all duration-200 font-label-bold text-sm text-on-surface-variant hover:text-primary`}>
+                  Record
+                </NavLink>
+                <NavLink to="/log" className={({ isActive }) => `px-5 py-1.5 rounded-full transition-all duration-200 font-label-bold text-sm ${isActive ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-primary'}`}>
+                  History
+                </NavLink>
+                <NavLink to="/export" className={({ isActive }) => `px-5 py-1.5 rounded-full transition-all duration-200 font-label-bold text-sm ${isActive ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-primary'}`}>
+                  Export
+                </NavLink>
+                <NavLink to="/settings" className={({ isActive }) => `px-5 py-1.5 rounded-full transition-all duration-200 font-label-bold text-sm ${isActive ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:text-primary'}`}>
+                  Settings
+                </NavLink>
+              </div>
 
-          <main id="main" className="pt-2 md:pt-4">
-            <Suspense fallback={<PageSkeleton />}>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/log" element={<LogDrive />} />
-                <Route path="/export" element={<ExportDocs />} />
-                <Route path="/settings" element={<SettingsPage />} />
-              </Routes>
-            </Suspense>
-          </main>
+              <main id="main" className="pt-2 md:pt-4">
+                <Suspense fallback={<PageSkeleton />}>
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/log" element={<LogDrive />} />
+                    <Route path="/export" element={<ExportDocs />} />
+                    <Route path="/settings" element={<SettingsPage />} />
+                  </Routes>
+                </Suspense>
+              </main>
 
-          <PwaInstallPrompt />
-          <BottomNavbar />
-        </div>
-      </ThemeProvider>
+              <PwaInstallPrompt />
+              <BottomNavbar />
+            </div>
+          </ThemeProvider>
+        </EntitlementProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDriveLog } from '../hooks/useDriveLog';
+import { useEntitlement } from '../contexts/EntitlementContext';
+import { UpgradeCard, UpgradeModal } from '../components/UpgradeModal';
 import { US_STATES } from '../types';
 import { DriveTimer } from '../components/DriveTimer';
 import { DriveLogEntry } from '../components/DriveLogEntry';
 
 export function Home() {
   const navigate = useNavigate();
+  const { isPro, isLimitReached, isApproachingLimit } = useEntitlement();
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const { 
     drives, 
     drivers, 
@@ -199,6 +203,11 @@ export function Home() {
         </div>
       </section>
 
+      {/* Tasteful Upgrade Card when approaching or reached 20 hours */}
+      {(isApproachingLimit || isLimitReached) && (
+        <UpgradeCard onUpgradeClick={() => setShowUpgradeModal(true)} />
+      )}
+
       {/* Recent Drives Carousel */}
       <section className="flex flex-col gap-stack-sm mt-2">
         <div className="flex justify-between items-end mb-2">
@@ -331,6 +340,17 @@ export function Home() {
           </div>
         </div>
       )}
+
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        reason={
+          isLimitReached 
+            ? 'You have tracked 20 hours on the free tier. Unlock Lifetime Pro for unlimited driving logs.' 
+            : undefined
+        }
+      />
 
     </main>
   );

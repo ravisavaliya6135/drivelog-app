@@ -1,26 +1,63 @@
 import { ArrowLeft, Save, X, User, Car, Trash2, Edit2, Plus, MapPin, Bell, Moon, Sun, Download, Wrench, Info, Shield, Monitor } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { MultiDriverForm } from '../components/MultiDriverForm';
 import { StateSelector } from '../components/StateSelector';
 import { useDriveLog } from '../hooks/useDriveLog';
 import { useTheme } from '../hooks/useTheme';
 import { usePwaInstall } from '../hooks/usePwaInstall';
-import { PwaInstallPrompt } from '../components/PwaInstallPrompt';
+import { useAuth } from '../contexts/AuthContext';
+import { useEntitlement, PRO_LIFETIME_PRICE } from '../contexts/EntitlementContext';
+import { AuthModal } from '../components/AuthModal';
+import { UpgradeModal } from '../components/UpgradeModal';
 import { US_STATES } from '../types';
 
 export function Settings() {
   const { drivers, vehicles, loading, refresh } = useDriveLog();
   const { theme, resolvedTheme, setTheme } = useTheme();
   const pwa = usePwaInstall();
+  const { user, signOut } = useAuth();
+  const { isPro, totalHoursLogged, freeHoursRemaining, isLimitReached, refreshEntitlement } = useEntitlement();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [selectedState, setSelectedState] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('drivelog-state') || 'CA';
     }
     return 'CA';
   });
-  const [activeTab, setActiveTab] = useState<'drivers' | 'vehicles' | 'preferences' | 'about'>('drivers');
+  const [activeTab, setActiveTab] = useState<'account' | 'drivers' | 'vehicles' | 'preferences' | 'about'>('account');
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [paymentSuccessNotice, setPaymentSuccessNotice] = useState(false);
   const [showExportData, setShowExportData] = useState(false);
   const [exportData, setExportData] = useState('');
+  const [restoreMessage, setRestoreMessage] = useState<string | null>(null);
+
+  // Check for Stripe Checkout return
+  useEffect(() => {
+    const paymentStatus = searchParams.get('payment');
+    if (paymentStatus === 'success') {
+      setPaymentSuccessNotice(true);
+      refreshEntitlement();
+      // Clean query params
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('payment');
+      newParams.delete('session_id');
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [searchParams, refreshEntitlement, setSearchParams]);
+
+  const handleRestorePurchase = async () => {
+    setRestoreMessage('Checking entitlement status with server...');
+    const hasPro = await refreshEntitlement();
+    if (hasPro) {
+      setRestoreMessage('✅ Lifetime Pro restored successfully!');
+    } else {
+      setRestoreMessage('No active Lifetime Pro purchase found for this account. If you just purchased, please wait a moment for the payment to confirm.');
+    }
+    setTimeout(() => setRestoreMessage(null), 5000);
+  };
 
   const handleStateChange = (stateCode: string) => {
     setSelectedState(stateCode);
@@ -150,7 +187,10 @@ export function Settings() {
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* Tab Navigation */}
         <div className="card-gradient-accent !p-1.5">
-          <nav className="flex gap-1" aria-label="Settings tabs">
+          <nav className="flex gap-1 overflow-x-auto" aria-label="Settings tabs">
+            <TabButton active={activeTab === 'account'} onClick={() => setActiveTab('account')}>
+              <span className="material-symbols-outlined text-base">person</span> Account
+            </TabButton>
             <TabButton active={activeTab === 'drivers'} onClick={() => setActiveTab('drivers')}>
               <User className="w-4 h-4" /> Drivers
             </TabButton>
@@ -167,6 +207,171 @@ export function Settings() {
         </div>
 
         {/* Tab Content */}
+        {activeTab === 'account' && (
+          <section className="space-y-6" aria-labelledby="account-heading">
+            <h2 id="account-heading" className="text-lg font-semibold text-slate-900">Account & Membership</h2>
+
+            {/* Payment Success Alert */}
+            {paymentSuccessNotice && (
+              <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 flex items-center justify-between animate-fade-in">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-2xl text-emerald-600" data-weight="fill">
+                    verified
+                  </span>
+                  <div>
+                    <h4 className="font-bold text-sm">Payment Successful!</h4>
+                    <p className="text-xs">Your Lifetime Pro entitlement has been activated.</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPaymentSuccessNotice(false)}
+                  className="text-xs font-bold px-3 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 transition-colors"
+                >
+                  Dismiss
+                </button>
+              </div>
+            )}
+
+            {/* Account Status Card */}
+            <div className="card-gradient">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-secondary text-on-secondary flex items-center justify-center shadow-md shadow-secondary/20 flex-shrink-0">
+                    <span className="material-symbols-outlined text-2xl" data-weight="fill">
+                      {user ? 'account_circle' : 'person_outline'}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="font-headline-md text-base font-bold text-primary">
+                      {user ? user.email : 'Guest / Offline Mode'}
+                    </h3>
+                    <p className="text-xs text-on-surface-variant font-medium">
+                      {user 
+                        ? 'Authenticated with Supabase Magic Link' 
+                        : 'Using local storage without an account'}
+                    </p>
+                  </div>
+                </div>
+
+                {user ? (
+                  <button
+                    type="button"
+                    onClick={signOut}
+                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-base">logout</span>
+                    Sign Out
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowAuthModal(true)}
+                    className="btn-primary inline-flex items-center justify-center gap-1.5 py-2.5 px-5 text-xs font-bold shadow-sm"
+                  >
+                    <span className="material-symbols-outlined text-base" data-weight="fill">login</span>
+                    Sign In / Create Account
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Membership Plan Card */}
+            <div className="card-gradient-accent space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-md font-bold text-slate-900 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-secondary" data-weight="fill">
+                      workspace_premium
+                    </span>
+                    Membership Plan
+                  </h3>
+                  <p className="text-xs text-muted">
+                    {isPro 
+                      ? 'You have unlimited lifetime access to all features.' 
+                      : 'Free tier includes up to 20 logged driving hours.'}
+                  </p>
+                </div>
+
+                {isPro ? (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-bold">
+                    <span className="material-symbols-outlined text-sm" data-weight="fill">verified</span>
+                    Lifetime Pro
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-xs font-bold">
+                    Free Tier ({totalHoursLogged}/20h)
+                  </span>
+                )}
+              </div>
+
+              {/* Free Tier Progress Bar */}
+              {!isPro && (
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs font-medium text-slate-600">
+                    <span>Driving Hours Tracked</span>
+                    <span>{totalHoursLogged} / 20 hours ({freeHoursRemaining}h remaining)</span>
+                  </div>
+                  <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all duration-300 ${
+                        isLimitReached ? 'bg-error' : 'bg-secondary'
+                      }`}
+                      style={{ width: `${Math.min(100, (totalHoursLogged / 20) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Pro Features / Purchase Action */}
+              {!isPro ? (
+                <div className="p-4 rounded-2xl bg-surface-container-lowest border border-secondary/20 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <h4 className="font-headline-md text-sm font-bold text-primary">
+                        Unlock DriveLog Lifetime Pro
+                      </h4>
+                      <p className="text-xs text-on-surface-variant font-medium">
+                        $4.99 one-time payment • No subscriptions • Never expires
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowUpgradeModal(true)}
+                      className="py-2.5 px-5 rounded-full bg-secondary text-on-secondary font-label-bold text-xs font-bold btn-3d shadow-md whitespace-nowrap"
+                    >
+                      Unlock for {PRO_LIFETIME_PRICE}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-3.5 rounded-2xl bg-surface-container-lowest border border-emerald-500/20 text-xs text-on-surface-variant space-y-1">
+                  <div className="font-bold text-primary flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-sm text-secondary" data-weight="fill">check_circle</span>
+                    All Pro Benefits Active
+                  </div>
+                  <p>Unlimited logging, official DMV PDF generator, multi-driver support, and 100% offline access.</p>
+                </div>
+              )}
+
+              {/* Restore Purchase */}
+              <div className="pt-2 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={handleRestorePurchase}
+                  className="text-xs text-secondary font-bold hover:underline inline-flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-sm">sync</span>
+                  Restore Purchase / Refresh Status
+                </button>
+                {restoreMessage && (
+                  <span className="text-xs text-on-surface-variant font-medium">{restoreMessage}</span>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
         {activeTab === 'drivers' && (
           <section aria-labelledby="drivers-heading">
             <h2 id="drivers-heading" className="text-lg font-semibold text-slate-900 mb-4">Manage Drivers</h2>
@@ -446,6 +651,18 @@ export function Settings() {
           </section>
         )}
       </main>
+
+      {/* Auth and Upgrade Modals */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={() => setShowAuthModal(false)}
+      />
+
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+      />
     </div>
   );
 }
