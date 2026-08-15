@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DriveLog — Teen Driving Hours Tracker</title>
-    <meta name="theme-color" content="#0f172a" />
+    <meta name="theme-color" content="#006a61" />
     <meta name="description" content="Offline-first supervised driving log with DMV-ready PDF export" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://drivelog-app.vercel.app/" />
@@ -15,6 +15,21 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script>
+      // Early capture of beforeinstallprompt before React mounts
+      window.__drivelogPwaDeferredPrompt = null;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('[DriveLog PWA] ⚡ beforeinstallprompt event fired and captured globally');
+        e.preventDefault();
+        window.__drivelogPwaDeferredPrompt = e;
+        window.dispatchEvent(new CustomEvent('drivelog-pwa-prompt-available'));
+      });
+      window.addEventListener('appinstalled', () => {
+        console.log('[DriveLog PWA] 🎉 appinstalled event fired — app is now installed');
+        window.__drivelogPwaDeferredPrompt = null;
+        window.dispatchEvent(new CustomEvent('drivelog-pwa-installed'));
+      });
+    </script>
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />

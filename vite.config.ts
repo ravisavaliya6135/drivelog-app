@@ -35,7 +35,13 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'auto',
+      devOptions: {
+        enabled: true,
+        type: 'module',
+      },
       workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
         runtimeCaching: [
           {
             urlPattern: ({ request }) => request.destination === 'document',
@@ -55,9 +61,14 @@ export default defineConfig({
             handler: 'StaleWhileRevalidate',
             options: { cacheName: 'font-cache' },
           },
+          {
+            urlPattern: ({ request }) => request.destination === 'image',
+            handler: 'CacheFirst',
+            options: { cacheName: 'image-cache' },
+          },
         ],
       },
-      includeAssets: ['favicon.svg', 'robots.txt'],
+      includeAssets: ['favicon.svg', 'robots.txt', 'pwa-192x192.png', 'pwa-512x512.png'],
       manifest,
     }),
   ],
