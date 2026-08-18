@@ -157,7 +157,7 @@ function PDFDocument({ drives, driver, vehicle, state, totals }: PDFProps) {
 
   return (
     <Document>
-      <Page size="letter" style={styles.page}>
+              <Page size="LETTER" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
           <View>
@@ -216,7 +216,7 @@ function PDFDocument({ drives, driver, vehicle, state, totals }: PDFProps) {
           </View>
 
           {sortedDrives.map((entry, index) => (
-            <View key={entry.id} style={[styles.tableRow, index % 2 === 1 && styles.tableRowEven]}>
+            <View key={entry.id} style={[styles.tableRow, ...(index % 2 === 1 ? [styles.tableRowEven] : [])]}>
               <Text style={[styles.cell, styles.cellDate]}>{new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</Text>
               <Text style={[styles.cell, styles.cellTime]}>
                 {new Date(entry.startTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} - 

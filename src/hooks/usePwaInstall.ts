@@ -33,7 +33,6 @@ declare global {
 export function usePwaInstall(): PwaInstallState {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(() => {
     if (typeof window !== 'undefined' && window.__drivelogPwaDeferredPrompt) {
-      console.log('[DriveLog PWA] ⚡ Initializing with pre-captured beforeinstallprompt event');
       return window.__drivelogPwaDeferredPrompt;
     }
     return null;
@@ -54,11 +53,11 @@ export function usePwaInstall(): PwaInstallState {
 
     // Detect standalone mode (already installed / launched as PWA)
     const checkStandalone = () => {
-      const isStandaloneMode = 
+      const isStandaloneMode =
         window.matchMedia('(display-mode: standalone)').matches ||
         (window.navigator as any).standalone === true ||
         document.referrer.includes('android-app://');
-      
+
       setIsStandalone(isStandaloneMode);
       setIsInstalled(isStandaloneMode);
       return isStandaloneMode;
@@ -68,27 +67,18 @@ export function usePwaInstall(): PwaInstallState {
 
     // Check user agent & touch capabilities
     const ua = window.navigator.userAgent || '';
-    const isIosDevice = 
-      /iPad|iPhone|iPod/.test(ua) || 
+    const isIosDevice =
+      /iPad|iPhone|iPod/.test(ua) ||
       (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
     const isAndroidDevice = /Android/i.test(ua);
-    const isMobileDevice = 
-      isIosDevice || 
-      isAndroidDevice || 
+    const isMobileDevice =
+      isIosDevice ||
+      isAndroidDevice ||
       (window.matchMedia('(pointer: coarse)').matches && /Mobile|Tablet|Android|iPhone/i.test(ua));
 
     setIsIOS(isIosDevice);
     setIsAndroid(isAndroidDevice);
     setIsMobile(isMobileDevice);
-
-    console.log('[DriveLog PWA] 📱 standalone/installed detection:', {
-      isStandalone: standalone,
-      isInstalled: standalone,
-      isIOS: isIosDevice,
-      isAndroid: isAndroidDevice,
-      isMobile: isMobileDevice,
-      hasPreCapturedPrompt: !!window.__drivelogPwaDeferredPrompt,
-    });
 
     // Check if dismissed in this session
     const isDismissed = sessionStorage.getItem('drivelog_pwa_dismissed') === 'true';
@@ -99,7 +89,6 @@ export function usePwaInstall(): PwaInstallState {
       if (!isDismissed && !standalone && isMobileDevice) {
         setTimeout(() => {
           if (!sessionStorage.getItem('drivelog_pwa_dismissed')) {
-            console.log('[DriveLog PWA] ⏰ Displaying install prompt after engagement delay');
             setShowPrompt(true);
           }
         }, 3000);
@@ -108,7 +97,6 @@ export function usePwaInstall(): PwaInstallState {
 
     // For Android/Chromium: Capture beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
-      console.log('[DriveLog PWA] ⚡ beforeinstallprompt event fired inside hook');
       e.preventDefault();
       const promptEvent = e as BeforeInstallPromptEvent;
       window.__drivelogPwaDeferredPrompt = promptEvent;
@@ -118,7 +106,6 @@ export function usePwaInstall(): PwaInstallState {
       if (!sessionStorage.getItem('drivelog_pwa_dismissed') && !standalone && isMobileDevice) {
         setTimeout(() => {
           if (!sessionStorage.getItem('drivelog_pwa_dismissed')) {
-            console.log('[DriveLog PWA] ⏰ Displaying install prompt on mobile');
             setShowPrompt(true);
           }
         }, 3000);
@@ -127,7 +114,6 @@ export function usePwaInstall(): PwaInstallState {
 
     // Custom event dispatched from early index.html script
     const handleEarlyPromptAvailable = () => {
-      console.log('[DriveLog PWA] ⚡ drivelog-pwa-prompt-available custom event received');
       if (window.__drivelogPwaDeferredPrompt) {
         setDeferredPrompt(window.__drivelogPwaDeferredPrompt);
         if (!sessionStorage.getItem('drivelog_pwa_dismissed') && !standalone && isMobileDevice) {
@@ -144,7 +130,6 @@ export function usePwaInstall(): PwaInstallState {
     if (isIosDevice && !standalone && !isDismissed) {
       const timer = setTimeout(() => {
         if (!sessionStorage.getItem('drivelog_pwa_dismissed')) {
-          console.log('[DriveLog PWA] 🍎 Displaying iOS install card on mobile Safari');
           setShowPrompt(true);
         }
       }, 3500);
@@ -154,7 +139,6 @@ export function usePwaInstall(): PwaInstallState {
 
     // App installed event
     const handleAppInstalled = () => {
-      console.log('[DriveLog PWA] 🎉 App installed successfully');
       setIsInstalled(true);
       setIsStandalone(true);
       setShowPrompt(false);
@@ -175,8 +159,6 @@ export function usePwaInstall(): PwaInstallState {
   }, [deferredPrompt]);
 
   const triggerInstall = useCallback(async () => {
-    console.log('[DriveLog PWA] 🚀 install prompt requested by user');
-
     if (isIOS) {
       setShowPrompt(false);
       setShowIosInstructions(true);
@@ -189,24 +171,21 @@ export function usePwaInstall(): PwaInstallState {
       try {
         await activePrompt.prompt();
         const choice = await activePrompt.userChoice;
-        console.log('[DriveLog PWA] 👤 userChoice result:', choice);
         if (choice.outcome === 'accepted') {
           setIsInstalled(true);
           setShowPrompt(false);
         }
         setDeferredPrompt(null);
         window.__drivelogPwaDeferredPrompt = null;
-      } catch (err) {
-        console.error('[DriveLog PWA] ❌ Error triggering PWA install prompt:', err);
+      } catch {
+        setShowIosInstructions(true);
       }
     } else {
-      console.warn('[DriveLog PWA] ℹ️ Native beforeinstallprompt not directly available in current context. Showing instructions.');
       setShowIosInstructions(true);
     }
   }, [deferredPrompt, isIOS]);
 
   const dismissPrompt = useCallback(() => {
-    console.log('[DriveLog PWA] 🚫 Install prompt dismissed by user for this session');
     setShowPrompt(false);
     sessionStorage.setItem('drivelog_pwa_dismissed', 'true');
   }, []);

@@ -28,14 +28,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (typeof window === 'undefined') return;
     
     const resolveAndApply = () => {
-      let resolved: 'light' | 'dark' = 'light';
-      
-      if (theme === 'system') {
-        resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      } else {
-        resolved = theme;
-      }
-      
+      const resolved: 'light' | 'dark' =
+        theme === 'system'
+          ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : theme;
+
       setResolvedTheme(resolved);
       const root = document.documentElement;
       root.classList.remove('light', 'dark');

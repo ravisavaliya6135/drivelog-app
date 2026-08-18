@@ -29,8 +29,10 @@ const manifest: VitePWAOptions['manifest'] = {
   ],
 }
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   base: '/',
+  // Strip console/debugger from production bundles; keep them in dev for debugging
+  esbuild: mode === 'production' ? { drop: ['console', 'debugger'] } : {},
   plugins: [
     react(),
     VitePWA({
@@ -93,4 +95,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))

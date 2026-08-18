@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, User, Car, Trash2, X, Save, Edit2, Check } from 'lucide-react';
+import { Plus, User, Car, Trash2, X, Save, Edit2 } from 'lucide-react';
 import type { DriverProfile, VehicleProfile } from '../types';
 
 function useFocusTrap(isActive: boolean) {

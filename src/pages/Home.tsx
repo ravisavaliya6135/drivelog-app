@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Play, Sun, Moon, Clock, Calendar, ChevronRight, Award, Plus, CheckCircle2, ShieldCheck, Car, X } from 'lucide-react';
+import { Play, Sun, Moon, ChevronRight, Plus, ShieldCheck, Car, X } from 'lucide-react';
 import { useDriveLog } from '../hooks/useDriveLog';
 import { useEntitlement } from '../contexts/EntitlementContext';
 import { UpgradeCard, UpgradeModal } from '../components/UpgradeModal';
@@ -17,16 +17,14 @@ export function Home() {
   });
 
   const navigate = useNavigate();
-  const { isPro, isLimitReached, isApproachingLimit } = useEntitlement();
+  const { isLimitReached, isApproachingLimit } = useEntitlement();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const { 
-    drives, 
-    drivers, 
-    vehicles, 
-    loading, 
-    todaysDrives,
-    dayMinutes, 
-    nightMinutes, 
+  const {
+    drives,
+    drivers,
+    vehicles,
+    dayMinutes,
+    nightMinutes,
     totalHours,
     addDrive,
   } = useDriveLog();

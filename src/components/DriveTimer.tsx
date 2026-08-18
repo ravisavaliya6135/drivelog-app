@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Play, Pause, Square, Sun, Moon, User, Car, AlertTriangle, RefreshCw, Compass, Clock, Gauge } from 'lucide-react';
+import { Play, Pause, Square, Sun, Moon, AlertTriangle } from 'lucide-react';
 import { useNightDetection } from '../hooks/useNightDetection';
 import { useDriveLog } from '../hooks/useDriveLog';
 

@@ -27,7 +27,7 @@ export function useSeo({ title, description, canonicalUrl, noindex = false }: Se
 
     // Update canonical link
     if (canonicalUrl) {
-      let linkCanonical = document.querySelector('link[rel="canonical"]');
+      const linkCanonical = document.querySelector('link[rel="canonical"]');
       if (linkCanonical) {
         linkCanonical.setAttribute('href', canonicalUrl);
       }

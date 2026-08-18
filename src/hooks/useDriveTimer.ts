@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { DriveEntry } from '../types';
 import { saveSetting, getSetting } from '../utils/db';
 
 export function useDriveTimer() {
@@ -7,12 +6,72 @@ export function useDriveTimer() {
   const [isPaused, setIsPaused] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [startTime, setStartTime] = useState<Date | null>(null);
-  const [pausedAt, setPausedAt] = useState<number>(0);
-  
+
   const intervalRef = useRef<number | null>(null);
   const startTimeRef = useRef<Date | null>(null);
   const pausedAtRef = useRef<number>(0);
   const lastPersistRef = useRef<number>(0);
+
+  const startTimer = useCallback(() => {
+    if (intervalRef.current) return;
+
+    intervalRef.current = window.setInterval(() => {
+      setElapsedSeconds(prev => {
+        const newElapsed = prev + 1;
+        pausedAtRef.current = newElapsed;
+        return newElapsed;
+      });
+    }, 1000);
+  }, []);
+
+  const stopTimer = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
+
+  const persistTimer = useCallback(async () => {
+    lastPersistRef.current = Date.now();
+    await saveSetting('activeTimer', {
+      isRunning,
+      isPaused,
+      elapsedSeconds,
+      startTime: startTimeRef.current?.toISOString() || null,
+      pausedAt: pausedAtRef.current,
+    });
+  }, [isRunning, isPaused, elapsedSeconds]);
+
+  const loadPersistedTimer = async () => {
+    try {
+      const saved = await getSetting<{
+        isRunning: boolean;
+        isPaused: boolean;
+        elapsedSeconds: number;
+        startTime: string | null;
+        pausedAt: number;
+      }>('activeTimer');
+
+      if (saved && saved.isRunning) {
+        const now = Date.now();
+        const start = saved.startTime ? new Date(saved.startTime).getTime() : now;
+        const elapsed = saved.isPaused
+          ? saved.pausedAt
+          : saved.elapsedSeconds + Math.floor((now - start) / 1000);
+
+        setIsRunning(true);
+        setIsPaused(saved.isPaused);
+        setElapsedSeconds(elapsed);
+        setStartTime(saved.startTime ? new Date(saved.startTime) : null);
+
+        if (!saved.isPaused) {
+          startTimer();
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load timer:', error);
+    }
+  };
 
   // Load persisted timer state on mount
   useEffect(() => {
@@ -34,12 +93,12 @@ export function useDriveTimer() {
   // Persist timer on every state change AND before unload (force-close protection)
   useEffect(() => {
     persistTimer();
-    
+
     // Also save on page unload (browser close, tab close, force-close)
     const handleBeforeUnload = () => {
       persistTimer();
     };
-    
+
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isRunning, isPaused, elapsedSeconds]);
@@ -47,78 +106,16 @@ export function useDriveTimer() {
   // Additional safety: persist every 5 seconds while running
   useEffect(() => {
     if (!isRunning || isPaused) return;
-    
+
     const persistInterval = window.setInterval(() => {
       const now = Date.now();
       if (now - lastPersistRef.current > 5000) {
         persistTimer();
       }
     }, 5000);
-    
+
     return () => clearInterval(persistInterval);
   }, [isRunning, isPaused]);
-
-  const loadPersistedTimer = async () => {
-    try {
-      const saved = await getSetting<{
-        isRunning: boolean;
-        isPaused: boolean;
-        elapsedSeconds: number;
-        startTime: string | null;
-        pausedAt: number;
-      }>('activeTimer');
-      
-      if (saved && saved.isRunning) {
-        const now = Date.now();
-        const start = saved.startTime ? new Date(saved.startTime).getTime() : now;
-        const elapsed = saved.isPaused 
-          ? saved.pausedAt 
-          : saved.elapsedSeconds + Math.floor((now - start) / 1000);
-        
-        setIsRunning(true);
-        setIsPaused(saved.isPaused);
-        setElapsedSeconds(elapsed);
-        setStartTime(saved.startTime ? new Date(saved.startTime) : null);
-        setPausedAt(saved.pausedAt);
-        
-        if (!saved.isPaused) {
-          startTimer();
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load timer:', error);
-    }
-  };
-
-  const persistTimer = useCallback(async () => {
-    lastPersistRef.current = Date.now();
-    await saveSetting('activeTimer', {
-      isRunning,
-      isPaused,
-      elapsedSeconds,
-      startTime: startTimeRef.current?.toISOString() || null,
-      pausedAt: pausedAtRef.current,
-    });
-  }, [isRunning, isPaused, elapsedSeconds]);
-
-  const startTimer = useCallback(() => {
-    if (intervalRef.current) return;
-    
-    intervalRef.current = window.setInterval(() => {
-      setElapsedSeconds(prev => {
-        const newElapsed = prev + 1;
-        pausedAtRef.current = newElapsed;
-        return newElapsed;
-      });
-    }, 1000);
-  }, []);
-
-  const stopTimer = useCallback(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  }, []);
 
   const start = useCallback(async () => {
     const now = new Date();
@@ -136,7 +133,6 @@ export function useDriveTimer() {
     stopTimer();
     setIsPaused(true);
     pausedAtRef.current = elapsedSeconds;
-    setPausedAt(elapsedSeconds);
     await persistTimer();
   }, [stopTimer, elapsedSeconds, persistTimer]);
 

@@ -1,19 +1,11 @@
 import { useState, useEffect } from 'react';
-import { 
-  Sun, 
-  Moon, 
-  Clock, 
-  Calendar, 
-  MapPin, 
-  User, 
-  Car, 
-  Cloud, 
-  Check, 
-  CloudRain, 
-  CloudFog, 
-  Save, 
-  X,
-  FileText
+import {
+  Sun,
+  Moon,
+  Cloud,
+  CloudRain,
+  CloudFog,
+  Save,
 } from 'lucide-react';
 import type { DriveEntry, DriverProfile, VehicleProfile } from '../types';
 import { useNightDetection } from '../hooks/useNightDetection';
@@ -69,7 +61,6 @@ export function DriveLogEntry({
     }
   }, [formData.startTime, formData.endTime]);
 
-  const activeDriver = drivers.find(d => d.id === formData.driverId) || drivers[0];
   const durationHours = Math.floor((formData.durationMinutes || 0) / 60);
   const durationMins = (formData.durationMinutes || 0) % 60;
 

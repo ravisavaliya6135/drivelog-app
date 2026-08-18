@@ -24,11 +24,6 @@ export function useDriveLog() {
   const [vehicles, setVehicles] = useState<VehicleProfile[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Load all data on mount
-  useEffect(() => {
-    loadAllData();
-  }, []);
-
   const loadAllData = async () => {
     setLoading(true);
     try {
@@ -46,6 +41,11 @@ export function useDriveLog() {
       setLoading(false);
     }
   };
+
+  // Load all data on mount
+  useEffect(() => {
+    loadAllData();
+  }, []);
 
   // Drive operations
   const addDrive = useCallback(async (entry: Omit<DriveEntry, 'id'>) => {

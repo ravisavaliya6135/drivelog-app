@@ -1,22 +1,16 @@
 import { useState } from 'react';
-import { 
-  FileText, 
-  Download, 
-  Share2, 
-  ShieldCheck, 
-  CheckCircle2, 
-  Printer, 
-  Car, 
-  User, 
-  MapPin, 
-  Clock, 
-  Sun, 
-  Moon,
-  AlertCircle,
+import {
+  Download,
+  Share2,
+  CheckCircle2,
+  Printer,
+  MapPin,
+  Clock,
   FileCheck
 } from 'lucide-react';
 import { useDriveLog } from '../hooks/useDriveLog';
 import { StateSelector } from '../components/StateSelector';
+import { US_STATES } from '../types';
 import { useSeo } from '../hooks/useSeo';
 
 export function ExportDocs() {
@@ -26,7 +20,7 @@ export function ExportDocs() {
     canonicalUrl: 'https://drivelog-app.vercel.app/export',
   });
 
-  const { drives, drivers, vehicles, loading, dayMinutes, nightMinutes, totalHours } = useDriveLog();
+  const { drives, drivers, vehicles, dayMinutes, nightMinutes, totalHours } = useDriveLog();
   const [selectedState, setSelectedState] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('drivelog-state') || 'CA';
@@ -126,7 +120,6 @@ export function ExportDocs() {
             setSelectedState(newCode);
             localStorage.setItem('drivelog-state', newCode);
           }}
-          showWarning={true}
         />
       </div>
 

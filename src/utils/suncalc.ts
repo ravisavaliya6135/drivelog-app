@@ -1,4 +1,4 @@
-import { getTimes, getSunrise, getSunset } from 'suncalc';
+import { getTimes } from 'suncalc';
 import type { StateInfo } from '../types';
 
 // Re-export getTimes for use in hooks
@@ -133,7 +133,7 @@ export function formatDate(date: Date): string {
 /**
  * Get state info for requirements
  */
-export function getStateRequirements(stateCode: string): StateInfo | undefined {
+export function getStateRequirements(_stateCode: string): StateInfo | undefined {
   // This will be imported from types
   return undefined; // Placeholder - imported from types
 }

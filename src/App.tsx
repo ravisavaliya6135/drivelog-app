@@ -1,6 +1,6 @@
 import { useState, Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom';
-import { Home as HomeIcon, Clock, Play, FileText, Settings as SettingsIcon, Car, Shield, User, Bell } from 'lucide-react';
+import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import { Home as HomeIcon, Clock, Play, FileText, Settings as SettingsIcon, Car } from 'lucide-react';
 import { ThemeProvider } from './hooks/useTheme';
 import { AuthProvider } from './contexts/AuthContext';
 import { EntitlementProvider } from './contexts/EntitlementContext';
@@ -113,7 +113,6 @@ function TopHeader({ activeRole, onToggleRole }: { activeRole: 'teen' | 'parent'
 }
 
 function BottomNavbar() {
-  const location = useLocation();
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200/80 dark:border-slate-800 pb-safe transition-colors">

@@ -1,26 +1,18 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
-  Clock, 
-  Calendar, 
-  Sun, 
-  Moon, 
-  Plus, 
-  Search, 
-  Filter, 
-  Car, 
-  User, 
-  ChevronRight, 
-  Trash2, 
-  Edit2, 
-  CheckCircle2, 
-  FileText,
+import {
+  Clock,
+  Calendar,
+  Sun,
+  Moon,
+  Plus,
+  Search,
+  Car,
+  User,
+  ChevronRight,
   X
 } from 'lucide-react';
 import { useDriveLog } from '../hooks/useDriveLog';
 import { DriveLogEntry } from '../components/DriveLogEntry';
-import { StateSelector } from '../components/StateSelector';
-import { US_STATES } from '../types';
 import { useSeo } from '../hooks/useSeo';
 
 export function LogDrive() {
@@ -30,21 +22,18 @@ export function LogDrive() {
     canonicalUrl: 'https://drivelog-app.vercel.app/log',
   });
 
-  const navigate = useNavigate();
-  const { drives, drivers, vehicles, loading, addDrive, deleteDrive } = useDriveLog();
+  const { drives, drivers, vehicles, addDrive } = useDriveLog();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'day' | 'night'>('all');
   const [showManualForm, setShowManualForm] = useState(false);
   const [editingDrive, setEditingDrive] = useState<typeof drives[0] | null>(null);
 
-  const [selectedState, setSelectedState] = useState(() => {
+  const [selectedState] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('drivelog-state') || 'CA';
     }
     return 'CA';
   });
-
-  const state = US_STATES.find(s => s.code === selectedState) || US_STATES[4];
 
   // Filtering
   const filteredDrives = drives.filter((drive) => {

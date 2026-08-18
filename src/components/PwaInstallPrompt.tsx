@@ -6,7 +6,8 @@ interface PwaInstallPromptProps {
 }
 
 export function PwaInstallPrompt({ hook }: PwaInstallPromptProps) {
-  const pwa = hook || usePwaInstall();
+  const fallback = usePwaInstall();
+  const pwa = hook ?? fallback;
 
   // Never render on desktop, or if already running as installed standalone PWA
   if (!pwa.isMobile || pwa.isStandalone) {
@@ -81,7 +82,7 @@ export function PwaInstallPrompt({ hook }: PwaInstallPromptProps) {
               </div>
               <button
                 type="button"
-                onClick={pwa.dismissIosInstructions}
+                onClick={pwa.closeIosInstructions}
                 className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-900"
               >
                 <X className="w-4 h-4" />
@@ -120,7 +121,7 @@ export function PwaInstallPrompt({ hook }: PwaInstallPromptProps) {
 
             <button
               type="button"
-              onClick={pwa.dismissIosInstructions}
+              onClick={pwa.closeIosInstructions}
               className="btn-primary w-full py-3 text-xs font-bold"
             >
               Got it

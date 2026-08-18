@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles, Check, Lock, ShieldCheck, X, ArrowRight, Zap, RefreshCw } from 'lucide-react';
+import { Sparkles, Check, ShieldCheck, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useEntitlement, PRO_LIFETIME_PRICE } from '../contexts/EntitlementContext';
 import { AuthModal } from './AuthModal';
@@ -16,7 +16,7 @@ export function UpgradeModal({
   reason,
 }: UpgradeModalProps) {
   const { user } = useAuth();
-  const { isPro, startCheckout } = useEntitlement();
+  const { startCheckout } = useEntitlement();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

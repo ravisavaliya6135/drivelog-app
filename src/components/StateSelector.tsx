@@ -1,15 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
-import { MapPin, AlertTriangle, ChevronDown, Check } from 'lucide-react';
+import { MapPin, ChevronDown, Check } from 'lucide-react';
 import { US_STATES } from '../types';
 
 interface StateSelectorProps {
   value: string;
   onChange: (stateCode: string) => void;
   className?: string;
-  showWarning?: boolean;
 }
 
-export function StateSelector({ value, onChange, className = '', showWarning = true }: StateSelectorProps) {
+export function StateSelector({ value, onChange, className = '' }: StateSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);

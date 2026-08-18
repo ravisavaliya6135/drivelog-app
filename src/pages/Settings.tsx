@@ -29,7 +29,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useEntitlement, PRO_LIFETIME_PRICE } from '../contexts/EntitlementContext';
 import { AuthModal } from '../components/AuthModal';
 import { UpgradeModal } from '../components/UpgradeModal';
-import { US_STATES } from '../types';
 import { useSeo } from '../hooks/useSeo';
 
 export function Settings() {
@@ -40,8 +39,8 @@ export function Settings() {
     noindex: true,
   });
 
-  const { drivers, vehicles, loading, refresh } = useDriveLog();
-  const { theme, resolvedTheme, setTheme } = useTheme();
+  const { drivers, vehicles, refresh } = useDriveLog();
+  const { theme, setTheme } = useTheme();
   const pwa = usePwaInstall();
   const { user, signOut } = useAuth();
   const { isPro, totalHoursLogged, freeHoursRemaining, isLimitReached, refreshEntitlement } = useEntitlement();
@@ -376,7 +375,6 @@ export function Settings() {
           <StateSelector
             value={selectedState}
             onChange={handleStateChange}
-            showWarning={true}
           />
         </section>
       )}

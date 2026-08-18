@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Download, Printer, CheckCircle, AlertTriangle, FileText, Loader2 } from 'lucide-react';
-import type { DriveEntry, DriverProfile, VehicleProfile, StateInfo } from '../types';
+import type { DriveEntry, DriverProfile, VehicleProfile } from '../types';
 import { US_STATES } from '../types';
 import { generatePDF, downloadPDF } from '../utils/pdf.tsx';
 
