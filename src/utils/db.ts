@@ -38,19 +38,34 @@ export interface AnalyticsEventRecord {
   synced: 0 | 1;
 }
 
-// Shape of the crash-resilient timer record persisted to the settings store
+// Shape of the crash-resilient timer record persisted to the settings store.
+// Elapsed time is derived from absolute wall-clock timestamps, never tick counts,
+// so closing/backgrounding the app can never lose driving time.
 export interface ActiveTimerRecord {
   isRunning: boolean;
   isPaused: boolean;
-  elapsedSeconds: number;
-  startTime: string | null;
-  pausedAt: number;
-  /** Unix ms of the last successful 1-second persist tick. Used to detect crashes/recovery. */
+  /** Unix ms (Date.now()) when the drive session was first started. */
+  startedAt: number | null;
+  /** Total time spent paused across the session, in ms. */
+  accumulatedPausedMs: number;
+  /** Unix ms of the most recent pause (null while running). */
+  pausedAt: number | null;
+  /** Frozen elapsed ms snapshot at pause time — authoritative display value while paused. */
+  lastSavedElapsedMs: number;
+  /** Unix ms of the last successful persist tick. Used to detect crashes/recovery. */
   lastHeartbeat: number | null;
 }
 
 export function emptyActiveTimer(): ActiveTimerRecord {
-  return { isRunning: false, isPaused: false, elapsedSeconds: 0, startTime: null, pausedAt: 0, lastHeartbeat: null };
+  return {
+    isRunning: false,
+    isPaused: false,
+    startedAt: null,
+    accumulatedPausedMs: 0,
+    pausedAt: null,
+    lastSavedElapsedMs: 0,
+    lastHeartbeat: null,
+  };
 }
 
 /** Reads the persisted active timer record, if any. */

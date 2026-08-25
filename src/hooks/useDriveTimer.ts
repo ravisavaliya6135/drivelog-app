@@ -14,10 +14,28 @@ function getCurrentStateCode(): string {
   return 'CA';
 }
 
+/**
+ * Computes real driving time from true wall-clock timestamps:
+ *   elapsed = now - startedAt - accumulatedPausedMs   (running)
+ *   elapsed = lastSavedElapsedMs                      (paused)
+ * This means closing the browser, backgrounding the tab, phone restarts,
+ * or OS timer throttling can never lose driving time — the next calculation
+ * is always derived from absolute timestamps, not accumulated ticks.
+ */
+function computeElapsedMs(
+  record: Pick<ActiveTimerRecord, 'isPaused' | 'startedAt' | 'accumulatedPausedMs' | 'lastSavedElapsedMs'>,
+  now: number
+): number {
+  if (!record.isPaused && record.startedAt !== null) {
+    return Math.max(0, now - record.startedAt - record.accumulatedPausedMs);
+  }
+  return Math.max(0, record.lastSavedElapsedMs);
+}
+
 export function useDriveTimer() {
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [elapsedMs, setElapsedMs] = useState(0);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [wasRecovered, setWasRecovered] = useState(false);
 
@@ -25,82 +43,83 @@ export function useDriveTimer() {
   const { isNight } = useNightDetection(getCurrentStateCode());
 
   const intervalRef = useRef<number | null>(null);
-  const startTimeRef = useRef<Date | null>(null);
-  const pausedAtRef = useRef<number>(0);
+  // Live mirror of the persisted record so ticks/persists always use fresh values
+  const recordRef = useRef<ActiveTimerRecord>(emptyActiveTimer());
   const lastPersistRef = useRef<number>(0);
 
-  const startTimer = useCallback(() => {
-    if (intervalRef.current) return;
-
-    intervalRef.current = window.setInterval(() => {
-      setElapsedSeconds(prev => {
-        const newElapsed = prev + 1;
-        pausedAtRef.current = newElapsed;
-        return newElapsed;
-      });
-    }, 1000);
+  const persistTimer = useCallback(async () => {
+    const now = Date.now();
+    lastPersistRef.current = now;
+    recordRef.current = { ...recordRef.current, lastHeartbeat: now };
+    await saveSetting('activeTimer', recordRef.current);
   }, []);
 
-  const stopTimer = useCallback(() => {
+  const startTicker = useCallback(() => {
+    if (intervalRef.current) return;
+    intervalRef.current = window.setInterval(() => {
+      const now = Date.now();
+      setElapsedMs(computeElapsedMs(recordRef.current, now));
+      // Persist every tick so the heartbeat stays fresh (crash detection)
+      void persistTimer();
+    }, 1000);
+  }, [persistTimer]);
+
+  const stopTicker = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
   }, []);
 
-  // Persist every second (driven by the elapsedSeconds state tick) with a live heartbeat.
-  // The heartbeat lets a future app load distinguish "running normally" from "crashed mid-drive".
-  const persistTimer = useCallback(async () => {
-    lastPersistRef.current = Date.now();
-    await saveSetting('activeTimer', {
-      isRunning,
-      isPaused,
-      elapsedSeconds,
-      startTime: startTimeRef.current?.toISOString() || null,
-      pausedAt: pausedAtRef.current,
-      lastHeartbeat: lastPersistRef.current,
-    });
-  }, [isRunning, isPaused, elapsedSeconds]);
-
   const loadPersistedTimer = async () => {
     try {
       const saved = await getSetting<ActiveTimerRecord>('activeTimer');
+      if (!saved || !saved.isRunning) return;
 
-      if (saved && saved.isRunning) {
-        const now = Date.now();
-        const start = saved.startTime ? new Date(saved.startTime).getTime() : now;
-        const heartbeat = saved.lastHeartbeat ?? start;
+      const now = Date.now();
 
-        // Wall-clock delta since the current session segment began. This automatically
-        // credits time lost to crashes, force-closes, phone restarts, or throttled
-        // background timers (iOS low-power mode) because it is computed from real time.
-        let elapsed = saved.isPaused
-          ? saved.pausedAt
-          : saved.elapsedSeconds + Math.max(0, Math.floor((now - start) / 1000));
+      // Backward compatibility: pre-wall-clock records stored an ISO startTime
+      let startedAt = saved.startedAt;
+      if (typeof startedAt !== 'number') {
+        const legacy = (saved as unknown as { startTime?: string | null }).startTime;
+        if (!legacy) return; // Malformed record — nothing to restore
+        startedAt = new Date(legacy).getTime();
+      }
 
-        // Crash recovery audit trail: heartbeat older than HEARTBEAT_STALE_MS means the
-        // app was killed while a drive was running (not just a tab switch).
-        if (!saved.isPaused && now - heartbeat > HEARTBEAT_STALE_MS) {
-          const missedSeconds = Math.max(0, elapsed - saved.elapsedSeconds);
-          console.info(
-            `[DriveLog Timer Recovery] Active drive restored after ${Math.round((now - heartbeat) / 1000)}s gap. ` +
-            `Credited ${saved.elapsedSeconds}s persisted + ${missedSeconds}s wall-clock catch-up. Recovery event logged.`
-          );
-          setWasRecovered(true);
-          // Guard against negative/absurd deltas if the device clock changed.
-          if (elapsed < saved.elapsedSeconds) elapsed = saved.elapsedSeconds;
-          // Crash-frequency telemetry: how much time was credited after recovery
-          void trackEvent('timer_recovered', { missedSeconds });
-        }
+      const restored: ActiveTimerRecord = {
+        isRunning: true,
+        isPaused: Boolean(saved.isPaused),
+        startedAt,
+        accumulatedPausedMs: Number(saved.accumulatedPausedMs) || 0,
+        pausedAt: typeof saved.pausedAt === 'number' ? saved.pausedAt : null,
+        lastSavedElapsedMs: Number(saved.lastSavedElapsedMs) || 0,
+        lastHeartbeat: typeof saved.lastHeartbeat === 'number' ? saved.lastHeartbeat : null,
+      };
 
-        setIsRunning(true);
-        setIsPaused(saved.isPaused);
-        setElapsedSeconds(elapsed);
-        setStartTime(saved.startTime ? new Date(saved.startTime) : null);
+      // Real wall-clock elapsed time — instantly correct even if the app was
+      // closed for hours. No tick accumulation involved.
+      const elapsed = computeElapsedMs(restored, now);
 
-        if (!saved.isPaused) {
-          startTimer();
-        }
+      // Crash recovery audit trail: stale heartbeat means the app was killed
+      // while a drive was running (not just a normal close while paused).
+      if (!restored.isPaused && restored.lastHeartbeat !== null && now - restored.lastHeartbeat > HEARTBEAT_STALE_MS) {
+        const missedSeconds = Math.max(0, Math.floor((elapsed - restored.lastSavedElapsedMs) / 1000));
+        console.info(
+          `[DriveLog Timer Recovery] Active drive restored after ${Math.round((now - restored.lastHeartbeat) / 1000)}s gap. ` +
+          `Wall-clock catch-up credited ${missedSeconds}s. Recovery event logged.`
+        );
+        setWasRecovered(true);
+        void trackEvent('timer_recovered', { missedSeconds });
+      }
+
+      recordRef.current = restored;
+      setIsRunning(true);
+      setIsPaused(restored.isPaused);
+      setElapsedMs(elapsed);
+      setStartTime(new Date(startedAt));
+
+      if (!restored.isPaused) {
+        startTicker();
       }
     } catch (error) {
       console.error('Failed to load timer:', error);
@@ -109,111 +128,138 @@ export function useDriveTimer() {
 
   // Load persisted timer state on mount
   useEffect(() => {
-    loadPersistedTimer();
+    void loadPersistedTimer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Handle visibility change (iOS backgrounding, tab switch)
+  // Handle visibility change (iOS backgrounding, tab switch):
+  // recompute from the wall clock immediately to erase any drift.
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && isRunning && !isPaused) {
-        // Page became visible again — reload persisted state to catch any drift
-        loadPersistedTimer();
+        setElapsedMs(computeElapsedMs(recordRef.current, Date.now()));
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [isRunning, isPaused]);
 
-  // Persist timer on every state change AND before unload (force-close protection)
-  useEffect(() => {
-    persistTimer();
-
-    // Also save on page unload (browser close, tab close, force-close)
-    const handleBeforeUnload = () => {
-      persistTimer();
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [isRunning, isPaused, elapsedSeconds]);
-
-  // Additional safety: persist every 5 seconds while running
+  // Safety net: persist periodically even if ticks are throttled (low-power mode),
+  // and always persist right before unload (force-close protection).
   useEffect(() => {
     if (!isRunning || isPaused) return;
 
     const persistInterval = window.setInterval(() => {
       const now = Date.now();
       if (now - lastPersistRef.current > 5000) {
-        persistTimer();
+        void persistTimer();
       }
     }, 5000);
 
-    return () => clearInterval(persistInterval);
-  }, [isRunning, isPaused]);
+    const handleBeforeUnload = () => {
+      void persistTimer();
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      clearInterval(persistInterval);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isRunning, isPaused, persistTimer]);
 
   const start = useCallback(async () => {
-    const now = new Date();
-    startTimeRef.current = now;
-    setStartTime(now);
+    const now = Date.now();
+    recordRef.current = {
+      isRunning: true,
+      isPaused: false,
+      startedAt: now,
+      accumulatedPausedMs: 0,
+      pausedAt: null,
+      lastSavedElapsedMs: 0,
+      lastHeartbeat: now,
+    };
     setIsRunning(true);
     setIsPaused(false);
-    setElapsedSeconds(0);
-    pausedAtRef.current = 0;
+    setElapsedMs(0);
+    setStartTime(new Date(now));
     setWasRecovered(false);
-    startTimer();
+    startTicker();
     await persistTimer();
     // Business analytics: no PII — state code + legal day/night classification only
     void trackEvent('drive_started', { state: getCurrentStateCode(), isNight });
-  }, [startTimer, persistTimer, isNight]);
+  }, [startTicker, persistTimer, isNight]);
 
   const pause = useCallback(async () => {
-    stopTimer();
+    const now = Date.now();
+    const rec = recordRef.current;
+    // Freeze elapsed at the exact wall-clock moment of pausing
+    const frozenMs = computeElapsedMs(rec, now);
+    recordRef.current = {
+      ...rec,
+      isPaused: true,
+      lastSavedElapsedMs: frozenMs,
+      pausedAt: now,
+    };
+    stopTicker();
     setIsPaused(true);
-    pausedAtRef.current = elapsedSeconds;
+    setElapsedMs(frozenMs);
     await persistTimer();
-  }, [stopTimer, elapsedSeconds, persistTimer]);
+  }, [stopTicker, persistTimer]);
 
   const resume = useCallback(async () => {
-    const now = new Date();
-    startTimeRef.current = now;
+    const now = Date.now();
+    const rec = recordRef.current;
+    // Fold the pause duration into accumulatedPausedMs so the wall-clock
+    // formula keeps producing exact driving time.
+    const pauseDuration = rec.pausedAt !== null ? Math.max(0, now - rec.pausedAt) : 0;
+    recordRef.current = {
+      ...rec,
+      isPaused: false,
+      accumulatedPausedMs: rec.accumulatedPausedMs + pauseDuration,
+      pausedAt: null,
+    };
+    startTicker();
     setIsPaused(false);
-    startTimer();
+    setElapsedMs(computeElapsedMs(recordRef.current, now));
     await persistTimer();
-  }, [startTimer, persistTimer]);
+  }, [startTicker, persistTimer]);
 
   const stop = useCallback(async () => {
-    stopTimer();
-    const finalElapsed = elapsedSeconds;
-    const finalStartTime = startTimeRef.current ?? startTime;
+    const now = Date.now();
+    const finalElapsedMs = computeElapsedMs(recordRef.current, now);
+    const finalStartMs = recordRef.current.startedAt;
+    stopTicker();
+    recordRef.current = emptyActiveTimer();
     setIsRunning(false);
     setIsPaused(false);
-    setElapsedSeconds(0);
+    setElapsedMs(0);
     setStartTime(null);
     setWasRecovered(false);
-    pausedAtRef.current = 0;
-    startTimeRef.current = null;
     await saveSetting('activeTimer', emptyActiveTimer());
     // Business analytics: duration + estimated miles (same 32 mph heuristic shown in the UI)
-    if (finalElapsed > 0) {
+    if (finalElapsedMs > 0) {
       void trackEvent('drive_completed', {
-        durationMinutes: Math.ceil(finalElapsed / 60),
-        miles: Number(((finalElapsed / 3600) * 32).toFixed(1)),
+        durationMinutes: Math.ceil(finalElapsedMs / 60000),
+        miles: Number(((finalElapsedMs / 3600000) * 32).toFixed(1)),
       });
     }
-    return { durationMinutes: Math.ceil(finalElapsed / 60), startTime: finalStartTime, endTime: new Date() };
-  }, [stopTimer, elapsedSeconds, startTime]);
+    return {
+      durationMinutes: Math.ceil(finalElapsedMs / 60000),
+      startTime: finalStartMs !== null ? new Date(finalStartMs) : new Date(),
+      endTime: new Date(now),
+    };
+  }, [stopTicker]);
 
   const reset = useCallback(async () => {
-    stopTimer();
+    stopTicker();
+    recordRef.current = emptyActiveTimer();
     setIsRunning(false);
     setIsPaused(false);
-    setElapsedSeconds(0);
+    setElapsedMs(0);
     setStartTime(null);
     setWasRecovered(false);
-    pausedAtRef.current = 0;
-    startTimeRef.current = null;
     await saveSetting('activeTimer', emptyActiveTimer());
-  }, [stopTimer]);
+  }, [stopTicker]);
 
   const dismissRecoveryToast = useCallback(() => setWasRecovered(false), []);
 
@@ -222,10 +268,7 @@ export function useDriveTimer() {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    if (hours > 0) {
-      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }, []);
 
   // Cleanup on unmount
@@ -240,11 +283,11 @@ export function useDriveTimer() {
   return {
     isRunning,
     isPaused,
-    elapsedSeconds,
+    elapsedSeconds: Math.floor(elapsedMs / 1000),
     startTime,
     wasRecovered,
     dismissRecoveryToast,
-    formatTime: formatTime(elapsedSeconds),
+    formatTime: formatTime(Math.floor(elapsedMs / 1000)),
     start,
     pause,
     resume,
