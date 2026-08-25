@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Clock,
   Calendar,
@@ -14,6 +15,7 @@ import {
 import { useDriveLog } from '../hooks/useDriveLog';
 import { DriveLogEntry } from '../components/DriveLogEntry';
 import { useSeo } from '../hooks/useSeo';
+import { getActiveTimerRecord } from '../utils/db';
 
 export function LogDrive() {
   useSeo({
@@ -27,6 +29,27 @@ export function LogDrive() {
   const [filterType, setFilterType] = useState<'all' | 'day' | 'night'>('all');
   const [showManualForm, setShowManualForm] = useState(false);
   const [editingDrive, setEditingDrive] = useState<typeof drives[0] | null>(null);
+
+  // Zero-distraction focus mode: if a drive session is active (persisted in
+  // IndexedDB), hide history and show only the "Current Drive" card.
+  const [driveActive, setDriveActive] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    const checkActive = async () => {
+      try {
+        const record = await getActiveTimerRecord();
+        if (!cancelled) setDriveActive(Boolean(record?.isRunning));
+      } catch {
+        // Offline-safe: treat as no active drive
+      }
+    };
+    void checkActive();
+    document.addEventListener('visibilitychange', checkActive);
+    return () => {
+      cancelled = true;
+      document.removeEventListener('visibilitychange', checkActive);
+    };
+  }, []);
 
   const [selectedState] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -67,7 +90,26 @@ export function LogDrive() {
 
   return (
     <div className="space-y-5 animate-fade-in">
-      
+
+      {/* Focus Mode: active drive session — hide all history & tools */}
+      {driveActive ? (
+        <div className="app-card-elevated p-8 text-center space-y-4">
+          <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 flex items-center justify-center mx-auto animate-pulse">
+            <Car className="w-7 h-7" />
+          </div>
+          <h1 className="text-lg font-extrabold text-slate-900 dark:text-white">Current Drive</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
+            A driving session is in progress. History is hidden to keep you focused on the road.
+          </p>
+          <Link
+            to="/?modal=timer"
+            className="inline-flex items-center justify-center w-full h-16 rounded-2xl bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white font-bold text-base shadow-teal transition-all"
+          >
+            Return to Live Timer
+          </Link>
+        </div>
+      ) : (
+        <>
       {/* 1. Header & Summary Stats Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -273,6 +315,8 @@ export function LogDrive() {
             />
           </div>
         </div>
+      )}
+        </>
       )}
 
     </div>

@@ -29,21 +29,47 @@ const manifest: VitePWAOptions['manifest'] = {
   ],
 }
 
-export default defineConfig(({ mode }) => ({
-  base: '/',
-  // Strip console/debugger from production bundles; keep them in dev for debugging
-  esbuild: mode === 'production' ? { drop: ['console', 'debugger'] } : {},
-  plugins: [
-    react(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: 'auto',
-      devOptions: {
-        enabled: true,
-        type: 'module',
+export default defineConfig(({ mode }) => {
+  // Minimal config for the SSG prerender step (`vite build --ssr --mode prerender`):
+  // builds ONLY the state-guide SSR renderer to Node-friendly output.
+  // No PWA plugin, no manual chunking, no console stripping.
+  if (mode === 'prerender') {
+    return {
+      base: '/',
+      plugins: [react()],
+      build: {
+        target: 'esnext',
+        outDir: 'dist-ssr',
+        emptyOutDir: true,
+        rollupOptions: {
+          output: {
+            entryFileNames: 'state-guide-ssr.js',
+          },
+        },
       },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
+    };
+  }
+
+  return {
+    base: '/',
+
+    // Strip console/debugger from production bundles; keep them in dev for debugging
+    esbuild: mode === 'production' ? { drop: ['console', 'debugger'] } : {},
+    plugins: [
+      react(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        injectRegister: 'auto',
+        devOptions: {
+          enabled: true,
+          type: 'module',
+        },
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
+          // Prerendered SEO pages are served statically and cached at runtime
+          // (NetworkFirst document strategy below) instead of being precached,
+          // keeping the offline bundle small.
+          globIgnores: ['dmv/**/*.html'],
         runtimeCaching: [
           {
             urlPattern: ({ request }) => request.destination === 'document',
@@ -95,4 +121,5 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
-}))
+  };
+});

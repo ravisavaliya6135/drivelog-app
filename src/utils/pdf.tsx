@@ -93,6 +93,11 @@ const styles = StyleSheet.create({
   cell: {
     paddingHorizontal: 4,
   },
+  // Tabular mono font for all numbers (hours, miles, dates)
+  cellMono: {
+    fontFamily: 'Courier',
+    fontSize: 8.5,
+  },
   cellDate: { width: '12%', textAlign: 'center' },
   cellTime: { width: '15%', textAlign: 'center' },
   cellDuration: { width: '10%', textAlign: 'center' },
@@ -131,6 +136,26 @@ const styles = StyleSheet.create({
     borderTop: '1px solid #333',
     paddingTop: 4,
   },
+  perjuryBlock: {
+    marginTop: 16,
+    padding: 10,
+    border: '1px solid #0f172a',
+    borderRadius: 4,
+    backgroundColor: '#f8fafc',
+  },
+  perjuryTitle: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#0f172a',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 6,
+  },
+  perjuryText: {
+    fontSize: 8,
+    lineHeight: 1.5,
+    color: '#334155',
+  },
   disclaimer: {
     marginTop: 20,
     padding: 10,
@@ -151,9 +176,25 @@ interface PDFProps {
 }
 
 function PDFDocument({ drives, driver, vehicle, state, totals }: PDFProps) {
-  const sortedDrives = [...drives].sort((a, b) => 
+  const sortedDrives = [...drives].sort((a, b) =>
     new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
   );
+
+  // A "specific" form name contains a form code (e.g. "MV-262", "HSMV 71143",
+  // "DL-180C"); a generic one is just "Supervised Driving Log".
+  const hasFormCode = Boolean(state.dmvFormName && /\d/.test(state.dmvFormName));
+
+  // State-aware document title:
+  //   coded form   -> "[State] Official Form [CODE] — Supervised Driving Log"
+  //   generic form -> "[State] Supervised Driving Log"
+  const docTitle = hasFormCode
+    ? `${state.name} Official Form ${state.dmvFormName} — Supervised Driving Log`
+    : `${state.name} Supervised Driving Log`;
+  const docSubtitle = hasFormCode
+    ? `Official Format — Based on ${state.name} DMV Form ${state.dmvFormName}`
+    : state.dmvFormName
+      ? `Official Format — Per ${state.name} DMV Requirements`
+      : 'Universal DMV Format — All 50 States';
 
   return (
     <Document>
@@ -161,8 +202,8 @@ function PDFDocument({ drives, driver, vehicle, state, totals }: PDFProps) {
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>Supervised Driving Log</Text>
-            <Text style={styles.subtitle}>Universal DMV Format — All 50 States</Text>
+            <Text style={styles.title}>{docTitle}</Text>
+            <Text style={styles.subtitle}>{docSubtitle}</Text>
           </View>
           <View style={{ textAlign: 'right' }}>
             <Text style={{ fontWeight: 'bold' }}>{state.name}</Text>
@@ -192,10 +233,8 @@ function PDFDocument({ drives, driver, vehicle, state, totals }: PDFProps) {
             <Text style={styles.infoValue}>{vehicle.licensePlate}</Text>
           </View>
           <View style={styles.infoRow}>
-            <Text style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Report Generated:</Text>
-              <Text style={styles.infoValue}>{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Text>
-            </Text>
+            <Text style={styles.infoLabel}>Report Generated:</Text>
+            <Text style={[styles.infoValue, styles.cellMono]}>{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Text>
           </View>
         </View>
 
@@ -217,18 +256,18 @@ function PDFDocument({ drives, driver, vehicle, state, totals }: PDFProps) {
 
           {sortedDrives.map((entry, index) => (
             <View key={entry.id} style={[styles.tableRow, ...(index % 2 === 1 ? [styles.tableRowEven] : [])]}>
-              <Text style={[styles.cell, styles.cellDate]}>{new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</Text>
-              <Text style={[styles.cell, styles.cellTime]}>
+              <Text style={[styles.cell, styles.cellDate, styles.cellMono]}>{new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</Text>
+              <Text style={[styles.cell, styles.cellTime, styles.cellMono]}>
                 {new Date(entry.startTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} - 
                 {new Date(entry.endTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
               </Text>
-              <Text style={[styles.cell, styles.cellDuration]}>{entry.durationMinutes} min</Text>
-              <Text style={[styles.cell, styles.cellDayNight]}>{entry.dayNight === 'day' ? '☀ Day' : '🌙 Night'}</Text>
-              <Text style={[styles.cell, styles.cellMiles]}>{entry.miles} mi</Text>
+              <Text style={[styles.cell, styles.cellDuration, styles.cellMono]}>{entry.durationMinutes} min</Text>
+              <Text style={[styles.cell, styles.cellDayNight]}>{entry.dayNight === 'day' ? 'Day' : 'Night'}</Text>
+              <Text style={[styles.cell, styles.cellMiles, styles.cellMono]}>{entry.miles} mi</Text>
               <Text style={[styles.cell, styles.cellWeather]}>{entry.weather}</Text>
               <Text style={[styles.cell, styles.cellRoadType]}>{entry.roadType}</Text>
               <Text style={[styles.cell, styles.cellSkills]}>{entry.notes || 'General practice'}</Text>
-              <Text style={[styles.cell, styles.cellInitials]}>{entry.initials}</Text>
+              <Text style={[styles.cell, styles.cellInitials, styles.cellMono]}>{entry.initials}</Text>
             </View>
           ))}
 
@@ -236,9 +275,9 @@ function PDFDocument({ drives, driver, vehicle, state, totals }: PDFProps) {
           <View style={styles.totalsRow}>
             <Text style={[styles.cell, styles.cellDate]}>TOTALS</Text>
             <Text style={[styles.cell, styles.cellTime]}></Text>
-            <Text style={[styles.cell, styles.cellDuration]}>{totals.total} min ({totals.total / 60}h)</Text>
-            <Text style={[styles.cell, styles.cellDayNight]}>{totals.day} min day / {totals.night} min night</Text>
-            <Text style={[styles.cell, styles.cellMiles]}>{drives.reduce((sum, d) => sum + d.miles, 0)} mi</Text>
+            <Text style={[styles.cell, styles.cellDuration, styles.cellMono]}>{(totals.total / 60).toFixed(1)}h</Text>
+            <Text style={[styles.cell, styles.cellDayNight, styles.cellMono]}>{(totals.day / 60).toFixed(1)}h / {(totals.night / 60).toFixed(1)}h</Text>
+            <Text style={[styles.cell, styles.cellMiles, styles.cellMono]}>{drives.reduce((sum, d) => sum + d.miles, 0)} mi</Text>
             <Text style={[styles.cell, styles.cellWeather]}></Text>
             <Text style={[styles.cell, styles.cellRoadType]}></Text>
             <Text style={[styles.cell, styles.cellSkills]}></Text>
@@ -251,28 +290,34 @@ function PDFDocument({ drives, driver, vehicle, state, totals }: PDFProps) {
           <Text style={styles.sectionTitle}>Progress vs State Requirements</Text>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Total Hours Logged:</Text>
-            <Text style={styles.infoValue}>{(totals.total / 60).toFixed(1)}h / {state.requiredHours}h required</Text>
+            <Text style={[styles.infoValue, styles.cellMono]}>{(totals.total / 60).toFixed(1)}h / {state.requiredHours}h required</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Night Hours Logged:</Text>
-            <Text style={styles.infoValue}>{(totals.night / 60).toFixed(1)}h / {state.requiredNightHours}h required</Text>
+            <Text style={[styles.infoValue, styles.cellMono]}>{(totals.night / 60).toFixed(1)}h / {state.requiredNightHours}h required</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Day Hours Logged:</Text>
-            <Text style={styles.infoValue}>{(totals.day / 60).toFixed(1)}h</Text>
+            <Text style={[styles.infoValue, styles.cellMono]}>{(totals.day / 60).toFixed(1)}h</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Total Miles:</Text>
-            <Text style={styles.infoValue}>{drives.reduce((sum, d) => sum + d.miles, 0)} mi</Text>
+            <Text style={[styles.infoValue, styles.cellMono]}>{drives.reduce((sum, d) => sum + d.miles, 0)} mi</Text>
           </View>
         </View>
 
         {/* Signature Section */}
         <View style={styles.signatureSection}>
           <Text style={styles.sectionTitle}>Certification & Signatures</Text>
-          <Text style={{ fontSize: 9, marginBottom: 16, color: '#334155' }}>
-            I certify that the above driving hours were completed under my supervision as required by {state.name} law.
-          </Text>
+          {state.perjuryStatement ? (
+            <Text style={{ fontSize: 9, marginBottom: 16, color: '#334155' }}>
+              {state.perjuryStatement}
+            </Text>
+          ) : (
+            <Text style={{ fontSize: 9, marginBottom: 16, color: '#334155' }}>
+              I certify that the above driving hours were completed under my supervision as required by {state.name} law.
+            </Text>
+          )}
           
           <View style={styles.signatureLine}>
             <View style={styles.signatureField}>

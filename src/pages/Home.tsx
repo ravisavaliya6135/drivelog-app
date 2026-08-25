@@ -49,8 +49,19 @@ export function Home() {
     const editId = searchParams.get('edit');
 
     if (modal === 'timer') {
-      setShowTimerModal(true);
-      setShowLogEntry(false);
+      // Paywall gate: block NEW drive starts once the free limit is reached.
+      // An in-progress drive is never interrupted — this only fires on fresh starts.
+      if (isLimitReached) {
+        setShowTimerModal(false);
+        setShowUpgradeModal(true);
+        const cleared = new URLSearchParams(searchParams);
+        cleared.delete('modal');
+        cleared.delete('edit');
+        setSearchParams(cleared, { replace: true });
+      } else {
+        setShowTimerModal(true);
+        setShowLogEntry(false);
+      }
     } else if (modal === 'log-entry') {
       setShowLogEntry(true);
       setShowTimerModal(false);
@@ -63,9 +74,8 @@ export function Home() {
       setShowLogEntry(false);
       setEditingDrive(null);
     }
-  }, [searchParams, drives]);
-
-  const updateModalUrl = (modal: string | null, editId?: string | null) => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, drives, isLimitReached]);  const updateModalUrl = (modal: string | null, editId?: string | null) => {
     const params = new URLSearchParams(searchParams);
     if (modal) {
       params.set('modal', modal);
@@ -121,6 +131,9 @@ export function Home() {
   
   const remainingTotal = Math.max(0, state.requiredHours - totalHoursVal).toFixed(1);
   const isTotalComplete = totalHoursVal >= state.requiredHours && nightHoursVal >= state.requiredNightHours;
+
+  // Parent sign-off tracking: drives awaiting verification
+  const unverifiedCount = drives.filter(d => !d.isVerified).length;
 
   const primaryDriver = drivers.find(d => d.isPrimaryDriver) || drivers[0];
 
@@ -219,6 +232,11 @@ export function Home() {
         <button
           type="button"
           onClick={() => {
+            // Gate new drive starts at the free limit; in-progress drives are unaffected.
+            if (isLimitReached) {
+              setShowUpgradeModal(true);
+              return;
+            }
             setShowTimerModal(true);
             updateModalUrl('timer');
           }}
@@ -248,6 +266,21 @@ export function Home() {
       {/* 3. Tasteful Upgrade Card (only if approaching / at 20h limit) */}
       {(isApproachingLimit || isLimitReached) && (
         <UpgradeCard onUpgradeClick={() => setShowUpgradeModal(true)} />
+      )}
+
+      {/* 3b. Parent Sign-Off Nudge (weekly reminder when many drives are unverified) */}
+      {unverifiedCount > 5 && (
+        <div className="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 flex items-start gap-3 animate-fade-in">
+          <span className="text-lg leading-none mt-0.5">📝</span>
+          <div>
+            <h4 className="font-bold text-xs text-amber-800 dark:text-amber-300">
+              You have {unverifiedCount} unverified drives
+            </h4>
+            <p className="text-[11px] text-amber-700/90 dark:text-amber-200/80 mt-0.5">
+              Ask your parent to sign off before DMV submission.
+            </p>
+          </div>
+        </div>
       )}
 
       {/* 4. Recent Drives List */}
@@ -322,11 +355,11 @@ export function Home() {
         )}
       </section>
 
-      {/* Timer Modal */}
+      {/* Timer Modal — full-screen distraction-free mode during an active drive */}
       {showTimerModal && (
-        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] max-h-[95vh] overflow-y-auto p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
-            <div className="flex justify-between items-center mb-4">
+        <div className="fixed inset-0 bg-white dark:bg-slate-950 z-[60] overflow-y-auto animate-fade-in">
+          <div className="min-h-full max-w-md mx-auto px-4 py-8 flex flex-col justify-center">
+            <div className="flex justify-between items-center mb-6">
               <span className="font-bold text-base text-slate-900 dark:text-white">Live Driving Session</span>
               <button
                 type="button"

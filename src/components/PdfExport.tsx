@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { Download, Printer, CheckCircle, AlertTriangle, FileText, Loader2 } from 'lucide-react';
+import { Download, Printer, CheckCircle, AlertTriangle, FileText, Loader2, Lock } from 'lucide-react';
 import type { DriveEntry, DriverProfile, VehicleProfile } from '../types';
 import { US_STATES } from '../types';
 import { generatePDF, downloadPDF } from '../utils/pdf.tsx';
+import { useEntitlement } from '../contexts/EntitlementContext';
+import { UpgradeModal } from './UpgradeModal';
+import { trackEvent } from '../utils/analytics';
 
 interface PdfExportProps {
   drives: DriveEntry[];
@@ -16,6 +19,11 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
   const [isGenerating, setIsGenerating] = useState(false);
   const [generated, setGenerated] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  // Paywall: DMV PDF export is blocked once the free tier limit is exceeded.
+  const { isPro, isLimitReached } = useEntitlement();
+  const exportBlocked = !isPro && isLimitReached;
 
   const state = US_STATES.find(s => s.code === selectedState) || US_STATES[4];
 
@@ -33,10 +41,18 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
     { day: 0, night: 0, total: 0, miles: 0 }
   );
 
-  const isTotalComplete = totals.total / 60 >= state.requiredHours && totals.night / 60 >= state.requiredNightHours;
+  const totalHoursLogged = totals.total / 60;
+  const nightHoursLogged = totals.night / 60;
+  const totalCheckPassed = totalHoursLogged >= state.requiredHours;
+  const nightCheckPassed = nightHoursLogged >= state.requiredNightHours;
+  const isTotalComplete = totalCheckPassed && nightCheckPassed;
 
   const handleGenerate = async () => {
     if (!driver || !vehicle || drives.length === 0) return;
+    if (exportBlocked) {
+      setShowUpgradeModal(true);
+      return;
+    }
 
     setIsGenerating(true);
     setError(null);
@@ -44,6 +60,11 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
     try {
       const blob = await generatePDF(drives, driver, vehicle, selectedState);
       downloadPDF(blob, `DriveLog-${state.code}-${new Date().toISOString().split('T')[0]}.pdf`);
+      // Business analytics: export volume per state (no PII)
+      void trackEvent('pdf_exported', {
+        state: selectedState,
+        totalHours: Number((totals.total / 60).toFixed(1)),
+      });
       setGenerated(true);
       setTimeout(() => setGenerated(false), 3000);
     } catch (err) {
@@ -56,6 +77,10 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
 
   const handlePrint = async () => {
     if (!driver || !vehicle || drives.length === 0) return;
+    if (exportBlocked) {
+      setShowUpgradeModal(true);
+      return;
+    }
 
     setIsGenerating(true);
     setError(null);
@@ -158,22 +183,65 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
         </div>
       </div>
 
-      {/* State Requirements Check */}
+      {/* DMV Compliance Check */}
       <div className={`p-4 rounded-xl border transition-smooth ${isTotalComplete ? 'card-gradient-success' : 'card-gradient-warning'}`}>
         <div className="flex items-start gap-3">
           <div className={`flex-shrink-0 p-2 rounded-lg transition-smooth ${isTotalComplete ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'}`}>
             {isTotalComplete ? <CheckCircle className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
           </div>
-          <div>
-            <h4 className="font-medium text-slate-900">
-              {isTotalComplete ? 'Requirements Met!' : 'Requirements Not Yet Met'}
-            </h4>
-            <p className="text-sm text-slate-600 mt-1">
-              {isTotalComplete
-                ? `You've logged ${(totals.total / 60).toFixed(1)}h total and ${(totals.night / 60).toFixed(1)}h night. This meets ${state.name}'s requirements of ${state.requiredHours}h total and ${state.requiredNightHours}h night.`
-                : `You need ${(state.requiredHours - totals.total / 60).toFixed(1)}h more total and ${Math.max(0, state.requiredNightHours - totals.night / 60).toFixed(1)}h more night driving.`
-              }
-            </p>
+          <div className="flex-1">
+            <h4 className="font-medium text-slate-900 dark:text-white">DMV Compliance Check — {state.name}</h4>
+
+            {/* Per-requirement verification rows */}
+            <div className="mt-3 space-y-2">
+              <div className={`flex items-center justify-between p-2.5 rounded-lg border text-sm ${
+                totalCheckPassed
+                  ? 'border-green-200 bg-green-50/70 dark:border-green-800 dark:bg-green-950/40'
+                  : 'border-red-200 bg-red-50/70 dark:border-red-800 dark:bg-red-950/40'
+              }`}>
+                <span className="text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                  {totalCheckPassed
+                    ? <CheckCircle className="w-4 h-4 text-green-600" />
+                    : <AlertTriangle className="w-4 h-4 text-red-500" />}
+                  Total supervised hours
+                </span>
+                <span className={`font-mono font-bold tabular-nums ${
+                  totalCheckPassed ? 'text-green-700 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                }`}>
+                  {totalHoursLogged.toFixed(1)}h / {state.requiredHours}h
+                </span>
+              </div>
+
+              <div className={`flex items-center justify-between p-2.5 rounded-lg border text-sm ${
+                nightCheckPassed
+                  ? 'border-green-200 bg-green-50/70 dark:border-green-800 dark:bg-green-950/40'
+                  : 'border-red-200 bg-red-50/70 dark:border-red-800 dark:bg-red-950/40'
+              }`}>
+                <span className="text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                  {nightCheckPassed
+                    ? <CheckCircle className="w-4 h-4 text-green-600" />
+                    : <AlertTriangle className="w-4 h-4 text-red-500" />}
+                  Night driving hours
+                </span>
+                <span className={`font-mono font-bold tabular-nums ${
+                  nightCheckPassed ? 'text-green-700 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                }`}>
+                  {nightHoursLogged.toFixed(1)}h / {state.requiredNightHours}h
+                </span>
+              </div>
+            </div>
+
+            {!isTotalComplete && (
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-2.5">
+                You need {(state.requiredHours - totalHoursLogged).toFixed(1)}h more total and{' '}
+                {Math.max(0, state.requiredNightHours - nightHoursLogged).toFixed(1)}h more night driving.
+              </p>
+            )}
+            {isTotalComplete && (
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-2.5">
+                You've met {state.name}'s requirements of {state.requiredHours}h total and {state.requiredNightHours}h night.
+              </p>
+            )}
             {state.requiresSpecificApp && (
               <p className="text-sm text-amber-700 mt-2 flex items-center gap-1">
                 <AlertTriangle className="w-3 h-3" />
@@ -192,17 +260,37 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
         </div>
       )}
 
+      {/* Paywall Notice */}
+      {exportBlocked && (
+        <div className="p-4 rounded-xl bg-teal-50/70 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 flex items-start gap-3">
+          <div className="flex-shrink-0 p-2 rounded-lg bg-teal-600 text-white">
+            <Lock className="w-4 h-4" />
+          </div>
+          <div>
+            <h4 className="font-medium text-slate-900 dark:text-white text-sm">PDF export is a Pro feature</h4>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              You've passed the 20 free hours. Unlock Lifetime Pro for $4.99 — one time — to export your DMV-ready log.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Action Buttons */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <button
           onClick={handleGenerate}
           disabled={isGenerating || !driver || !vehicle || drives.length === 0}
-          className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          className={`btn-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${exportBlocked ? 'opacity-80' : ''}`}
         >
           {isGenerating ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
               Generating...
+            </>
+          ) : exportBlocked ? (
+            <>
+              <Lock className="w-5 h-5" />
+              Unlock PDF Export
             </>
           ) : (
             <>
@@ -215,7 +303,7 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
         <button
           onClick={handlePrint}
           disabled={isGenerating || !driver || !vehicle || drives.length === 0}
-          className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          className={`btn-secondary disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${exportBlocked ? 'opacity-80' : ''}`}
         >
           {isGenerating ? (
             <>
@@ -230,6 +318,12 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
           )}
         </button>
       </div>
+
+      {/* Upgrade Modal (paywall) */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+      />
 
       {/* Tips */}
       <details className="group glass rounded-lg p-4 cursor-pointer">

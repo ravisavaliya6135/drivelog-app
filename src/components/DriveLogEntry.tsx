@@ -6,6 +6,8 @@ import {
   CloudRain,
   CloudFog,
   Save,
+  ShieldCheck,
+  Clock,
 } from 'lucide-react';
 import type { DriveEntry, DriverProfile, VehicleProfile } from '../types';
 import { useNightDetection } from '../hooks/useNightDetection';
@@ -41,7 +43,7 @@ export function DriveLogEntry({
     weather: 'Sunny',
     roadType: 'City / Residential',
     notes: '',
-    isVerified: true,
+    isVerified: false,
     driverId: drivers[0]?.id || '',
     vehicleId: vehicles[0]?.id || '',
     initials: 'DAD',
@@ -253,7 +255,57 @@ export function DriveLogEntry({
         </div>
       </div>
 
-      {/* 6. Form Actions */}
+      {/* 6. Parent Sign-Off Verification */}
+      <div>
+        <label className="form-label">Parent Sign-Off</label>
+        <button
+          type="button"
+          onClick={() => setFormData(prev => ({ ...prev, isVerified: !prev.isVerified }))}
+          aria-pressed={Boolean(formData.isVerified)}
+          className={`w-full p-4 rounded-2xl border flex items-center gap-3 text-left transition-all ${
+            formData.isVerified
+              ? 'border-emerald-300 bg-emerald-50/70 dark:border-emerald-800 dark:bg-emerald-950/40'
+              : 'border-amber-300 bg-amber-50/70 dark:border-amber-800 dark:bg-amber-950/40'
+          }`}
+        >
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+            formData.isVerified
+              ? 'bg-emerald-600 text-white'
+              : 'bg-amber-500 text-white'
+          }`}>
+            {formData.isVerified ? <ShieldCheck className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
+          </div>
+          <div className="flex-1 min-w-0">
+            {formData.isVerified ? (
+              <>
+                <span className="block font-bold text-xs text-emerald-700 dark:text-emerald-300">
+                  ✓ Verified by {(formData.initials || 'parent').toUpperCase()}
+                </span>
+                <span className="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  Signed off for DMV submission
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="block font-bold text-xs text-amber-700 dark:text-amber-300">
+                  Awaiting parent sign-off
+                </span>
+                <span className="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  Tap to mark this drive as verified by a parent/guardian
+                </span>
+              </>
+            )}
+          </div>
+          {/* Toggle switch visual */}
+          <div className={`w-10 h-6 rounded-full p-0.5 flex-shrink-0 transition-all ${
+            formData.isVerified ? 'bg-emerald-600 justify-end' : 'bg-slate-300 dark:bg-slate-700 justify-start'
+          }`}>
+            <div className="w-5 h-5 rounded-full bg-white shadow-sm" />
+          </div>
+        </button>
+      </div>
+
+      {/* 7. Form Actions */}
       <div className="pt-2 space-y-2">
         <button
           type="submit"

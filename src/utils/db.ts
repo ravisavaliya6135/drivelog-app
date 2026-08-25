@@ -19,10 +19,47 @@ interface DriveLogDB extends DBSchema {
     key: string;
     value: { key: string; value: unknown };
   };
+  analyticsEvents: {
+    key: string;
+    value: AnalyticsEventRecord;
+    indexes: { 'by-synced': 0 | 1 };
+  };
+}
+
+/** Locally-stored privacy-safe analytics event awaiting sync. */
+export interface AnalyticsEventRecord {
+  id: string;
+  /** Event name, e.g. 'drive_started'. Never contains PII. */
+  name: string;
+  /** Flat scalar properties. Never contains names, emails, or coordinates. */
+  properties: Record<string, unknown>;
+  createdAt: string;
+  /** 1 = uploaded to server; 0 = pending. (Number, because booleans aren't valid IndexedDB index keys.) */
+  synced: 0 | 1;
+}
+
+// Shape of the crash-resilient timer record persisted to the settings store
+export interface ActiveTimerRecord {
+  isRunning: boolean;
+  isPaused: boolean;
+  elapsedSeconds: number;
+  startTime: string | null;
+  pausedAt: number;
+  /** Unix ms of the last successful 1-second persist tick. Used to detect crashes/recovery. */
+  lastHeartbeat: number | null;
+}
+
+export function emptyActiveTimer(): ActiveTimerRecord {
+  return { isRunning: false, isPaused: false, elapsedSeconds: 0, startTime: null, pausedAt: 0, lastHeartbeat: null };
+}
+
+/** Reads the persisted active timer record, if any. */
+export async function getActiveTimerRecord(): Promise<ActiveTimerRecord | undefined> {
+  return getSetting<ActiveTimerRecord>('activeTimer');
 }
 
 const DB_NAME = 'DriveLogDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let dbInstance: IDBPDatabase<DriveLogDB> | null = null;
 
@@ -31,20 +68,34 @@ export async function getDB(): Promise<IDBPDatabase<DriveLogDB>> {
 
   dbInstance = await openDB<DriveLogDB>(DB_NAME, DB_VERSION, {
     upgrade(db) {
-      // Drives store
-      const driveStore = db.createObjectStore('drives', { keyPath: 'id' });
-      driveStore.createIndex('by-date', 'date');
-      driveStore.createIndex('by-driver', 'driverId');
-      driveStore.createIndex('by-state', 'state');
+      // Drives store (guarded so the v1 -> v2 upgrade doesn't recreate existing stores)
+      if (!db.objectStoreNames.contains('drives')) {
+        const driveStore = db.createObjectStore('drives', { keyPath: 'id' });
+        driveStore.createIndex('by-date', 'date');
+        driveStore.createIndex('by-driver', 'driverId');
+        driveStore.createIndex('by-state', 'state');
+      }
 
       // Drivers store
-      db.createObjectStore('drivers', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains('drivers')) {
+        db.createObjectStore('drivers', { keyPath: 'id' });
+      }
 
       // Vehicles store
-      db.createObjectStore('vehicles', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains('vehicles')) {
+        db.createObjectStore('vehicles', { keyPath: 'id' });
+      }
 
       // Settings store
-      db.createObjectStore('settings', { keyPath: 'key' });
+      if (!db.objectStoreNames.contains('settings')) {
+        db.createObjectStore('settings', { keyPath: 'key' });
+      }
+
+      // Analytics events store (added in DB v2)
+      if (!db.objectStoreNames.contains('analyticsEvents')) {
+        const analyticsStore = db.createObjectStore('analyticsEvents', { keyPath: 'id' });
+        analyticsStore.createIndex('by-synced', 'synced');
+      }
     },
   });
 

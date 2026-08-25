@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useAuth } from './AuthContext';
 import { useDriveLog } from '../hooks/useDriveLog';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { getSetting, saveSetting } from '../utils/db';
 
 export const FREE_HOURS_LIMIT = 20;
 export const PRO_LIFETIME_PRICE = '$4.99';
@@ -57,6 +58,26 @@ export function EntitlementProvider({ children }: { children: React.ReactNode })
 
   const [loading, setLoading] = useState(false);
 
+  // Mirror the localStorage cache into IndexedDB on mount so Pro works even if
+  // localStorage is unavailable/cleared, and vice versa (offline-first durability).
+  useEffect(() => {
+    let cancelled = false;
+    const hydrateFromIndexedDB = async () => {
+      try {
+        const cached = await getSetting<{ plan?: string; status?: string }>(CACHE_KEY);
+        if (!cancelled && cached?.plan === 'lifetime' && cached?.status === 'active') {
+          setIsPro(true);
+        }
+      } catch (err) {
+        console.warn('[DriveLog Entitlement] IndexedDB cache read failed:', err);
+      }
+    };
+    void hydrateFromIndexedDB();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Fetch server-verified entitlement from Supabase database
   const refreshEntitlement = useCallback(async (): Promise<boolean> => {
     if (!user || !isSupabaseConfigured) {
@@ -82,18 +103,20 @@ export function EntitlementProvider({ children }: { children: React.ReactNode })
       const hasActiveLifetime = Boolean(data && data.status === 'active');
       setIsPro(hasActiveLifetime);
 
+      const cachePayload = {
+        userId: user.id,
+        plan: 'lifetime',
+        status: hasActiveLifetime ? 'active' : 'inactive',
+        cachedAt: new Date().toISOString(),
+      };
+
       if (hasActiveLifetime) {
-        localStorage.setItem(
-          CACHE_KEY,
-          JSON.stringify({
-            userId: user.id,
-            plan: 'lifetime',
-            status: 'active',
-            cachedAt: new Date().toISOString(),
-          })
-        );
+        // Dual cache: localStorage for instant sync reads + IndexedDB for offline durability.
+        localStorage.setItem(CACHE_KEY, JSON.stringify(cachePayload));
+        await saveSetting(CACHE_KEY, cachePayload);
       } else {
         localStorage.removeItem(CACHE_KEY);
+        await saveSetting(CACHE_KEY, { ...cachePayload, plan: 'free', status: 'inactive' });
       }
 
       setLoading(false);
@@ -146,8 +169,8 @@ export function EntitlementProvider({ children }: { children: React.ReactNode })
       }
 
       return { url: data.url };
-    } catch (err: any) {
-      return { error: new Error(err.message || 'Error connecting to payment service') };
+    } catch (err) {
+      return { error: new Error(err instanceof Error ? err.message : 'Error connecting to payment service') };
     }
   }, [user, session]);
 

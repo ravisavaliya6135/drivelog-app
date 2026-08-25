@@ -6,6 +6,10 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/dmv/:stateCode",
+      "destination": "/dmv/:stateCode.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

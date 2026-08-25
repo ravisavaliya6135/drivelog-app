@@ -11,6 +11,7 @@ const HomePage = lazy(() => import('./pages/Home').then(m => ({ default: m.Home 
 const LogDrive = lazy(() => import('./pages/LogDrive').then(m => ({ default: m.LogDrive })));
 const ExportDocs = lazy(() => import('./pages/ExportDocs').then(m => ({ default: m.ExportDocs })));
 const SettingsPage = lazy(() => import('./pages/Settings').then(m => ({ default: m.Settings })));
+const StateGuide = lazy(() => import('./pages/StateGuide').then(m => ({ default: m.StateGuide })));
 
 function PageSkeleton() {
   return (
@@ -205,6 +206,8 @@ export default function App() {
                     <Route path="/log" element={<LogDrive />} />
                     <Route path="/export" element={<ExportDocs />} />
                     <Route path="/settings" element={<SettingsPage />} />
+                    {/* Programmatic SEO state guides — /dmv/ca, /dmv/tx, ... all 50 states */}
+                    <Route path="/dmv/:stateCode" element={<StateGuide />} />
                   </Routes>
                 </Suspense>
               </main>

@@ -1,0 +1,106 @@
+/**
+ * Post-build SSG prerender step for DriveLog.
+ *
+ * Generates fully static HTML for all 50 /dmv/:stateCode routes so crawlers
+ * see complete content (H1, table, meta tags, canonical URL, CTA) without
+ * executing JavaScript. The rest of the app remains client-rendered.
+ *
+ * Usage: node scripts/prerender.mjs   (run after `vite build`)
+ */
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const rootDir = join(dirname(fileURLToPath(import.meta.url)), '..');
+const distDir = join(rootDir, 'dist');
+const ssrDir = join(rootDir, 'dist-ssr');
+
+const { renderStateGuide, stateData } = require(join(ssrDir, 'state-guide-ssr.js'));
+
+const SITE_URL = 'https://drivelog-app.vercel.app';
+const template = readFileSync(join(distDir, 'index.html'), 'utf8');
+
+if (!template.includes('<div id="root"></div>')) {
+  throw new Error('Prerender: index.html template does not contain an empty <div id="root"></div>');
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function setMetaContent(html, attr, key, value) {
+  const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const pattern =
+    attr === 'property'
+      ? new RegExp(`<meta\\s+property="${escapedKey}"\\s+content="[^"]*"\\s*/?>`)
+      : new RegExp(`<meta\\s+(?:name|property)="${escapedKey}"\\s+content="[^"]*"\\s*/?>`);
+  if (pattern.test(html)) {
+    return html.replace(pattern, `<meta ${attr}="${key}" content="${escapeHtml(value)}" />`);
+  }
+  return html;
+}
+
+let generated = 0;
+
+for (const state of stateData) {
+  const code = state.code.toLowerCase();
+  const routePath = `/dmv/${code}`;
+  const canonical = `${SITE_URL}${routePath}`;
+  const title = `${state.name} Teen Driving Log Requirements | DriveLog`;
+  const description = `Track your ${state.name} supervised driving hours with legal night detection. DMV-ready PDF export. Free to start.`;
+
+  // Render the full page content server-side (no JS execution needed)
+  const appHtml = renderStateGuide(routePath);
+
+  let html = template.replace('<div id="root"></div>', `<div id="root">${appHtml}</div>`);
+
+  // Bake per-state meta tags into the static payload
+  html = html
+    .replace(/<title>.*?<\/title>/s, `<title>${escapeHtml(title)}</title>`)
+    .replace(/<link rel="canonical" href="[^"]*" \/>/, `<link rel="canonical" href="${canonical}" />`);
+
+  html = setMetaContent(html, 'name', 'title', title);
+  html = setMetaContent(html, 'name', 'description', description);
+  html = setMetaContent(html, 'property', 'og:title', title);
+  html = setMetaContent(html, 'property', 'og:description', description);
+  html = setMetaContent(html, 'property', 'og:url', canonical);
+  html = setMetaContent(html, 'name', 'twitter:title', title);
+  html = setMetaContent(html, 'name', 'twitter:description', description);
+  html = setMetaContent(html, 'name', 'twitter:url', canonical);
+
+  const outDir = join(distDir, 'dmv', code);
+  mkdirSync(outDir, { recursive: true });
+  // Directory form: served at /dmv/<code> by Vercel/nginx (directory index)
+  writeFileSync(join(outDir, 'index.html'), html);
+  // Flat form: guarantees a real static file for `vite preview` and any host
+  // without directory-index resolution
+  writeFileSync(join(distDir, 'dmv', `${code}.html`), html);
+  generated++;
+}
+
+console.log(`[prerender] Generated ${generated} static /dmv/:stateCode pages into dist/dmv/`);
+
+// Regenerate sitemap.xml including all state guide URLs (replaces public/sitemap.xml in dist)
+const staticPaths = ['/', '/log', '/export'];
+const today = new Date().toISOString().split('T')[0];
+const urls = [
+  ...staticPaths.map(
+    p =>
+      `  <url><loc>${SITE_URL}${p}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>${p === '/' ? '1.0' : '0.8'}</priority></url>`
+  ),
+  ...stateData.map(
+    s =>
+      `  <url><loc>${SITE_URL}/dmv/${s.code.toLowerCase()}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>`
+  ),
+];
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`;
+writeFileSync(join(distDir, 'sitemap.xml'), sitemap);
+console.log(`[prerender] Regenerated sitemap.xml with ${urls.length} URLs`);
+
+// Remove the temporary SSR bundle — it is not needed at runtime
+if (existsSync(ssrDir)) {
+  rmSync(ssrDir, { recursive: true, force: true });
+  console.log('[prerender] Cleaned up dist-ssr/');
+}

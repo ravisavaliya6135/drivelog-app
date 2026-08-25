@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
-import { Play, Pause, Square, Sun, Moon, AlertTriangle } from 'lucide-react';
+import { useState } from 'react';
+import { Play, Pause, Square, Sun, Moon, AlertTriangle, History } from 'lucide-react';
 import { useNightDetection } from '../hooks/useNightDetection';
 import { useDriveLog } from '../hooks/useDriveLog';
+import { useDriveTimer } from '../hooks/useDriveTimer';
 
 interface DriveTimerProps {
   onDriveComplete: (data: {
@@ -13,87 +14,56 @@ interface DriveTimerProps {
 
 export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
   const { drivers } = useDriveLog();
-  const [isRunning, setIsRunning] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [seconds, setSeconds] = useState(0);
+
+  // Crash-resilient timer: state is persisted to IndexedDB every second
+  // with a live heartbeat, and restored automatically after crashes/force-closes.
+  const {
+    isRunning,
+    isPaused,
+    elapsedSeconds: seconds,
+    wasRecovered,
+    dismissRecoveryToast,
+    start,
+    pause,
+    resume,
+    stop,
+    reset,
+  } = useDriveTimer();
+
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
-  
-  const [selectedDriverId, setSelectedDriverId] = useState<string>(() => {
+
+  const [selectedDriverId] = useState(() => {
     const primary = drivers.find(d => d.isPrimaryDriver) || drivers[0];
     return primary?.id || '';
   });
-  
-  const startTimeRef = useRef<Date | null>(null);
-  const pausedTimeRef = useRef<number>(0);
-  const intervalRef = useRef<number | null>(null);
 
-  // Automatic legal night detection & manual override
-  const { isNight: autoIsNight } = useNightDetection();
-  const [manualOverride, setManualOverride] = useState<'day' | 'night' | null>(null);
-  const isNightEffective = manualOverride !== null ? manualOverride === 'night' : autoIsNight;
-
-  useEffect(() => {
-    if (isRunning && !isPaused) {
-      if (!startTimeRef.current) {
-        startTimeRef.current = new Date(Date.now() - pausedTimeRef.current * 1000);
-      }
-      intervalRef.current = window.setInterval(() => {
-        if (startTimeRef.current) {
-          const elapsed = Math.floor((Date.now() - startTimeRef.current.getTime()) / 1000);
-          setSeconds(elapsed);
-        }
-      }, 1000);
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    }
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [isRunning, isPaused]);
+  // Automatic legal night detection — no user input required.
+  const { isNight } = useNightDetection();
+  const isNightEffective = isNight;
 
   const handleStart = () => {
-    setIsRunning(true);
-    setIsPaused(false);
+    void start();
   };
 
   const handlePauseResume = () => {
     if (isPaused) {
-      // Resume
-      setIsPaused(false);
+      void resume();
     } else {
-      // Pause
-      setIsPaused(true);
-      pausedTimeRef.current = seconds;
+      void pause();
     }
   };
 
-  const handleFinish = () => {
-    const finalSeconds = seconds;
-    const finalStart = startTimeRef.current || new Date();
-    const finalEnd = new Date();
-    
-    setIsRunning(false);
-    setIsPaused(false);
-    setSeconds(0);
-    startTimeRef.current = null;
-    pausedTimeRef.current = 0;
-
-    const durationMinutes = Math.max(1, Math.round(finalSeconds / 60));
+  const handleFinish = async () => {
+    const result = await stop();
     onDriveComplete({
-      durationMinutes,
-      startTime: finalStart,
-      endTime: finalEnd,
+      durationMinutes: result.durationMinutes,
+      startTime: result.startTime || new Date(),
+      endTime: result.endTime,
     });
   };
 
   const handleDiscard = () => {
-    setIsRunning(false);
-    setIsPaused(false);
-    setSeconds(0);
-    startTimeRef.current = null;
-    pausedTimeRef.current = 0;
+    void reset();
     setShowDiscardConfirm(false);
   };
 
@@ -119,7 +89,32 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
 
   return (
     <div className="w-full flex flex-col items-center space-y-6 max-w-md mx-auto">
-      
+
+      {/* Crash Recovery Toast */}
+      {wasRecovered && (
+        <div
+          role="status"
+          className="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 z-[60] w-[calc(100%-2rem)] max-w-sm animate-slide-up"
+        >
+          <div className="flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-teal-300 dark:border-teal-700 shadow-xl">
+            <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+              <History className="w-4.5 h-4.5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold text-slate-900 dark:text-white">Drive timer recovered.</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">No time was lost.</p>
+            </div>
+            <button
+              type="button"
+              onClick={dismissRecoveryToast}
+              className="text-[11px] font-bold text-teal-600 dark:text-teal-400 px-2 py-1 rounded-lg hover:bg-teal-50 dark:hover:bg-teal-950"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 1. Supervisor & Day/Night Context Bar */}
       <div className="w-full grid grid-cols-2 gap-3">
         {/* Supervisor Card */}
@@ -129,29 +124,16 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
           </div>
           <div className="flex-1 min-w-0">
             <span className="text-[10px] uppercase font-bold text-slate-400 block">Supervisor</span>
-            {drivers.length > 1 ? (
-              <select
-                value={selectedDriverId}
-                onChange={(e) => setSelectedDriverId(e.target.value)}
-                className="w-full bg-transparent font-bold text-xs text-slate-800 dark:text-slate-200 focus:outline-none truncate cursor-pointer"
-              >
-                {drivers.map(d => (
-                  <option key={d.id} value={d.id} className="dark:bg-slate-900">{d.name}</option>
-                ))}
-              </select>
-            ) : (
-              <span className="font-bold text-xs text-slate-800 dark:text-slate-200 truncate block">
-                {currentSupervisor?.name || 'Primary Supervisor'}
-              </span>
-            )}
+            <span className="font-bold text-xs text-slate-800 dark:text-slate-200 truncate block">
+              {currentSupervisor?.name || 'Primary Supervisor'}
+            </span>
           </div>
         </div>
 
-        {/* Day / Night Selector */}
-        <button
-          type="button"
-          onClick={() => setManualOverride(isNightEffective ? 'day' : 'night')}
-          className={`app-card p-3 flex items-center gap-2.5 text-left transition-all ${
+        {/* Automatic Day / Night Badge — set by legal night detection, no user input */}
+        <div
+          aria-live="polite"
+          className={`app-card p-3 flex items-center gap-2.5 text-left ${
             isNightEffective
               ? 'border-indigo-500/40 bg-indigo-50/50 dark:bg-indigo-950/30'
               : 'border-amber-500/40 bg-amber-50/50 dark:bg-amber-950/30'
@@ -163,17 +145,17 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
             {isNightEffective ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
           </div>
           <div className="min-w-0">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Condition</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400 block">Auto-Detected</span>
             <span className="font-bold text-xs text-slate-900 dark:text-white capitalize flex items-center gap-1">
               {isNightEffective ? 'Night Drive' : 'Day Drive'}
             </span>
           </div>
-        </button>
+        </div>
       </div>
 
-      {/* 2. Main Live Timer Display (High Contrast / Distraction-Free) */}
+      {/* 2. Main Live Timer Display */}
       <div className="w-full app-card-elevated p-8 text-center space-y-4 relative overflow-hidden">
-        
+
         {/* Status Indicator */}
         <div className="flex items-center justify-center gap-2">
           {isRunning && !isPaused ? (
@@ -206,30 +188,32 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
         </div>
 
         {/* Telemetry Bento */}
-        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
-          <div className="bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl text-center">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Est. Distance</span>
-            <span className="font-mono font-bold text-base text-slate-900 dark:text-white tabular-nums">
-              {estimatedMiles} mi
-            </span>
+        {!isRunning && (
+          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+            <div className="bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl text-center">
+              <span className="text-[10px] uppercase font-bold text-slate-400 block">Est. Distance</span>
+              <span className="font-mono font-bold text-base text-slate-900 dark:text-white tabular-nums">
+                {estimatedMiles} mi
+              </span>
+            </div>
+            <div className="bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl text-center">
+              <span className="text-[10px] uppercase font-bold text-slate-400 block">Average Speed</span>
+              <span className="font-mono font-bold text-base text-slate-900 dark:text-white tabular-nums">
+                {avgSpeed} mph
+              </span>
+            </div>
           </div>
-          <div className="bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl text-center">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Average Speed</span>
-            <span className="font-mono font-bold text-base text-slate-900 dark:text-white tabular-nums">
-              {avgSpeed} mph
-            </span>
-          </div>
-        </div>
+        )}
       </div>
 
-      {/* 3. Tactile Large Touch Controls (Min 56px height) */}
+      {/* 3. Tactile Large Touch Controls (Min 64px height) */}
       <div className="w-full space-y-3">
         {!isRunning ? (
           /* Start Button */
           <button
             type="button"
             onClick={handleStart}
-            className="w-full h-15 rounded-2xl bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white font-bold text-lg shadow-teal flex items-center justify-center gap-3 transition-all"
+            className="w-full h-16 rounded-2xl bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white font-bold text-lg shadow-teal flex items-center justify-center gap-3 transition-all focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
           >
             <Play className="w-6 h-6 fill-white" />
             <span>Start Drive</span>
@@ -240,9 +224,9 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
             <button
               type="button"
               onClick={handlePauseResume}
-              className={`h-15 rounded-2xl font-bold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all ${
+              className={`h-16 rounded-2xl font-bold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-offset-1 ${
                 isPaused
-                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm focus:ring-emerald-500'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700'
               }`}
             >
@@ -252,11 +236,11 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
 
             <button
               type="button"
-              onClick={handleFinish}
-              className="h-15 rounded-2xl bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white font-bold text-base shadow-teal flex items-center justify-center gap-2 transition-all"
+              onClick={() => void handleFinish()}
+              className="h-16 rounded-2xl bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white font-bold text-base shadow-sm flex items-center justify-center gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
             >
               <Square className="w-5 h-5 fill-white" />
-              <span>Finish Drive</span>
+              <span>Stop</span>
             </button>
           </div>
         )}
