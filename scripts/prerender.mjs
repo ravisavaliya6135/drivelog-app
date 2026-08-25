@@ -19,7 +19,7 @@ const ssrDir = join(rootDir, 'dist-ssr');
 
 const { renderStateGuide, stateData } = require(join(ssrDir, 'state-guide-ssr.js'));
 
-const SITE_URL = 'https://drivelog-app.vercel.app';
+const SITE_URL = 'https://drivehours.app';
 const template = readFileSync(join(distDir, 'index.html'), 'utf8');
 
 if (!template.includes('<div id="root"></div>')) {

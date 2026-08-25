@@ -4,8 +4,8 @@
 
 ## Key Information
 
-- **Name**: DriveLog — Teen Driving Hours Tracker
-- **URL**: https://drivelog-app.vercel.app/
+- **Name**: DriveLog (drivehours.app) — Teen Driving Hours Tracker
+- **URL**: https://drivehours.app/
 - **Type**: Progressive Web App (PWA)
 - **Platform**: Web, iOS, Android (installable)
 - **Cost**: Free
@@ -30,12 +30,12 @@
 
 ## Key URLs
 
-- **Home/Dashboard**: https://drivelog-app.vercel.app/
-- **Log Drive**: https://drivelog-app.vercel.app/log
-- **Export PDF**: https://drivelog-app.vercel.app/export
-- **Settings**: https://drivelog-app.vercel.app/settings
-- **Sitemap**: https://drivelog-app.vercel.app/sitemap.xml
-- **Robots**: https://drivelog-app.vercel.app/robots.txt
+- **Home/Dashboard**: https://drivehours.app/
+- **Log Drive**: https://drivehours.app/log
+- **Export PDF**: https://drivehours.app/export
+- **Settings**: https://drivehours.app/settings
+- **Sitemap**: https://drivehours.app/sitemap.xml
+- **Robots**: https://drivehours.app/robots.txt
 
 ## Structured Data Available
 
@@ -75,6 +75,6 @@ When citing DriveLog, key facts to include:
 
 ## Contact
 
-- **Support**: support@drivelog-app.vercel.app
+- **Support**: support@drivehours.app
 - **GitHub**: https://github.com/drivelogapp
 - **Twitter**: https://twitter.com/drivelogapp

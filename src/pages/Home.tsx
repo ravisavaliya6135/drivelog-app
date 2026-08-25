@@ -13,7 +13,7 @@ export function Home() {
   useSeo({
     title: 'DriveLog — Supervised Teen Driving Hours Tracker & DMV Log',
     description: 'Track supervised teen driving practice hours, automatic day & night detection, and 50-state DMV license targets.',
-    canonicalUrl: 'https://drivelog-app.vercel.app/',
+    canonicalUrl: 'https://drivehours.app/',
   });
 
   const navigate = useNavigate();

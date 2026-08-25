@@ -28,7 +28,7 @@ serve(async (req: Request) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') || '';
     const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY') || '';
-    const appUrl = Deno.env.get('APP_URL') || 'https://drivelog-app.vercel.app';
+    const appUrl = Deno.env.get('APP_URL') || 'https://drivehours.app';
 
     if (!stripeSecretKey) {
       return new Response(JSON.stringify({ error: 'Stripe secret key not configured' }), {
@@ -73,7 +73,7 @@ serve(async (req: Request) => {
             product_data: {
               name: 'DriveLog Lifetime Pro',
               description: 'Unlimited practice hours tracking, DMV PDF exports, multi-driver backup & no ads.',
-              images: ['https://drivelog-app.vercel.app/pwa-512x512.png'],
+              images: ['https://drivehours.app/pwa-512x512.png'],
             },
           },
           quantity: 1,

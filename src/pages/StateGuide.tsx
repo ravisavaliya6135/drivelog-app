@@ -4,7 +4,7 @@ import type { StateInfo } from '../types';
 import { US_STATES } from '../types';
 import { useSeo } from '../hooks/useSeo';
 
-const SITE_URL = 'https://drivelog-app.vercel.app';
+const SITE_URL = 'https://drivehours.app';
 
 function formatAge(age?: number): string {
   if (age === undefined) return 'Varies — check DMV';
