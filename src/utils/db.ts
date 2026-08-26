@@ -24,6 +24,11 @@ interface DriveLogDB extends DBSchema {
     value: AnalyticsEventRecord;
     indexes: { 'by-synced': 0 | 1 };
   };
+  feedback: {
+    key: string;
+    value: FeedbackSubmission;
+    indexes: { 'by-status': string };
+  };
 }
 
 /** Locally-stored privacy-safe analytics event awaiting sync. */
@@ -36,6 +41,18 @@ export interface AnalyticsEventRecord {
   createdAt: string;
   /** 1 = uploaded to server; 0 = pending. (Number, because booleans aren't valid IndexedDB index keys.) */
   synced: 0 | 1;
+}
+
+/** A user-submitted support/feedback message, queued locally first. */
+export interface FeedbackSubmission {
+  id: string;
+  createdAt: string;
+  name?: string;
+  email?: string;
+  category: 'bug' | 'suggestion' | 'dmv_acceptance' | 'payment' | 'other';
+  message: string;
+  status: 'pending' | 'synced' | 'failed';
+  source: 'contact_page' | 'settings' | 'beta_banner';
 }
 
 // Shape of the crash-resilient timer record persisted to the settings store.
@@ -74,7 +91,7 @@ export async function getActiveTimerRecord(): Promise<ActiveTimerRecord | undefi
 }
 
 const DB_NAME = 'DriveLogDB';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 let dbInstance: IDBPDatabase<DriveLogDB> | null = null;
 
@@ -110,6 +127,12 @@ export async function getDB(): Promise<IDBPDatabase<DriveLogDB>> {
       if (!db.objectStoreNames.contains('analyticsEvents')) {
         const analyticsStore = db.createObjectStore('analyticsEvents', { keyPath: 'id' });
         analyticsStore.createIndex('by-synced', 'synced');
+      }
+
+      // Feedback submissions store (added in DB v3)
+      if (!db.objectStoreNames.contains('feedback')) {
+        const feedbackStore = db.createObjectStore('feedback', { keyPath: 'id' });
+        feedbackStore.createIndex('by-status', 'status');
       }
     },
   });

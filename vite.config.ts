@@ -4,11 +4,11 @@ import { VitePWA, type VitePWAOptions } from 'vite-plugin-pwa'
 import path from 'path'
 
 const manifest: VitePWAOptions['manifest'] = {
-  name: 'DriveLog',
-  short_name: 'DriveLog',
-  description: 'Offline-first supervised driving log with DMV-ready PDF export',
-  theme_color: '#0D9488',
-  background_color: '#F8FAFC',
+  name: 'DriveHours — Teen Driving Log',
+  short_name: 'DriveHours',
+  description: 'Offline-first supervised driving log with DMV-ready PDF export and legal sunset detection',
+  theme_color: '#0F172A',
+  background_color: '#0F172A',
   display: 'standalone',
   orientation: 'portrait-primary',
   scope: '/',

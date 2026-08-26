@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const DEFAULT_OG_IMAGE = 'https://drivehours.app/pwa-512x512.png';
+const DEFAULT_OG_IMAGE = 'https://drivehours.app/og-image.png';
 
 interface SeoProps {
   title: string;

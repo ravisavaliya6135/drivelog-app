@@ -30,6 +30,8 @@ import { useEntitlement, PRO_LIFETIME_PRICE } from '../contexts/EntitlementConte
 import { AuthModal } from '../components/AuthModal';
 import { UpgradeModal } from '../components/UpgradeModal';
 import { useSeo } from '../hooks/useSeo';
+import { Link } from 'react-router-dom';
+import { LifeBuoy } from 'lucide-react';
 
 export function Settings() {
   useSeo({
@@ -218,7 +220,30 @@ export function Settings() {
       {/* TAB: Account & Membership */}
       {activeTab === 'account' && (
         <section className="space-y-4 animate-fade-in">
-          
+
+          {/* Beta / Support entry point */}
+          <div className="p-4 rounded-2xl bg-teal-50/70 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center flex-shrink-0">
+                <LifeBuoy className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-2">
+                  Need help? <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">BETA</span>
+                </h4>
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 truncate">
+                  Guides, FAQ, and direct feedback to the team.
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/help"
+              className="btn-primary py-2 px-3.5 text-xs font-bold whitespace-nowrap shadow-teal flex-shrink-0"
+            >
+              Get help
+            </Link>
+          </div>
+
           {/* Payment Success Alert */}
           {paymentSuccessNotice && (
             <div className="p-4 rounded-2xl bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between">
@@ -581,6 +606,15 @@ export function Settings() {
               DriveLog is a record-keeping utility. Requirements vary by state and change periodically. Always verify current DMV requirements in your jurisdiction prior to your licensing appointment.
             </p>
           </div>
+
+          {/* Trust & policy links */}
+          <nav aria-label="Trust and policy" className="app-card p-4 flex flex-wrap justify-center gap-x-6 gap-y-1">
+            <Link to="/about" className="text-xs font-semibold text-teal-700 dark:text-teal-400 hover:underline min-h-[44px] inline-flex items-center">About</Link>
+            <Link to="/help" className="text-xs font-semibold text-teal-700 dark:text-teal-400 hover:underline min-h-[44px] inline-flex items-center">Help Center</Link>
+            <Link to="/privacy" className="text-xs font-semibold text-teal-700 dark:text-teal-400 hover:underline min-h-[44px] inline-flex items-center">Privacy Policy</Link>
+            <Link to="/terms" className="text-xs font-semibold text-teal-700 dark:text-teal-400 hover:underline min-h-[44px] inline-flex items-center">Terms of Use</Link>
+            <Link to="/contact" className="text-xs font-semibold text-teal-700 dark:text-teal-400 hover:underline min-h-[44px] inline-flex items-center">Contact</Link>
+          </nav>
         </section>
       )}
 

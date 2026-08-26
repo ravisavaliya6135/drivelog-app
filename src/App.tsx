@@ -5,6 +5,7 @@ import { ThemeProvider } from './hooks/useTheme';
 import { AuthProvider } from './contexts/AuthContext';
 import { EntitlementProvider } from './contexts/EntitlementContext';
 import { PwaInstallPrompt } from './components/PwaInstallPrompt';
+import { SiteFooter } from './components/SiteFooter';
 
 // Lazy load pages for fast code-split performance
 const HomePage = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
@@ -12,6 +13,11 @@ const LogDrive = lazy(() => import('./pages/LogDrive').then(m => ({ default: m.L
 const ExportDocs = lazy(() => import('./pages/ExportDocs').then(m => ({ default: m.ExportDocs })));
 const SettingsPage = lazy(() => import('./pages/Settings').then(m => ({ default: m.Settings })));
 const StateGuide = lazy(() => import('./pages/StateGuide').then(m => ({ default: m.StateGuide })));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy').then(m => ({ default: m.PrivacyPolicy })));
+const TermsOfUse = lazy(() => import('./pages/TermsOfUse').then(m => ({ default: m.TermsOfUse })));
+const HelpCenter = lazy(() => import('./pages/HelpCenter').then(m => ({ default: m.HelpCenter })));
+const ContactFeedback = lazy(() => import('./pages/ContactFeedback').then(m => ({ default: m.ContactFeedback })));
+const About = lazy(() => import('./pages/About').then(m => ({ default: m.About })));
 
 function PageSkeleton() {
   return (
@@ -208,11 +214,18 @@ export default function App() {
                     <Route path="/settings" element={<SettingsPage />} />
                     {/* Programmatic SEO state guides — /dmv/ca, /dmv/tx, ... all 50 states */}
                     <Route path="/dmv/:stateCode" element={<StateGuide />} />
+                    {/* Trust & support pages */}
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/terms" element={<TermsOfUse />} />
+                    <Route path="/help" element={<HelpCenter />} />
+                    <Route path="/contact" element={<ContactFeedback />} />
+                    <Route path="/about" element={<About />} />
                   </Routes>
                 </Suspense>
               </main>
 
               <PwaInstallPrompt />
+              <SiteFooter />
               <BottomNavbar />
             </div>
           </ThemeProvider>
