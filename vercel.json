@@ -1,6 +1,25 @@
 {
   "version": 2,
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        { "type": "host", "value": "drivelog-app\\.vercel\\.app" }
+      ],
+      "destination": "https://www.drivehours.app/:path*",
+      "statusCode": 301
+    }
+  ],
   "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Permissions-Policy", "value": "geolocation=(self)" }
+      ]
+    },
     {
       "source": "/sitemap.xml",
       "headers": [
@@ -24,10 +43,6 @@
     {
       "source": "/robots.txt",
       "destination": "/robots.txt"
-    },
-    {
-      "source": "/((?!sitemap\\.xml|robots\\.txt|manifest\\.json|og-image\\.png|assets/|.*\\.(?:png|jpg|jpeg|gif|svg|ico|xml|txt|json|js|css)$).*)",
-      "destination": "/index.html"
     }
   ]
 }

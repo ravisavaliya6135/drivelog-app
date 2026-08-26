@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
-const DEFAULT_OG_IMAGE = 'https://drivehours.app/og-image.png';
+const SITE_URL = 'https://www.drivehours.app';
+const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 interface SeoProps {
   title: string;
@@ -58,12 +59,13 @@ export function useSeo({ title, description, canonicalUrl, noindex = false, ogIm
     setMeta('property', 'og:description', descriptionOrFallback);
     setMeta('property', 'og:type', 'website');
     setMeta('property', 'og:image', ogImage);
-    setMeta('property', 'og:url', canonicalUrl ?? window.location.origin);
+    setMeta('property', 'og:url', canonicalUrl ?? SITE_URL);
 
     // Twitter Card tags
     setMeta('name', 'twitter:card', 'summary_large_image');
     setMeta('name', 'twitter:title', title);
     setMeta('name', 'twitter:description', descriptionOrFallback);
     setMeta('name', 'twitter:image', ogImage);
+    setMeta('name', 'twitter:url', canonicalUrl ?? SITE_URL);
   }, [title, description, canonicalUrl, noindex, ogImage]);
 }

@@ -115,3 +115,15 @@ All 50 states' hour requirements are configured in `src/types/index.ts` (e.g., C
 - PWA must remain installable on iOS Safari and Android Chrome.
 - Never log or expose Supabase/Stripe keys (see `.env.example`).
 - Deploy target: Vercel (`vercel.json`).
+
+## DriveHours Specialized Agent Guides
+
+Before modifying these surfaces, read the applicable guide:
+
+- Premium UI, Tailwind, components, pages: `docs/agent-skills/premium-ui-ux.md`
+- Timer, IndexedDB, service worker, PWA/install/offline flows: `docs/agent-skills/pwa-offline.md`
+- Metadata, canonical URLs, sitemap, robots, JSON-LD, state guides: `docs/agent-skills/seo-schema.md`
+- Any interactive UI, form, dialog, color, animation, or responsive change: `docs/agent-skills/accessibility.md`
+- Vite config, route loading, images, PWA assets, bundle size, or performance work: `docs/agent-skills/performance.md`
+
+These guides supplement this file. When guidance overlaps, preserve the stricter DriveHours constraint.

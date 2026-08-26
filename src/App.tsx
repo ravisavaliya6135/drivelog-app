@@ -224,6 +224,7 @@ export default function App() {
                       <Route path="/help" element={<HelpCenter />} />
                       <Route path="/contact" element={<ContactFeedback />} />
                       <Route path="/about" element={<About />} />
+                      <Route path="*" element={<div className="app-card p-8 text-center"><h1 className="text-2xl font-bold">Page not found</h1><p className="mt-2 text-slate-500">This page does not exist.</p></div>} />
                     </Routes>
                   </ErrorBoundary>
                 </Suspense>

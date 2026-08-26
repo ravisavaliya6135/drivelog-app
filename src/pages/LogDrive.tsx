@@ -22,7 +22,8 @@ export function LogDrive() {
   useSeo({
     title: 'Driving History & Practice Log | DriveLog',
     description: 'Chronological log of supervised teen driving sessions with day/night filtering, road conditions, and supervisor signatures.',
-    canonicalUrl: 'https://drivehours.app/log',
+    canonicalUrl: 'https://www.drivehours.app/log',
+    noindex: true,
   });
 
   const { drives, drivers, vehicles, addDrive } = useDriveLog();

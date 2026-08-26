@@ -5,4 +5,4 @@ Disallow: /*?*modal=*
 Disallow: /*?*payment=*
 Disallow: /*?*edit=*
 
-Sitemap: https://drivehours.app/sitemap.xml
+Sitemap: https://www.drivehours.app/sitemap.xml

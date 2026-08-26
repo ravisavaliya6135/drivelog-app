@@ -34,7 +34,7 @@ export function About() {
   useSeo({
     title: 'About DriveLog — Why We Built It | DriveLog',
     description: "It's not complicated, it's just a log. Why we built an offline-first, ad-free driving hours tracker for teens and parents.",
-    canonicalUrl: 'https://drivehours.app/about',
+    canonicalUrl: 'https://www.drivehours.app/about',
   });
 
   return (

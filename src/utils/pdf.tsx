@@ -361,7 +361,7 @@ function PDFDocument({ drives, driver, vehicle, state, totals }: PDFProps) {
 
         {/* Fixed footer on every page */}
         <Text style={styles.pageFooter} fixed>
-          Generated with DriveLog (drivehours.app) — supervised driving log
+          Generated with DriveLog (www.drivehours.app) — supervised driving log
         </Text>
       </Page>
     </Document>

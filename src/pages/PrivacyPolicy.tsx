@@ -15,7 +15,7 @@ export function PrivacyPolicy() {
   useSeo({
     title: 'Privacy Policy | DriveLog',
     description: 'What DriveLog stores on your device, what (little) leaves it, and why. No ads, no GPS tracking, no sale of personal data.',
-    canonicalUrl: 'https://drivehours.app/privacy',
+    canonicalUrl: 'https://www.drivehours.app/privacy',
   });
 
   return (

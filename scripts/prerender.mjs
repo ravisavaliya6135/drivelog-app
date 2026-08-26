@@ -17,9 +17,9 @@ const rootDir = join(dirname(fileURLToPath(import.meta.url)), '..');
 const distDir = join(rootDir, 'dist');
 const ssrDir = join(rootDir, 'dist-ssr');
 
-const { renderStateGuide, stateData } = require(join(ssrDir, 'state-guide-ssr.js'));
+const { renderStateGuide, renderPublicPage, stateData } = require(join(ssrDir, 'state-guide-ssr.js'));
 
-const SITE_URL = 'https://drivehours.app';
+const SITE_URL = 'https://www.drivehours.app';
 const template = readFileSync(join(distDir, 'index.html'), 'utf8');
 
 if (!template.includes('<div id="root"></div>')) {
@@ -43,6 +43,60 @@ function setMetaContent(html, attr, key, value) {
 }
 
 let generated = 0;
+
+const publicPages = [
+  ['/dmv', 'Teen Driving Log Requirements by State (All 50) | DriveLog', 'Browse supervised driving hour requirements, night-hour rules, and official DMV log forms for all 50 US states.'],
+  ['/about', 'About DriveLog — Why We Built It | DriveLog', "Why we built an offline-first, ad-free driving hours tracker for teens and parents."],
+  ['/help', 'Help Center | DriveLog', 'Answers about logging drives, night hours, parent verification, offline PDF export, and DriveLog Pro.'],
+  ['/privacy', 'Privacy Policy | DriveLog', 'What DriveLog stores on your device, what leaves it, and why.'],
+  ['/terms', 'Terms of Use | DriveLog', 'Terms for using DriveLog, the offline-first teen driving hours tracker.'],
+  ['/contact', 'Contact & Feedback | DriveLog', 'Questions, bugs, or DMV feedback about DriveLog? Contact the team.'],
+];
+
+for (const [routePath, title, description] of publicPages) {
+  const canonical = `${SITE_URL}${routePath}`;
+  const appHtml = renderPublicPage(routePath);
+  let html = template.replace('<div id="root"></div>', `<div id="root">${appHtml}</div>`);
+  html = html
+    .replace(/<title>.*?<\/title>/s, `<title>${escapeHtml(title)}</title>`)
+    .replace(/<link rel="canonical" href="[^"]*" \/>/, `<link rel="canonical" href="${canonical}" />`);
+  html = setMetaContent(html, 'name', 'title', title);
+  html = setMetaContent(html, 'name', 'description', description);
+  html = setMetaContent(html, 'property', 'og:title', title);
+  html = setMetaContent(html, 'property', 'og:description', description);
+  html = setMetaContent(html, 'property', 'og:url', canonical);
+  html = setMetaContent(html, 'name', 'twitter:title', title);
+  html = setMetaContent(html, 'name', 'twitter:description', description);
+  html = setMetaContent(html, 'name', 'twitter:url', canonical);
+  const outDir = join(distDir, routePath);
+  mkdirSync(outDir, { recursive: true });
+  writeFileSync(join(outDir, 'index.html'), html);
+}
+
+const noindexAppPages = [
+  ['/log', 'Driving History & Practice Log | DriveLog', 'Chronological log of supervised teen driving sessions with day/night filtering, road conditions, and supervisor signatures.'],
+  ['/export', 'DMV Driving Log PDF Export & 50-State Compliance | DriveLog', 'Generate an official state DMV-compliant supervised driving practice log PDF report for your road test licensing appointment.'],
+  ['/settings', 'State DMV Requirements & App Settings | DriveLog', 'Configure your state driving targets, manage student drivers and supervisor profiles, and customize app appearance.'],
+];
+
+for (const [routePath, title, description] of noindexAppPages) {
+  const canonical = `${SITE_URL}${routePath}`;
+  let html = template
+    .replace(/<title>.*?<\/title>/s, `<title>${escapeHtml(title)}</title>`)
+    .replace(/<link rel="canonical" href="[^"]*" \/>/, `<link rel="canonical" href="${canonical}" />`)
+    .replace(/<meta name="robots" content="[^"]*" \/>/, '<meta name="robots" content="noindex, follow" />');
+  html = setMetaContent(html, 'name', 'title', title);
+  html = setMetaContent(html, 'name', 'description', description);
+  html = setMetaContent(html, 'property', 'og:title', title);
+  html = setMetaContent(html, 'property', 'og:description', description);
+  html = setMetaContent(html, 'property', 'og:url', canonical);
+  html = setMetaContent(html, 'name', 'twitter:title', title);
+  html = setMetaContent(html, 'name', 'twitter:description', description);
+  html = setMetaContent(html, 'name', 'twitter:url', canonical);
+  const outDir = join(distDir, routePath);
+  mkdirSync(outDir, { recursive: true });
+  writeFileSync(join(outDir, 'index.html'), html);
+}
 
 for (const state of stateData) {
   const code = state.code.toLowerCase();
@@ -83,7 +137,7 @@ for (const state of stateData) {
 console.log(`[prerender] Generated ${generated} static /dmv/:stateCode pages into dist/dmv/`);
 
 // Regenerate sitemap.xml including all state guide URLs (replaces public/sitemap.xml in dist)
-const staticPaths = ['/', '/log', '/export', '/settings', '/about', '/help', '/privacy', '/terms', '/contact', '/dmv'];
+const staticPaths = ['/', '/about', '/help', '/privacy', '/terms', '/contact', '/dmv'];
 const today = new Date().toISOString().split('T')[0];
 const urls = [
   ...staticPaths.map(

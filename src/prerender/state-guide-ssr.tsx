@@ -1,6 +1,12 @@
 import { renderToString } from 'react-dom/server';
 import { StaticRouter, Routes, Route } from 'react-router';
 import { StateGuide } from '../pages/StateGuide';
+import { StateGuideIndex } from '../pages/StateGuideIndex';
+import { About } from '../pages/About';
+import { HelpCenter } from '../pages/HelpCenter';
+import { PrivacyPolicy } from '../pages/PrivacyPolicy';
+import { TermsOfUse } from '../pages/TermsOfUse';
+import { ContactFeedback } from '../pages/ContactFeedback';
 import { US_STATES } from '../types';
 
 export const stateData = US_STATES;
@@ -16,6 +22,21 @@ export function renderStateGuide(path: string): string {
       <Routes>
         {/* Must mirror the app route so useParams resolves :stateCode */}
         <Route path="/dmv/:stateCode" element={<StateGuide />} />
+      </Routes>
+    </StaticRouter>
+  );
+}
+
+export function renderPublicPage(path: string): string {
+  return renderToString(
+    <StaticRouter location={path}>
+      <Routes>
+        <Route path="/dmv" element={<StateGuideIndex />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/help" element={<HelpCenter />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfUse />} />
+        <Route path="/contact" element={<ContactFeedback />} />
       </Routes>
     </StaticRouter>
   );

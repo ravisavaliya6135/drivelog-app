@@ -4,7 +4,7 @@ import type { StateInfo } from '../types';
 import { US_STATES } from '../types';
 import { useSeo } from '../hooks/useSeo';
 
-const SITE_URL = 'https://drivehours.app';
+const SITE_URL = 'https://www.drivehours.app';
 
 function formatAge(age?: number): string {
   if (age === undefined) return 'Varies — check DMV';
@@ -110,9 +110,9 @@ export function StateGuide() {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'DriveLog', item: 'https://drivehours.app/' },
-      { '@type': 'ListItem', position: 2, name: 'State Guides', item: 'https://drivehours.app/dmv' },
-      { '@type': 'ListItem', position: 3, name: state.name + ' Driving Requirements', item: 'https://drivehours.app/dmv/' + state.code.toLowerCase() },
+      { '@type': 'ListItem', position: 1, name: 'DriveLog', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'State Guides', item: `${SITE_URL}/dmv` },
+      { '@type': 'ListItem', position: 3, name: state.name + ' Driving Requirements', item: `${SITE_URL}/dmv/${state.code.toLowerCase()}` },
     ],
   };
 
@@ -221,6 +221,24 @@ export function StateGuide() {
           </tbody>
         </table>
       </section>
+
+      <aside className="rounded-2xl border border-teal-200 bg-teal-50 p-4 text-sm text-slate-700 dark:border-teal-900/70 dark:bg-teal-950/30 dark:text-slate-200" aria-label="Requirements source note">
+        <p>
+          <strong>Verify before your road test:</strong> state licensing rules and forms can change.{' '}
+          {state.dmvFormUrl ? (
+            <a
+              href={state.dmvFormUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-teal-700 underline decoration-teal-400 underline-offset-2 hover:text-teal-800 dark:text-teal-300"
+            >
+              Check the official {state.name} licensing source
+            </a>
+          ) : (
+            <span>Confirm the current requirements with your state licensing agency.</span>
+          )}
+        </p>
+      </aside>
 
       {/* Night driving explainer */}
       <section className="app-card p-5 space-y-3">

@@ -37,7 +37,7 @@ export function Settings() {
   useSeo({
     title: 'State DMV Requirements & App Settings | DriveLog',
     description: 'Configure your state driving targets, manage student drivers & supervisor profiles, and customize app appearance.',
-    canonicalUrl: 'https://drivehours.app/settings',
+    canonicalUrl: 'https://www.drivehours.app/settings',
     noindex: true,
   });
 
