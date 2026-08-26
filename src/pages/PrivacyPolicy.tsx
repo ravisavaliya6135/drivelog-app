@@ -97,6 +97,33 @@ export function PrivacyPolicy() {
         </p>
       </Section>
 
+      <Section title="Cookies & local storage">
+        <p>
+          DriveLog sets no advertising or tracking cookies. We use only browser local storage
+          (IndexedDB and localStorage) to remember your logs and preferences on your own device —
+          the same mechanism any notes app uses. There is nothing to "accept" because there is
+          nothing tracking you across sites.
+        </p>
+      </Section>
+
+      <Section title="Third-party services">
+        <ul className="list-disc pl-5 space-y-1">
+          <li><strong>Supabase</strong> — hosts optional account sign-in, purchase records, feedback, and anonymous usage events</li>
+          <li><strong>Stripe</strong> — processes the optional $4.99 Lifetime Pro payment. Card details go directly to Stripe; we never see them.</li>
+          <li><strong>Vercel</strong> — serves the app itself</li>
+        </ul>
+        <p>That's the entire list. No ad networks, no analytics services, no social SDKs.</p>
+      </Section>
+
+      <Section title="Your rights: export & deletion">
+        <p>
+          You own your data. <strong>Export</strong>: Settings → Data Backup produces a complete JSON file of
+          every drive, driver, and vehicle at any time. <strong>Delete</strong>: Settings → Clear Local Data
+          permanently erases everything stored on the device. If you signed in and want your server-side account
+          deleted too, contact us via the feedback page and we'll remove it.
+        </p>
+      </Section>
+
       <Section title="Accuracy disclaimer">
         <p>
           DriveLog is a logging tool, not an authority on licensing law. You are responsible for verifying your

@@ -6,6 +6,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { EntitlementProvider } from './contexts/EntitlementContext';
 import { PwaInstallPrompt } from './components/PwaInstallPrompt';
 import { SiteFooter } from './components/SiteFooter';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Lazy load pages for fast code-split performance
 const HomePage = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
@@ -207,20 +208,22 @@ export default function App() {
 
               <main id="main" className="flex-1 w-full max-w-4xl mx-auto px-4 py-4 md:py-6">
                 <Suspense fallback={<PageSkeleton />}>
-                  <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/log" element={<LogDrive />} />
-                    <Route path="/export" element={<ExportDocs />} />
-                    <Route path="/settings" element={<SettingsPage />} />
-                    {/* Programmatic SEO state guides — /dmv/ca, /dmv/tx, ... all 50 states */}
-                    <Route path="/dmv/:stateCode" element={<StateGuide />} />
-                    {/* Trust & support pages */}
-                    <Route path="/privacy" element={<PrivacyPolicy />} />
-                    <Route path="/terms" element={<TermsOfUse />} />
-                    <Route path="/help" element={<HelpCenter />} />
-                    <Route path="/contact" element={<ContactFeedback />} />
-                    <Route path="/about" element={<About />} />
-                  </Routes>
+                  <ErrorBoundary>
+                    <Routes>
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/log" element={<LogDrive />} />
+                      <Route path="/export" element={<ExportDocs />} />
+                      <Route path="/settings" element={<SettingsPage />} />
+                      {/* Programmatic SEO state guides — /dmv/ca, /dmv/tx, ... all 50 states */}
+                      <Route path="/dmv/:stateCode" element={<StateGuide />} />
+                      {/* Trust & support pages */}
+                      <Route path="/privacy" element={<PrivacyPolicy />} />
+                      <Route path="/terms" element={<TermsOfUse />} />
+                      <Route path="/help" element={<HelpCenter />} />
+                      <Route path="/contact" element={<ContactFeedback />} />
+                      <Route path="/about" element={<About />} />
+                    </Routes>
+                  </ErrorBoundary>
                 </Suspense>
               </main>
 

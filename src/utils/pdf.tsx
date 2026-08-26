@@ -149,8 +149,17 @@ const styles = StyleSheet.create({
     lineHeight: 1.5,
     color: '#334155',
   },
-  disclaimer: {
-    marginTop: 20,
+  pageFooter: {
+    position: 'absolute',
+    bottom: 20,
+    left: 40,
+    right: 40,
+    textAlign: 'center',
+    fontSize: 8,
+    color: '#94a3b8',
+    fontFamily: 'Courier',
+  },
+  disclaimer: {    marginTop: 20,
     padding: 10,
     backgroundColor: '#fef3c7',
     border: '1px solid #f59e0b',
@@ -231,11 +240,12 @@ function PDFDocument({ drives, driver, vehicle, state, totals }: PDFProps) {
           </View>
         </View>
 
-        {/* Drive Log Table */}
+        {/* Drive Log Table — rows flow onto additional pages for long logs;
+            the header row repeats on every page via `fixed` */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Drive Entries</Text>
-          
-          <View style={styles.tableHeader}>
+
+          <View style={styles.tableHeader} fixed>
             <Text style={[styles.cell, styles.cellDate]}>Date</Text>
             <Text style={[styles.cell, styles.cellTime]}>Start - End</Text>
             <Text style={[styles.cell, styles.cellDuration]}>Duration</Text>
@@ -348,6 +358,11 @@ function PDFDocument({ drives, driver, vehicle, state, totals }: PDFProps) {
             Some states may require a specific form or digital submission. This document does not guarantee license approval.
           </Text>
         </View>
+
+        {/* Fixed footer on every page */}
+        <Text style={styles.pageFooter} fixed>
+          Generated with DriveLog (drivehours.app) — supervised driving log
+        </Text>
       </Page>
     </Document>
   );

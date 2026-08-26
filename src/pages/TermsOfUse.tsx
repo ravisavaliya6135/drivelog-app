@@ -62,13 +62,31 @@ export function TermsOfUse() {
         </p>
       </Section>
 
+      <Section title="Age requirements & parental consent">
+        <p>
+          DriveLog is intended for teens of driving-permit age (typically 15+) and their parents or guardians.
+          The app is designed for shared family use on a family device, and parents supervising a minor's
+          driving are expected to review and verify logged hours. The app does not knowingly collect personal
+          information from children under 13; drive logs stay on the family's device by design.
+        </p>
+      </Section>
+
+      <Section title="Prohibited uses">
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Falsifying driving hours, conditions, or supervisor signatures</li>
+          <li>Using the app while actively driving (it's for the passenger seat — always)</li>
+          <li>Reselling, reverse-engineering for malicious purposes, or using the service to harm others</li>
+        </ul>
+      </Section>
+
       <Section title="Payments (Lifetime Pro)">
         <p className="flex items-start gap-2">
           <CreditCard className="w-4 h-4 text-teal-700 mt-0.5 flex-shrink-0" />
           DriveLog's free tier includes up to 20 logged hours. An optional one-time payment of $4.99 unlocks
           unlimited logging and PDF export forever — no subscription, no recurring charges. Payments are processed
-          securely by Stripe; we never see or store your card details. If something goes wrong with a purchase,
-          contact us through the feedback page and we'll make it right.
+          securely by Stripe; we never see or store your card details. Because Pro is delivered instantly
+          and in full, purchases are final — but if anything goes wrong, contact us through the feedback page
+          and we'll work to make it right.
         </p>
       </Section>
 
@@ -78,6 +96,14 @@ export function TermsOfUse() {
           To the maximum extent permitted by law, DriveLog is provided "as is" without warranties of any kind.
           We are not liable for denied applications, lost data, missed appointments, or any indirect damages
           arising from use of the app. Keep backups of important records (the Settings page includes a JSON export).
+        </p>
+      </Section>
+
+      <Section title="Governing law">
+        <p>
+          These terms are governed by the laws of the United States and the state of the app operator's
+          principal place of business, without regard to conflict-of-law principles. Consumer rights under
+          your local law are not affected.
         </p>
       </Section>
 
