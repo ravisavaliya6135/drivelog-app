@@ -1,4 +1,4 @@
-import { useState, Suspense, lazy } from 'react';
+import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import { Home as HomeIcon, Clock, Play, FileText, Settings as SettingsIcon, Car } from 'lucide-react';
 import { ThemeProvider } from './hooks/useTheme';
@@ -31,7 +31,7 @@ function PageSkeleton() {
   );
 }
 
-function TopHeader({ activeRole, onToggleRole }: { activeRole: 'teen' | 'parent'; onToggleRole: (role: 'teen' | 'parent') => void }) {
+function TopHeader() {
   return (
     <header className="sticky top-0 z-40 w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 pt-safe transition-colors">
       <div className="max-w-4xl mx-auto h-16 px-4 flex items-center justify-between">
@@ -42,34 +42,8 @@ function TopHeader({ activeRole, onToggleRole }: { activeRole: 'teen' | 'parent'
           </div>
           <div>
             <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">DriveLog</span>
-            <span className="hidden sm:inline-block ml-2 text-[11px] font-medium text-slate-500 uppercase tracking-wider">Supervised Log</span>
+            <span className="hidden sm:inline-block ml-2 text-xs font-medium text-slate-600 dark:text-slate-300 uppercase tracking-wider">Supervised Log</span>
           </div>
-        </div>
-
-        {/* Role Switcher Pill */}
-        <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-xl flex items-center border border-slate-200/60 dark:border-slate-700/60">
-          <button
-            type="button"
-            onClick={() => onToggleRole('teen')}
-            className={`px-3.5 py-1 text-xs font-semibold rounded-lg transition-all ${
-              activeRole === 'teen'
-                ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900'
-            }`}
-          >
-            Teen
-          </button>
-          <button
-            type="button"
-            onClick={() => onToggleRole('parent')}
-            className={`px-3.5 py-1 text-xs font-semibold rounded-lg transition-all ${
-              activeRole === 'parent'
-                ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900'
-            }`}
-          >
-            Parent
-          </button>
         </div>
 
         {/* Desktop Nav Links */}
@@ -78,7 +52,7 @@ function TopHeader({ activeRole, onToggleRole }: { activeRole: 'teen' | 'parent'
             to="/"
             end
             className={({ isActive }) =>
-              `px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+              `min-h-11 inline-flex items-center px-3 rounded-lg text-sm font-semibold transition-colors ${
                 isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`
             }
@@ -88,7 +62,7 @@ function TopHeader({ activeRole, onToggleRole }: { activeRole: 'teen' | 'parent'
           <NavLink
             to="/log"
             className={({ isActive }) =>
-              `px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+              `min-h-11 inline-flex items-center px-3 rounded-lg text-sm font-semibold transition-colors ${
                 isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`
             }
@@ -98,7 +72,7 @@ function TopHeader({ activeRole, onToggleRole }: { activeRole: 'teen' | 'parent'
           <NavLink
             to="/export"
             className={({ isActive }) =>
-              `px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+              `min-h-11 inline-flex items-center px-3 rounded-lg text-sm font-semibold transition-colors ${
                 isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`
             }
@@ -108,7 +82,7 @@ function TopHeader({ activeRole, onToggleRole }: { activeRole: 'teen' | 'parent'
           <NavLink
             to="/settings"
             className={({ isActive }) =>
-              `px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+              `min-h-11 inline-flex items-center px-3 rounded-lg text-sm font-semibold transition-colors ${
                 isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`
             }
@@ -132,33 +106,33 @@ function BottomNavbar() {
           to="/"
           end
           className={({ isActive }) =>
-            `flex flex-col items-center justify-center py-1 transition-colors ${
+            `min-h-16 flex flex-col items-center justify-center py-1 transition-colors ${
               isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
             }`
           }
         >
           <HomeIcon className="w-5 h-5 mb-0.5" />
-          <span className="text-[10px]">Home</span>
+          <span className="text-xs">Home</span>
         </NavLink>
 
         {/* History */}
         <NavLink
           to="/log"
           className={({ isActive }) =>
-            `flex flex-col items-center justify-center py-1 transition-colors ${
+            `min-h-16 flex flex-col items-center justify-center py-1 transition-colors ${
               isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
             }`
           }
         >
           <Clock className="w-5 h-5 mb-0.5" />
-          <span className="text-[10px]">History</span>
+          <span className="text-xs">History</span>
         </NavLink>
 
         {/* Center Record Drive CTA */}
         <div className="flex justify-center -mt-5">
           <NavLink
             to="/?modal=timer"
-            className="w-13 h-13 p-3.5 rounded-full bg-teal-600 hover:bg-teal-700 text-white shadow-teal flex items-center justify-center active:scale-95 transition-all duration-150 border-4 border-white dark:border-slate-900"
+            className="w-16 h-16 rounded-full bg-teal-600 hover:bg-teal-700 text-white shadow-teal flex items-center justify-center active:scale-95 transition-all duration-150 border-4 border-white dark:border-slate-900"
             aria-label="Record driving session"
           >
             <Play className="w-6 h-6 fill-white translate-x-0.5" />
@@ -169,26 +143,26 @@ function BottomNavbar() {
         <NavLink
           to="/export"
           className={({ isActive }) =>
-            `flex flex-col items-center justify-center py-1 transition-colors ${
+            `min-h-16 flex flex-col items-center justify-center py-1 transition-colors ${
               isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
             }`
           }
         >
           <FileText className="w-5 h-5 mb-0.5" />
-          <span className="text-[10px]">Export</span>
+          <span className="text-xs">Export</span>
         </NavLink>
 
         {/* Settings */}
         <NavLink
           to="/settings"
           className={({ isActive }) =>
-            `flex flex-col items-center justify-center py-1 transition-colors ${
+            `min-h-16 flex flex-col items-center justify-center py-1 transition-colors ${
               isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
             }`
           }
         >
           <SettingsIcon className="w-5 h-5 mb-0.5" />
-          <span className="text-[10px]">Settings</span>
+          <span className="text-xs">Settings</span>
         </NavLink>
 
       </div>
@@ -197,15 +171,16 @@ function BottomNavbar() {
 }
 
 export default function App() {
-  const [activeRole, setActiveRole] = useState<'teen' | 'parent'>('teen');
-
   return (
     <BrowserRouter>
       <AuthProvider>
         <EntitlementProvider>
           <ThemeProvider>
             <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col pb-24 md:pb-8 selection:bg-teal-500 selection:text-white antialiased transition-colors">
-              <TopHeader activeRole={activeRole} onToggleRole={setActiveRole} />
+              <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[70] rounded-xl bg-teal-700 px-4 py-3 font-bold text-white">
+                Skip to main content
+              </a>
+              <TopHeader />
 
               <main id="main" className="flex-1 w-full max-w-4xl mx-auto px-4 py-4 md:py-6">
                 <Suspense fallback={<PageSkeleton />}>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { Play, Sun, Moon, ChevronRight, Plus, ShieldCheck, Car, X } from 'lucide-react';
+import { Play, Sun, Moon, ChevronRight, Plus, ShieldCheck, Car, X, ClipboardCheck } from 'lucide-react';
 import { useDriveLog } from '../hooks/useDriveLog';
 import { useEntitlement } from '../contexts/EntitlementContext';
 import { UpgradeCard, UpgradeModal } from '../components/UpgradeModal';
@@ -9,6 +9,7 @@ import type { DriveEntry } from '../types';
 import { DriveTimer } from '../components/DriveTimer';
 import { DriveLogEntry } from '../components/DriveLogEntry';
 import { useSeo } from '../hooks/useSeo';
+import { useAccessibleDialog } from '../hooks/useAccessibleDialog';
 
 export function Home() {
   useSeo({
@@ -122,6 +123,12 @@ export function Home() {
     updateModalUrl(null);
   };
 
+  const timerDialogRef = useAccessibleDialog(showTimerModal, () => {
+    setShowTimerModal(false);
+    updateModalUrl(null);
+  });
+  const logEntryDialogRef = useAccessibleDialog(showLogEntry, handleLogEntryCancel);
+
   // Calculations
   const totalHoursVal = Number(totalHours.toFixed(1));
   const dayHoursVal = Number((dayMinutes / 60).toFixed(1));
@@ -201,7 +208,7 @@ export function Home() {
               <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
                 <Sun className="w-3.5 h-3.5 text-amber-500" /> Day
               </span>
-              <span className="text-[11px] font-bold text-slate-500">{dayProgress}%</span>
+              <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{dayProgress}%</span>
             </div>
             <div className="flex items-baseline gap-1">
               <span className="font-mono text-xl font-bold text-slate-900 dark:text-white tabular-nums">{dayHoursVal}h</span>
@@ -218,7 +225,7 @@ export function Home() {
               <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
                 <Moon className="w-3.5 h-3.5 text-indigo-500" /> Night
               </span>
-              <span className="text-[11px] font-bold text-slate-500">{nightProgress}%</span>
+              <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{nightProgress}%</span>
             </div>
             <div className="flex items-baseline gap-1">
               <span className="font-mono text-xl font-bold text-slate-900 dark:text-white tabular-nums">{nightHoursVal}h</span>
@@ -275,12 +282,12 @@ export function Home() {
       {/* 3b. Parent Sign-Off Nudge (weekly reminder when many drives are unverified) */}
       {unverifiedCount > 5 && (
         <div className="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 flex items-start gap-3 animate-fade-in">
-          <span className="text-lg leading-none mt-0.5">📝</span>
+          <ClipboardCheck className="h-5 w-5 shrink-0 text-amber-700 dark:text-amber-300" aria-hidden="true" />
           <div>
             <h4 className="font-bold text-xs text-amber-800 dark:text-amber-300">
               You have {unverifiedCount} unverified drives
             </h4>
-            <p className="text-[11px] text-amber-700/90 dark:text-amber-200/80 mt-0.5">
+            <p className="text-xs text-amber-800 dark:text-amber-200 mt-0.5">
               Ask your parent to sign off before DMV submission.
             </p>
           </div>
@@ -309,14 +316,15 @@ export function Home() {
               const formattedDuration = durationHours > 0 ? `${durationHours}h ${durationMins}m` : `${durationMins}m`;
 
               return (
-                <div
+                <button
+                  type="button"
                   key={drive.id}
                   onClick={() => {
                     setEditingDrive(drive);
                     setShowLogEntry(true);
                     updateModalUrl('log-entry', drive.id);
                   }}
-                  className="app-card p-3.5 flex items-center justify-between cursor-pointer hover:border-teal-500/50 transition-all"
+                  className="app-card w-full p-3.5 flex items-center justify-between text-left hover:border-teal-500/50 transition-all focus:outline-none focus:ring-2 focus:ring-teal-500"
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
@@ -342,7 +350,7 @@ export function Home() {
                     <span className="capitalize text-slate-600 dark:text-slate-300">{drive.weather || 'Clear'}</span>
                     <ChevronRight className="w-4 h-4" />
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
@@ -362,16 +370,17 @@ export function Home() {
       {/* Timer Modal — full-screen distraction-free mode during an active drive */}
       {showTimerModal && (
         <div className="fixed inset-0 bg-white dark:bg-slate-950 z-[60] overflow-y-auto animate-fade-in">
-          <div className="min-h-full max-w-md mx-auto px-4 py-8 flex flex-col justify-center">
+          <div ref={timerDialogRef} role="dialog" aria-modal="true" aria-labelledby="timer-modal-title" tabIndex={-1} className="min-h-full max-w-md mx-auto px-4 py-8 flex flex-col justify-center">
             <div className="flex justify-between items-center mb-6">
-              <span className="font-bold text-base text-slate-900 dark:text-white">Live Driving Session</span>
+              <h2 id="timer-modal-title" className="font-bold text-base text-slate-900 dark:text-white">Live Driving Session</h2>
               <button
                 type="button"
                 onClick={() => {
                   setShowTimerModal(false);
                   updateModalUrl(null);
                 }}
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900"
+                aria-label="Close driving session"
+                className="btn-ghost rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -384,15 +393,16 @@ export function Home() {
       {/* Save Drive Modal */}
       {showLogEntry && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] max-h-[95vh] overflow-y-auto p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
+          <div ref={logEntryDialogRef} role="dialog" aria-modal="true" aria-labelledby="drive-entry-modal-title" tabIndex={-1} className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] max-h-[95vh] overflow-y-auto p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
             <div className="flex justify-between items-center mb-4">
-              <span className="font-bold text-base text-slate-900 dark:text-white">
+              <h2 id="drive-entry-modal-title" className="font-bold text-base text-slate-900 dark:text-white">
                 {editingDrive ? 'Edit Drive' : 'Log Drive Summary'}
-              </span>
+              </h2>
               <button
                 type="button"
                 onClick={handleLogEntryCancel}
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900"
+                aria-label="Close drive entry"
+                className="btn-ghost rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900"
               >
                 <X className="w-5 h-5" />
               </button>

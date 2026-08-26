@@ -1,46 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Plus, User, Car, Trash2, X, Save, Edit2 } from 'lucide-react';
 import type { DriverProfile, VehicleProfile } from '../types';
-
-function useFocusTrap(isActive: boolean) {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isActive || !containerRef.current) return;
-
-    const container = containerRef.current;
-    const focusableElements = container.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
-
-      if (e.shiftKey) {
-        if (document.activeElement === firstElement) {
-          e.preventDefault();
-          lastElement?.focus();
-        }
-      } else {
-        if (document.activeElement === lastElement) {
-          e.preventDefault();
-          firstElement?.focus();
-        }
-      }
-    };
-
-    container.addEventListener('keydown', handleKeyDown);
-    firstElement?.focus();
-
-    return () => {
-      container.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isActive]);
-
-  return containerRef;
-}
+import { useAccessibleDialog } from '../hooks/useAccessibleDialog';
 
 interface MultiDriverFormProps {
   drivers: DriverProfile[];
@@ -54,8 +15,6 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
   const [showAddVehicle, setShowAddVehicle] = useState(false);
   const [editingDriver, setEditingDriver] = useState<DriverProfile | null>(null);
   const [editingVehicle, setEditingVehicle] = useState<VehicleProfile | null>(null);
-  const driverSheetRef = useFocusTrap(showAddDriver);
-  const vehicleSheetRef = useFocusTrap(showAddVehicle);
 
   const [driverForm, setDriverForm] = useState({
     name: '',
@@ -83,6 +42,9 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
     setEditingVehicle(null);
     setShowAddVehicle(false);
   };
+
+  const driverSheetRef = useAccessibleDialog(showAddDriver, resetDriverForm);
+  const vehicleSheetRef = useAccessibleDialog(showAddVehicle, resetVehicleForm);
 
   const handleDriverSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -176,9 +138,9 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
                 <div>
                   <p className="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
                     {driver.name}
-                    {driver.isPrimaryDriver && <span className="badge-teal text-[10px]">Primary</span>}
+                    {driver.isPrimaryDriver && <span className="badge-teal text-xs">Primary</span>}
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 capitalize">
+                  <p className="text-xs text-slate-600 dark:text-slate-300 capitalize">
                     {driver.role === 'teen' ? 'Student Driver' : 'Supervising Adult'} {driver.phone ? `• ${driver.phone}` : ''}
                   </p>
                 </div>
@@ -208,21 +170,22 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
 
         {/* Add/Edit Driver Modal */}
         {showAddDriver && (
-          <div ref={driverSheetRef} className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
-            <div className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
+          <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
+            <div ref={driverSheetRef} role="dialog" aria-modal="true" aria-labelledby="driver-sheet-title" tabIndex={-1} className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="font-bold text-sm text-slate-900 dark:text-white">
+                <h4 id="driver-sheet-title" className="font-bold text-sm text-slate-900 dark:text-white">
                   {editingDriver ? 'Edit Driver Profile' : 'Add New Driver / Supervisor'}
                 </h4>
-                <button type="button" onClick={resetDriverForm} className="btn-ghost p-1.5">
+                <button type="button" onClick={resetDriverForm} aria-label="Close driver profile form" className="btn-ghost p-1.5">
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               <form onSubmit={handleDriverSubmit} className="space-y-3">
                 <div>
-                  <label className="form-label">Full Name *</label>
+                  <label htmlFor="driver-name" className="form-label">Full Name *</label>
                   <input
+                    id="driver-name"
                     type="text"
                     required
                     value={driverForm.name}
@@ -233,8 +196,9 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
                 </div>
 
                 <div>
-                  <label className="form-label">Role</label>
+                  <label htmlFor="driver-role" className="form-label">Role</label>
                   <select
+                    id="driver-role"
                     value={driverForm.role}
                     onChange={e => setDriverForm(prev => ({ ...prev, role: e.target.value as 'parent' | 'teen' }))}
                     className="form-input"
@@ -245,8 +209,9 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
                 </div>
 
                 <div>
-                  <label className="form-label">Phone Number</label>
+                  <label htmlFor="driver-phone" className="form-label">Phone Number</label>
                   <input
+                    id="driver-phone"
                     type="tel"
                     value={driverForm.phone}
                     onChange={e => setDriverForm(prev => ({ ...prev, phone: e.target.value }))}
@@ -306,7 +271,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
                   <p className="font-bold text-xs text-slate-900 dark:text-white">
                     {vehicle.name}
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  <p className="text-xs text-slate-600 dark:text-slate-300">
                     {vehicle.year ? `${vehicle.year} ` : ''}{vehicle.make} {vehicle.model} {vehicle.licensePlate ? `• ${vehicle.licensePlate}` : ''}
                   </p>
                 </div>
@@ -336,21 +301,22 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
 
         {/* Add/Edit Vehicle Modal */}
         {showAddVehicle && (
-          <div ref={vehicleSheetRef} className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
-            <div className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
+          <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
+            <div ref={vehicleSheetRef} role="dialog" aria-modal="true" aria-labelledby="vehicle-sheet-title" tabIndex={-1} className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="font-bold text-sm text-slate-900 dark:text-white">
+                <h4 id="vehicle-sheet-title" className="font-bold text-sm text-slate-900 dark:text-white">
                   {editingVehicle ? 'Edit Vehicle Profile' : 'Add New Vehicle'}
                 </h4>
-                <button type="button" onClick={resetVehicleForm} className="btn-ghost p-1.5">
+                <button type="button" onClick={resetVehicleForm} aria-label="Close vehicle profile form" className="btn-ghost p-1.5">
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               <form onSubmit={handleVehicleSubmit} className="space-y-3">
                 <div>
-                  <label className="form-label">Vehicle Nickname *</label>
+                  <label htmlFor="vehicle-name" className="form-label">Vehicle Nickname *</label>
                   <input
+                    id="vehicle-name"
                     type="text"
                     required
                     value={vehicleForm.name}
@@ -362,8 +328,9 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="form-label">Make *</label>
+                    <label htmlFor="vehicle-make" className="form-label">Make *</label>
                     <input
+                      id="vehicle-make"
                       type="text"
                       required
                       value={vehicleForm.make}
@@ -373,8 +340,9 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
                     />
                   </div>
                   <div>
-                    <label className="form-label">Model *</label>
+                    <label htmlFor="vehicle-model" className="form-label">Model *</label>
                     <input
+                      id="vehicle-model"
                       type="text"
                       required
                       value={vehicleForm.model}
@@ -387,8 +355,9 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="form-label">Year</label>
+                    <label htmlFor="vehicle-year" className="form-label">Year</label>
                     <input
+                      id="vehicle-year"
                       type="text"
                       value={vehicleForm.year}
                       onChange={e => setVehicleForm(prev => ({ ...prev, year: e.target.value }))}
@@ -397,8 +366,9 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
                     />
                   </div>
                   <div>
-                    <label className="form-label">License Plate</label>
+                    <label htmlFor="vehicle-license-plate" className="form-label">License Plate</label>
                     <input
+                      id="vehicle-license-plate"
                       type="text"
                       value={vehicleForm.licensePlate}
                       onChange={e => setVehicleForm(prev => ({ ...prev, licensePlate: e.target.value.toUpperCase() }))}

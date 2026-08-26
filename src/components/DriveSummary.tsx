@@ -105,7 +105,7 @@ export function DriveSummary({ drives, selectedState, primaryDriver }: DriveSumm
           </div>
 
           <div className="flex justify-between items-center text-xs text-muted pt-1">
-            <span>{isTotalComplete ? '🎉 100% DMV Supervised Requirements Met!' : `${remainingTotalHours} hours remaining`}</span>
+            <span>{isTotalComplete ? '100% DMV supervised requirements met!' : `${remainingTotalHours} hours remaining`}</span>
             <span>{drives.length} total logged sessions</span>
           </div>
         </div>
@@ -126,11 +126,11 @@ export function DriveSummary({ drives, selectedState, primaryDriver }: DriveSumm
                 <span className="font-semibold text-sm text-slate-800 dark:text-slate-200">Daytime Hours</span>
               </div>
               {isDayComplete ? (
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Met
                 </span>
               ) : (
-                <span className="text-[11px] text-muted">{Math.round(dayProgress * 100)}%</span>
+                <span className="text-xs text-slate-600 dark:text-slate-300">{Math.round(dayProgress * 100)}%</span>
               )}
             </div>
 
@@ -161,11 +161,11 @@ export function DriveSummary({ drives, selectedState, primaryDriver }: DriveSumm
                 <span className="font-semibold text-sm text-slate-800 dark:text-slate-200">Legal Night Hours</span>
               </div>
               {isNightComplete ? (
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Met
                 </span>
               ) : (
-                <span className="text-[11px] text-muted">{remainingNightHours}h left</span>
+                <span className="text-xs text-slate-600 dark:text-slate-300">{remainingNightHours}h left</span>
               )}
             </div>
 
@@ -191,7 +191,7 @@ export function DriveSummary({ drives, selectedState, primaryDriver }: DriveSumm
             <Clock className="w-4 h-4" />
           </div>
           <p className="font-mono text-lg md:text-xl font-bold text-slate-900 dark:text-white tabular-nums">{formatDuration(totals.total)}</p>
-          <p className="text-[11px] text-muted uppercase font-medium">Logged Time</p>
+          <p className="text-xs text-slate-600 dark:text-slate-300 uppercase font-medium">Logged Time</p>
         </div>
 
         <div className="glass-panel p-3.5 text-center">
@@ -199,7 +199,7 @@ export function DriveSummary({ drives, selectedState, primaryDriver }: DriveSumm
             <Route className="w-4 h-4" />
           </div>
           <p className="font-mono text-lg md:text-xl font-bold text-slate-900 dark:text-white tabular-nums">{totals.miles.toFixed(1)} mi</p>
-          <p className="text-[11px] text-muted uppercase font-medium">Total Distance</p>
+          <p className="text-xs text-slate-600 dark:text-slate-300 uppercase font-medium">Total Distance</p>
         </div>
 
         <div className="glass-panel p-3.5 text-center">
@@ -207,7 +207,7 @@ export function DriveSummary({ drives, selectedState, primaryDriver }: DriveSumm
             <Award className="w-4 h-4" />
           </div>
           <p className="font-mono text-lg md:text-xl font-bold text-slate-900 dark:text-white tabular-nums">{drives.length}</p>
-          <p className="text-[11px] text-muted uppercase font-medium">Trips Logged</p>
+          <p className="text-xs text-slate-600 dark:text-slate-300 uppercase font-medium">Trips Logged</p>
         </div>
 
         <div className="glass-panel p-3.5 text-center">
@@ -219,7 +219,7 @@ export function DriveSummary({ drives, selectedState, primaryDriver }: DriveSumm
           <p className={`text-sm md:text-base font-bold truncate ${isTotalComplete ? 'text-emerald-600 dark:text-emerald-400' : 'text-indigo-600 dark:text-indigo-400'}`}>
             {isTotalComplete ? 'DMV Ready' : 'In Training'}
           </p>
-          <p className="text-[11px] text-muted uppercase font-medium">License Status</p>
+          <p className="text-xs text-slate-600 dark:text-slate-300 uppercase font-medium">License Status</p>
         </div>
       </div>
     </div>

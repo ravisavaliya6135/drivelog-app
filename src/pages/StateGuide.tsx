@@ -49,7 +49,7 @@ export function StateGuide() {
             <Link
               key={s.code}
               to={`/dmv/${s.code.toLowerCase()}`}
-              className="px-2 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-300 hover:bg-teal-50 hover:text-teal-700 dark:hover:bg-teal-950"
+              className="min-h-11 px-2 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-teal-50 hover:text-teal-700 dark:hover:bg-teal-950"
             >
               {s.code}
             </Link>
@@ -290,7 +290,7 @@ export function StateGuide() {
         >
           Start Logging for Free
         </Link>
-        <p className="text-center text-[11px] text-slate-400">
+        <p className="text-center text-xs text-slate-600 dark:text-slate-300">
           Free for your first 20 hours • No account required • Works offline
         </p>
       </div>

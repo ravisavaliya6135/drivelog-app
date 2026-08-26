@@ -5,6 +5,7 @@ import { useEntitlement, PRO_LIFETIME_PRICE, FREE_HOURS_LIMIT } from '../context
 import { AuthModal } from './AuthModal';
 import { US_STATES } from '../types';
 import { trackEvent } from '../utils/analytics';
+import { useAccessibleDialog } from '../hooks/useAccessibleDialog';
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ export function UpgradeModal({
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const dialogRef = useAccessibleDialog(isOpen && !showAuthModal, onClose);
 
   // Milestone context: compare logged hours against the user's selected state requirement
   const selectedStateCode = typeof window !== 'undefined'
@@ -69,7 +71,7 @@ export function UpgradeModal({
   return (
     <>
       <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
-        <div className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col gap-4 animate-slide-up">
+        <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="upgrade-modal-title" tabIndex={-1} className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col gap-4 animate-slide-up">
 
           {/* Header */}
           <div className="flex items-start justify-between">
@@ -77,24 +79,24 @@ export function UpgradeModal({
               <div className={`w-10 h-10 rounded-xl text-white flex items-center justify-center shadow-sm flex-shrink-0 ${
                 isMilestone ? 'bg-emerald-500' : 'bg-teal-600'
               }`}>
-                {isMilestone ? <span className="text-lg leading-none">🎉</span> : <Sparkles className="w-5 h-5" />}
+                {isMilestone ? <ShieldCheck className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
               </div>
               <div>
                 {isMilestone ? (
                   <>
-                    <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
-                      🎉 You just hit {FREE_HOURS_LIMIT} hours!
+                    <h3 id="upgrade-modal-title" className="font-extrabold text-base text-slate-900 dark:text-white">
+                      You just hit {FREE_HOURS_LIMIT} hours!
                     </h3>
-                    <p className="text-[11px] text-teal-700 dark:text-teal-400 font-bold">
+                    <p className="text-xs text-teal-700 dark:text-teal-300 font-bold">
                       Milestone unlocked — keep the streak going
                     </p>
                   </>
                 ) : (
                   <>
-                    <h3 className="font-bold text-sm text-slate-900 dark:text-white">
+                    <h3 id="upgrade-modal-title" className="font-bold text-sm text-slate-900 dark:text-white">
                       Unlock DriveLog Lifetime Pro
                     </h3>
-                    <p className="text-[11px] text-teal-700 dark:text-teal-400 font-bold">
+                    <p className="text-xs text-teal-700 dark:text-teal-300 font-bold">
                       {PRO_LIFETIME_PRICE} One-Time • No Recurring Fees
                     </p>
                   </>
@@ -105,7 +107,7 @@ export function UpgradeModal({
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white"
+              className="btn-ghost rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-white"
             >
               <X className="w-4 h-4" />
             </button>
@@ -122,7 +124,7 @@ export function UpgradeModal({
 
           {/* Progress Toward State Requirement */}
           <div className="space-y-1.5">
-            <div className="flex justify-between text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+            <div className="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300">
               <span>{stateInfo.name} license progress</span>
               <span className="font-mono tabular-nums">
                 {totalHoursLogged} / {stateInfo.requiredHours} hrs
@@ -179,7 +181,7 @@ export function UpgradeModal({
           </div>
 
           {error && (
-            <div className="p-2.5 rounded-xl bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 text-xs font-medium border border-red-200 dark:border-red-800">
+            <div role="alert" className="p-2.5 rounded-xl bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 text-xs font-medium border border-red-200 dark:border-red-800">
               {error}
             </div>
           )}
@@ -205,12 +207,12 @@ export function UpgradeModal({
             <button
               type="button"
               onClick={onClose}
-              className="w-full py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors text-center block"
+              className="w-full min-h-12 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors text-center block"
             >
               Not now
             </button>
 
-            <p className="text-[10px] text-center text-slate-400">
+            <p className="text-xs text-center text-slate-500 dark:text-slate-300">
               Secure checkout via Stripe • One-time payment • Never charged again
             </p>
           </div>
@@ -243,7 +245,7 @@ export function UpgradeCard({ onUpgradeClick }: { onUpgradeClick: () => void }) 
           <h4 className="font-bold text-xs text-slate-900 dark:text-white">
             Approaching 20h Free Limit
           </h4>
-          <p className="text-[11px] text-slate-600 dark:text-slate-400">
+          <p className="text-xs text-slate-700 dark:text-slate-300">
             Unlock unlimited supervised hours with Lifetime Pro for {PRO_LIFETIME_PRICE}.
           </p>
         </div>
@@ -252,7 +254,7 @@ export function UpgradeCard({ onUpgradeClick }: { onUpgradeClick: () => void }) 
       <button
         type="button"
         onClick={onUpgradeClick}
-        className="btn-primary py-2 px-3.5 text-xs font-bold whitespace-nowrap shadow-teal flex-shrink-0"
+        className="btn-primary min-h-12 py-2 px-3.5 text-xs font-bold whitespace-nowrap shadow-teal flex-shrink-0"
       >
         Upgrade
       </button>

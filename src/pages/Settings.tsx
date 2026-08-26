@@ -229,9 +229,9 @@ export function Settings() {
               </div>
               <div className="min-w-0">
                 <h4 className="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-2">
-                  Need help? <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">BETA</span>
+                  Need help? <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">BETA</span>
                 </h4>
-                <p className="text-[11px] text-slate-600 dark:text-slate-400 truncate">
+                <p className="text-xs text-slate-600 dark:text-slate-300 truncate">
                   Guides, FAQ, and direct feedback to the team.
                 </p>
               </div>
@@ -348,7 +348,7 @@ export function Settings() {
                   <h4 className="font-bold text-xs text-teal-900 dark:text-teal-200">
                     DriveLog Lifetime Pro — {PRO_LIFETIME_PRICE}
                   </h4>
-                  <p className="text-[11px] text-teal-700 dark:text-teal-400">
+                  <p className="text-xs text-teal-700 dark:text-teal-300">
                     One-time payment • Unlimited driving logs • DMV exports • No subscriptions
                   </p>
                 </div>
@@ -549,7 +549,7 @@ export function Settings() {
                   value={exportData}
                   readOnly
                   rows={4}
-                  className="form-input font-mono text-[10px]"
+                  className="form-input font-mono text-xs"
                 />
                 <button
                   type="button"

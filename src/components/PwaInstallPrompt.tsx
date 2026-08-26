@@ -1,5 +1,6 @@
 import { Car, Download, Share, PlusSquare, X, Smartphone } from 'lucide-react';
 import { usePwaInstall } from '../hooks/usePwaInstall';
+import { useAccessibleDialog } from '../hooks/useAccessibleDialog';
 
 interface PwaInstallPromptProps {
   hook?: ReturnType<typeof usePwaInstall>;
@@ -8,6 +9,7 @@ interface PwaInstallPromptProps {
 export function PwaInstallPrompt({ hook }: PwaInstallPromptProps) {
   const fallback = usePwaInstall();
   const pwa = hook ?? fallback;
+  const dialogRef = useAccessibleDialog(pwa.showIosInstructions, pwa.closeIosInstructions);
 
   // Never render on desktop, or if already running as installed standalone PWA
   if (!pwa.isMobile || pwa.isStandalone) {
@@ -28,7 +30,7 @@ export function PwaInstallPrompt({ hook }: PwaInstallPromptProps) {
                 <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
                   {pwa.isIOS ? 'Add DriveLog to Home Screen' : 'Install DriveLog App'}
                 </h4>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-600 dark:text-slate-300">
                   {pwa.isIOS 
                     ? 'Access offline anytime from your home screen' 
                     : 'Fast offline logging & instant DMV reports'}
@@ -37,7 +39,7 @@ export function PwaInstallPrompt({ hook }: PwaInstallPromptProps) {
               <button
                 type="button"
                 onClick={pwa.dismissPrompt}
-                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white"
+                className="btn-ghost rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-white"
                 aria-label="Dismiss installation prompt"
               >
                 <X className="w-4 h-4" />
@@ -49,7 +51,7 @@ export function PwaInstallPrompt({ hook }: PwaInstallPromptProps) {
                 type="button"
                 aria-label="Dismiss install prompt"
                 onClick={pwa.dismissPrompt}
-                className="flex-1 py-2 px-3 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-center"
+                className="flex-1 min-h-12 py-2 px-3 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-center"
               >
                 Not now
               </button>
@@ -57,7 +59,7 @@ export function PwaInstallPrompt({ hook }: PwaInstallPromptProps) {
                 type="button"
                 aria-label="Install DriveLog app"
                 onClick={pwa.triggerInstall}
-                className="flex-1 py-2 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white text-xs font-bold shadow-teal flex items-center justify-center gap-1.5 transition-all text-center"
+                className="flex-1 min-h-12 py-2 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white text-xs font-bold shadow-teal flex items-center justify-center gap-1.5 transition-all text-center"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>{pwa.isIOS ? 'Instructions' : 'Install'}</span>
@@ -70,7 +72,7 @@ export function PwaInstallPrompt({ hook }: PwaInstallPromptProps) {
       {/* iOS "Add to Home Screen" Bottom Sheet Modal */}
       {pwa.showIosInstructions && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end justify-center p-0 sm:p-4 animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up space-y-4">
+          <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="ios-install-title" tabIndex={-1} className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up space-y-4">
             
             {/* Header */}
             <div className="flex items-center justify-between">
@@ -78,7 +80,7 @@ export function PwaInstallPrompt({ hook }: PwaInstallPromptProps) {
                 <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300 flex items-center justify-center">
                   <Smartphone className="w-5 h-5" />
                 </div>
-                <h3 className="font-bold text-sm text-slate-900 dark:text-white">
+                <h3 id="ios-install-title" className="font-bold text-sm text-slate-900 dark:text-white">
                   Add to Home Screen (iOS)
                 </h3>
               </div>
@@ -86,7 +88,7 @@ export function PwaInstallPrompt({ hook }: PwaInstallPromptProps) {
                 type="button"
                 aria-label="Close iOS install instructions"
                 onClick={pwa.closeIosInstructions}
-                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-900"
+                className="btn-ghost rounded-full text-slate-400 hover:text-slate-900"
               >
                 <X className="w-4 h-4" />
               </button>

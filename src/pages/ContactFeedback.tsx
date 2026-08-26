@@ -170,7 +170,7 @@ export function ContactFeedback({ source = 'contact_page' }: ContactFeedbackProp
             placeholder="e.g. The night badge showed Day but my DMV log counted it as night…"
             className="form-input resize-y"
           />
-          <p className="text-[11px] text-slate-400 mt-1 text-right">{message.length}/2000</p>
+          <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 text-right">{message.length}/2000</p>
         </div>
 
         <button
@@ -188,7 +188,7 @@ export function ContactFeedback({ source = 'contact_page' }: ContactFeedbackProp
           )}
         </button>
 
-        <p className="text-[11px] text-slate-400 text-center">
+        <p className="text-xs text-slate-600 dark:text-slate-300 text-center">
           Works offline — your message is saved securely on this device first.
         </p>
       </form>

@@ -47,9 +47,9 @@ export function StateGuideIndex() {
             >
               <div className="flex items-center justify-between">
                 <span className="font-bold text-sm text-slate-900 dark:text-white truncate">{s.name}</span>
-                <span className="text-[11px] font-mono font-bold text-slate-400 flex-shrink-0 ml-2">{s.code}</span>
+                <span className="text-xs font-mono font-bold text-slate-600 dark:text-slate-300 flex-shrink-0 ml-2">{s.code}</span>
               </div>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono tabular-nums">
+              <span className="text-xs text-slate-600 dark:text-slate-300 font-mono tabular-nums">
                 {s.requiredHours}h total · {s.requiredNightHours}h night
               </span>
             </Link>

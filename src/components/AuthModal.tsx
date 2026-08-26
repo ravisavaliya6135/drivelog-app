@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Lock, Mail, CheckCircle2, AlertCircle, X, ArrowRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useAccessibleDialog } from '../hooks/useAccessibleDialog';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ export function AuthModal({
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const dialogRef = useAccessibleDialog(isOpen, onClose);
 
   if (!isOpen) return null;
 
@@ -45,7 +47,7 @@ export function AuthModal({
 
   return (
     <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
-      <div className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col gap-4 animate-slide-up">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="auth-modal-title" tabIndex={-1} className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col gap-4 animate-slide-up">
         
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -54,14 +56,15 @@ export function AuthModal({
               <Lock className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white">{title}</h3>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">Passwordless & secure</p>
+              <h3 id="auth-modal-title" className="font-bold text-sm text-slate-900 dark:text-white">{title}</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-300">Passwordless & secure</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white"
+            aria-label="Close sign-in dialog"
+            className="btn-ghost rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-white"
           >
             <X className="w-4 h-4" />
           </button>
@@ -101,10 +104,11 @@ export function AuthModal({
             <p className="text-xs text-slate-600 dark:text-slate-400">{subtitle}</p>
 
             <div>
-              <label className="form-label">Email Address</label>
+              <label htmlFor="auth-email" className="form-label">Email Address</label>
               <div className="relative">
                 <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
+                  id="auth-email"
                   type="email"
                   required
                   placeholder="parent@example.com"
@@ -116,7 +120,7 @@ export function AuthModal({
             </div>
 
             {errorMessage && (
-              <div className="p-2.5 rounded-xl bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 text-xs font-medium border border-red-200 dark:border-red-800 flex items-center gap-2">
+              <div role="alert" className="p-2.5 rounded-xl bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 text-xs font-medium border border-red-200 dark:border-red-800 flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{errorMessage}</span>
               </div>

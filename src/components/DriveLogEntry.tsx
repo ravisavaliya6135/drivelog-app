@@ -104,7 +104,7 @@ export const DriveLogEntry = memo(function DriveLogEntry({
       {/* 1. Time & Duration Display Card */}
       <div className="p-4 rounded-2xl bg-teal-50/70 dark:bg-teal-950/40 border border-teal-200/80 dark:border-teal-800/60 flex items-center justify-between">
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300">
+          <span className="text-xs font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300">
             Total Session Time
           </span>
           <div className="font-mono text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tabular-nums">
@@ -142,8 +142,9 @@ export const DriveLogEntry = memo(function DriveLogEntry({
       {/* 2. Date & Duration Inputs */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="form-label">Date</label>
+          <label htmlFor="drive-date" className="form-label">Date</label>
           <input
+            id="drive-date"
             type="date"
             required
             value={formData.date}
@@ -153,8 +154,9 @@ export const DriveLogEntry = memo(function DriveLogEntry({
         </div>
 
         <div>
-          <label className="form-label">Duration (Minutes)</label>
+          <label htmlFor="drive-duration" className="form-label">Duration (Minutes)</label>
           <input
+            id="drive-duration"
             type="number"
             min="1"
             max="720"
@@ -169,8 +171,9 @@ export const DriveLogEntry = memo(function DriveLogEntry({
       {/* 3. Driver & Vehicle Selectors */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="form-label">Supervising Adult</label>
+          <label htmlFor="drive-supervisor" className="form-label">Supervising Adult</label>
           <select
+            id="drive-supervisor"
             value={formData.driverId}
             onChange={(e) => setFormData(prev => ({ ...prev, driverId: e.target.value }))}
             className="form-input cursor-pointer"
@@ -182,8 +185,9 @@ export const DriveLogEntry = memo(function DriveLogEntry({
         </div>
 
         <div>
-          <label className="form-label">Vehicle</label>
+          <label htmlFor="drive-vehicle" className="form-label">Vehicle</label>
           <select
+            id="drive-vehicle"
             value={formData.vehicleId}
             onChange={(e) => setFormData(prev => ({ ...prev, vehicleId: e.target.value }))}
             className="form-input cursor-pointer"
@@ -220,8 +224,9 @@ export const DriveLogEntry = memo(function DriveLogEntry({
       {/* 5. Notes & Supervisor Signature */}
       <div className="space-y-3">
         <div>
-          <label className="form-label">Route & Practice Notes</label>
+          <label htmlFor="drive-notes" className="form-label">Route & Practice Notes</label>
           <input
+            id="drive-notes"
             type="text"
             placeholder="e.g. Parallel parking, 101 freeway merge, night rain practice"
             value={formData.notes || ''}
@@ -232,8 +237,9 @@ export const DriveLogEntry = memo(function DriveLogEntry({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="form-label">Supervisor Initials</label>
+            <label htmlFor="drive-initials" className="form-label">Supervisor Initials</label>
             <input
+              id="drive-initials"
               type="text"
               maxLength={4}
               value={formData.initials || ''}
@@ -244,8 +250,9 @@ export const DriveLogEntry = memo(function DriveLogEntry({
           </div>
 
           <div>
-            <label className="form-label">Est. Miles</label>
+            <label htmlFor="drive-miles" className="form-label">Est. Miles</label>
             <input
+              id="drive-miles"
               type="number"
               min="0"
               step="0.1"
@@ -285,7 +292,7 @@ export const DriveLogEntry = memo(function DriveLogEntry({
                 <span className="block font-bold text-xs text-emerald-700 dark:text-emerald-300">
                   ✓ Verified by {(formData.initials || 'parent').toUpperCase()}
                 </span>
-                <span className="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                <span className="block text-xs text-slate-600 dark:text-slate-300 mt-0.5">
                   Signed off for DMV submission
                 </span>
               </>
@@ -294,7 +301,7 @@ export const DriveLogEntry = memo(function DriveLogEntry({
                 <span className="block font-bold text-xs text-amber-700 dark:text-amber-300">
                   Awaiting parent sign-off
                 </span>
-                <span className="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                <span className="block text-xs text-slate-600 dark:text-slate-300 mt-0.5">
                   Tap to mark this drive as verified by a parent/guardian
                 </span>
               </>
@@ -313,7 +320,7 @@ export const DriveLogEntry = memo(function DriveLogEntry({
       <div className="pt-2 space-y-2">
         <button
           type="submit"
-          className="btn-primary w-full h-14 text-base font-bold shadow-teal flex items-center justify-center gap-2"
+          className="btn-primary w-full h-16 text-base font-bold shadow-teal flex items-center justify-center gap-2"
         >
           <Save className="w-5 h-5" />
           <span>{isEditing ? 'Update Drive Entry' : 'Save Drive to Log'}</span>
@@ -322,7 +329,7 @@ export const DriveLogEntry = memo(function DriveLogEntry({
         <button
           type="button"
           onClick={onCancel}
-          className="w-full py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors text-center block"
+          className="w-full min-h-12 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-300 transition-colors text-center block"
         >
           Cancel
         </button>

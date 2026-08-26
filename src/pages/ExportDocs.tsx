@@ -156,27 +156,27 @@ export function ExportDocs() {
         {/* Readiness Bento Stats */}
         <div className="grid grid-cols-3 gap-2 sm:gap-3 text-center">
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Total Logged</span>
+            <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Total Logged</span>
             <span className="font-mono text-lg sm:text-xl font-bold text-slate-900 dark:text-white tabular-nums">
               {totalHoursVal}h
             </span>
-            <span className="text-[10px] text-slate-400 block">/ {state.requiredHours}h target</span>
+            <span className="text-xs text-slate-600 dark:text-slate-300 block">/ {state.requiredHours}h target</span>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Day Practice</span>
+            <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Day Practice</span>
             <span className="font-mono text-lg sm:text-xl font-bold text-slate-900 dark:text-white tabular-nums">
               {dayHoursVal}h
             </span>
-            <span className="text-[10px] text-slate-400 block">/ {state.requiredHours - state.requiredNightHours}h target</span>
+            <span className="text-xs text-slate-600 dark:text-slate-300 block">/ {state.requiredHours - state.requiredNightHours}h target</span>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Night Practice</span>
+            <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Night Practice</span>
             <span className="font-mono text-lg sm:text-xl font-bold text-slate-900 dark:text-white tabular-nums">
               {nightHoursVal}h
             </span>
-            <span className="text-[10px] text-slate-400 block">/ {state.requiredNightHours}h target</span>
+            <span className="text-xs text-slate-600 dark:text-slate-300 block">/ {state.requiredNightHours}h target</span>
           </div>
         </div>
 
@@ -230,7 +230,7 @@ export function ExportDocs() {
           </div>
         </div>
 
-        <p className="text-[11px] text-center text-slate-400">
+        <p className="text-xs text-center text-slate-600 dark:text-slate-300">
           Complies with state DMV log formats. All calculations are stored locally on your device.
         </p>
 

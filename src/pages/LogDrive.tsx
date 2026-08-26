@@ -220,7 +220,7 @@ export function LogDrive() {
                       <span className="font-mono text-base font-extrabold text-slate-900 dark:text-white tabular-nums">
                         {formattedDuration}
                       </span>
-                      <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${
                         drive.dayNight === 'night'
                           ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
                           : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'

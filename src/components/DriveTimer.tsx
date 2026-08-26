@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Play, Pause, Square, Sun, Moon, AlertTriangle, History } from 'lucide-react';
+import { Play, Pause, Square, Sun, Moon, AlertTriangle, History, Info } from 'lucide-react';
 import { useNightDetection } from '../hooks/useNightDetection';
 import { useDriveLog } from '../hooks/useDriveLog';
 import { useDriveTimer } from '../hooks/useDriveTimer';
+import { useAccessibleDialog } from '../hooks/useAccessibleDialog';
 
 interface DriveTimerProps {
   onDriveComplete: (data: {
@@ -33,6 +34,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
   } = useDriveTimer();
 
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+  const discardDialogRef = useAccessibleDialog(showDiscardConfirm, () => setShowDiscardConfirm(false));
 
   const [selectedDriverId, setSelectedDriverId] = useState<string>(() => {
     const primary = drivers.find(d => d.isPrimaryDriver) || drivers[0];
@@ -105,12 +107,12 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-slate-900 dark:text-white">Drive timer recovered.</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">No time was lost.</p>
+              <p className="text-xs text-slate-600 dark:text-slate-300">No time was lost.</p>
             </div>
             <button
               type="button"
               onClick={dismissRecoveryToast}
-              className="text-[11px] font-bold text-teal-700 dark:text-teal-400 px-2 py-1 rounded-lg hover:bg-teal-50 dark:hover:bg-teal-950"
+              className="text-xs font-bold text-teal-700 dark:text-teal-300 px-2 py-1 rounded-lg hover:bg-teal-50 dark:hover:bg-teal-950"
             >
               OK
             </button>
@@ -126,7 +128,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
             {currentSupervisor?.name ? currentSupervisor.name[0].toUpperCase() : 'S'}
           </div>
           <div className="flex-1 min-w-0">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Supervisor</span>
+            <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Supervisor</span>
             {drivers.length > 1 ? (
               <select
                 value={selectedDriverId}
@@ -161,7 +163,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
             {isNightEffective ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
           </div>
           <div className="min-w-0">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Auto-Detected</span>
+            <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Auto-detected</span>
             <span className="font-bold text-xs text-slate-900 dark:text-white capitalize flex items-center gap-1">
               {isNightEffective ? 'Night Drive' : 'Day Drive'}
             </span>
@@ -171,8 +173,8 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
 
       {/* Polar day/night info (Alaska extreme latitudes only) */}
       {polarNote && (
-        <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center -mt-3" role="note">
-          ℹ️ {polarNote}
+        <p className="text-xs text-slate-600 dark:text-slate-300 text-center -mt-3 inline-flex items-center justify-center gap-1" role="note">
+          <Info className="h-4 w-4" aria-hidden="true" /> {polarNote}
         </p>
       )}
 
@@ -208,7 +210,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
           <span aria-live="polite" className="sr-only">
             {isRunning ? `${Math.floor(seconds / 60)} minutes elapsed` : 'Timer ready'}
           </span>
-          <div className="grid grid-cols-3 text-center max-w-[240px] mx-auto text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">
+          <div className="grid grid-cols-3 text-center max-w-[240px] mx-auto text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300 mt-1">
             <span>Hours</span>
             <span>Mins</span>
             <span>Secs</span>
@@ -219,13 +221,13 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
         {!isRunning && (
           <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
             <div className="bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl text-center">
-              <span className="text-[10px] uppercase font-bold text-slate-400 block">Est. Distance</span>
+              <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Est. Distance</span>
               <span className="font-mono font-bold text-base text-slate-900 dark:text-white tabular-nums">
                 {estimatedMiles} mi
               </span>
             </div>
             <div className="bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl text-center">
-              <span className="text-[10px] uppercase font-bold text-slate-400 block">Average Speed</span>
+              <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Average Speed</span>
               <span className="font-mono font-bold text-base text-slate-900 dark:text-white tabular-nums">
                 {avgSpeed} mph
               </span>
@@ -293,10 +295,10 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
       {/* Discard Confirmation Dialog */}
       {showDiscardConfirm && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 max-w-sm w-full rounded-2xl p-5 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 animate-slide-up">
+          <div ref={discardDialogRef} role="dialog" aria-modal="true" aria-labelledby="discard-drive-title" tabIndex={-1} className="bg-white dark:bg-slate-900 max-w-sm w-full rounded-2xl p-5 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 animate-slide-up">
             <div className="flex items-center gap-3 text-red-600 dark:text-red-400">
               <AlertTriangle className="w-6 h-6 flex-shrink-0" />
-              <h3 className="font-bold text-base text-slate-900 dark:text-white">Discard Drive?</h3>
+              <h3 id="discard-drive-title" className="font-bold text-base text-slate-900 dark:text-white">Discard Drive?</h3>
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-300">
               Are you sure you want to discard this driving session? The elapsed time ({time.hours}:{time.minutes}:{time.seconds}) will not be saved.
@@ -305,14 +307,14 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
               <button
                 type="button"
                 onClick={() => setShowDiscardConfirm(false)}
-                className="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs"
+                className="flex-1 min-h-12 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs"
               >
                 Keep Driving
               </button>
               <button
                 type="button"
                 onClick={handleDiscard}
-                className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs"
+                className="flex-1 min-h-12 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs"
               >
                 Discard
               </button>
