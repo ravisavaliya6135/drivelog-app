@@ -68,8 +68,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       });
       return { error: error ? new Error(error.message) : null };
-    } catch (err: any) {
-      return { error: new Error(err.message || 'Failed to send magic link') };
+    } catch (err) {
+      return { error: new Error(err instanceof Error ? err.message : 'Failed to send magic link') };
     }
   };
 

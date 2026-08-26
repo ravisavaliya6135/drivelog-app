@@ -283,7 +283,7 @@ export function Settings() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-teal-600" />
+                  <Sparkles className="w-4 h-4 text-teal-700" />
                   Membership Status
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -293,7 +293,7 @@ export function Settings() {
 
               {isPro ? (
                 <span className="badge-teal text-xs font-bold">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" /> Lifetime Pro
+                  <CheckCircle2 className="w-3.5 h-3.5 text-teal-700" /> Lifetime Pro
                 </span>
               ) : (
                 <span className="badge-amber text-xs font-bold">
@@ -346,7 +346,7 @@ export function Settings() {
               <button
                 type="button"
                 onClick={handleRestorePurchase}
-                className="text-xs text-teal-600 dark:text-teal-400 font-bold hover:underline inline-flex items-center gap-1"
+                className="text-xs text-teal-700 dark:text-teal-400 font-bold hover:underline inline-flex items-center gap-1"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 Restore Purchase / Refresh Status
@@ -364,7 +364,7 @@ export function Settings() {
       {activeTab === 'requirements' && (
         <section className="app-card p-5 space-y-4 animate-fade-in">
           <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-teal-600" />
+            <MapPin className="w-4 h-4 text-teal-700" />
             <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
               State DMV Licensing Targets
             </h2>
@@ -383,7 +383,7 @@ export function Settings() {
       {activeTab === 'drivers' && (
         <section className="app-card p-5 space-y-4 animate-fade-in">
           <div className="flex items-center gap-2">
-            <Car className="w-4 h-4 text-teal-600" />
+            <Car className="w-4 h-4 text-teal-700" />
             <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
               Supervising Drivers & Vehicles
             </h2>
@@ -461,7 +461,7 @@ export function Settings() {
           {/* PWA Installation */}
           <div className="app-card p-5 space-y-3">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Smartphone className="w-4 h-4 text-teal-600" /> App Installation (PWA)
+              <Smartphone className="w-4 h-4 text-teal-700" /> App Installation (PWA)
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               {pwa.isStandalone
@@ -471,7 +471,7 @@ export function Settings() {
 
             {pwa.isStandalone ? (
               <span className="badge-teal">
-                <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" /> DriveLog is Installed
+                <CheckCircle2 className="w-3.5 h-3.5 text-teal-700" /> DriveLog is Installed
               </span>
             ) : (
               <button
@@ -488,7 +488,7 @@ export function Settings() {
           {/* Backup & Restore */}
           <div className="app-card p-5 space-y-3">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Download className="w-4 h-4 text-teal-600" /> Data Backup & Restore
+              <Download className="w-4 h-4 text-teal-700" /> Data Backup & Restore
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               Export all local driving logs and vehicle profiles as a JSON file to transfer between devices.

@@ -106,7 +106,7 @@ export function ExportDocs() {
       <div className="app-card p-4 space-y-3">
         <div className="flex items-center justify-between">
           <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-teal-600" />
+            <MapPin className="w-3.5 h-3.5 text-teal-700" />
             Target State Requirement
           </label>
           <span className="badge-teal">

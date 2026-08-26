@@ -38,7 +38,7 @@ export function StateSelector({ value, onChange, className = '' }: StateSelector
         aria-expanded={isOpen}
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 dark:bg-teal-950/60 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
             <MapPin className="w-4 h-4" />
           </div>
           <div>
@@ -84,7 +84,7 @@ export function StateSelector({ value, onChange, className = '' }: StateSelector
                 </p>
               </div>
               {value === state.code && (
-                <Check className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                <Check className="w-4 h-4 text-teal-700 dark:text-teal-400" />
               )}
             </button>
           ))}

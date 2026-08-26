@@ -16,6 +16,7 @@ import { useDriveLog } from '../hooks/useDriveLog';
 import { DriveLogEntry } from '../components/DriveLogEntry';
 import { useSeo } from '../hooks/useSeo';
 import { getActiveTimerRecord } from '../utils/db';
+import type { DriveEntry } from '../types';
 
 export function LogDrive() {
   useSeo({
@@ -82,7 +83,7 @@ export function LogDrive() {
   const nightMinutes = drives.filter(d => d.dayNight === 'night').reduce((acc, d) => acc + d.durationMinutes, 0);
   const nightHours = (nightMinutes / 60).toFixed(1);
 
-  const handleSaveDrive = async (entry: any) => {
+  const handleSaveDrive = async (entry: DriveEntry) => {
     await addDrive(entry);
     setShowManualForm(false);
     setEditingDrive(null);

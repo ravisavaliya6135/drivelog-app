@@ -6,6 +6,7 @@ export function useNightDetection(stateCode: string = 'CA') {
   const [legalNightStart, setLegalNightStart] = useState<Date | null>(null);
   const [isNight, setIsNight] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [polarNote, setPolarNote] = useState<string | undefined>(undefined);
   const [manualOverride, setManualOverride] = useState<'day' | 'night' | null>(null); // Manual fallback when GPS/location denied
 
   // Update current time every minute
@@ -22,6 +23,7 @@ export function useNightDetection(stateCode: string = 'CA') {
     setIsNight(manualOverride ? manualOverride === 'night' : result.isNight);
     setSunsetTime(result.sunsetTime);
     setLegalNightStart(result.legalNightStart);
+    setPolarNote(result.polarNote);
   }, [currentTime, stateCode, manualOverride]);
 
   // Get night status for a specific datetime
@@ -60,6 +62,7 @@ export function useNightDetection(stateCode: string = 'CA') {
     sunsetTime,
     legalNightStart,
     currentTime,
+    polarNote,
     getNightStatus,
     getSunset,
     getSunrise,

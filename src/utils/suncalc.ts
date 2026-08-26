@@ -1,7 +1,7 @@
-import { getTimes } from 'suncalc';
+import { getTimes, getAltitude } from 'suncalc';
 import type { StateInfo } from '../types';
 
-// Re-export getTimes for use in hooks
+// Re-export for use in hooks
 export { getTimes };
 
 // State capital coordinates for sunrise/sunset calculations
@@ -62,6 +62,8 @@ export interface NightCalculationResult {
   isNight: boolean;
   sunsetTime: Date;
   legalNightStart: Date; // 30 minutes after sunset
+  /** Set only during polar day/night (extreme latitudes like Alaska) */
+  polarNote?: string;
 }
 
 /**
@@ -78,6 +80,24 @@ export function calculateNightStatus(
   // Get sunset time for the date
   const times = getTimes(dateTime, lat, lng);
   const sunset = times.sunset;
+  const sunrise = times.sunrise;
+
+  // Polar day/night fallback (e.g. Fairbanks/Utqiagvik, AK in summer/winter):
+  // suncalc returns Invalid Dates when the sun never sets or never rises.
+  // Classify by the sun's actual altitude at the given moment instead:
+  // below -0.833° (geometric horizon incl. refraction) counts as legal night.
+  if (Number.isNaN(sunset.getTime()) || Number.isNaN(sunrise.getTime())) {
+    const isNight = getAltitude(dateTime, lat, lng) < -0.833;
+    return {
+      isNight,
+      sunsetTime: dateTime,
+      legalNightStart: dateTime,
+      polarNote: isNight
+        ? 'Polar night — all hours classified as night'
+        : 'Midnight sun (polar day) — all hours classified as day',
+    };
+  }
+
   const legalNightStart = new Date(sunset.getTime() + 30 * 60 * 1000); // 30 minutes after sunset
 
   return {

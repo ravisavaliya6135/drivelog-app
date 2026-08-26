@@ -2,10 +2,14 @@ import { useState } from 'react';
 import { Download, Printer, CheckCircle, AlertTriangle, FileText, Loader2, Lock } from 'lucide-react';
 import type { DriveEntry, DriverProfile, VehicleProfile } from '../types';
 import { US_STATES } from '../types';
-import { generatePDF, downloadPDF } from '../utils/pdf.tsx';
 import { useEntitlement } from '../contexts/EntitlementContext';
 import { UpgradeModal } from './UpgradeModal';
 import { trackEvent } from '../utils/analytics';
+
+// NOTE: @react-pdf/renderer (~1.3MB) is intentionally NOT statically imported.
+// It is loaded on demand via dynamic import() inside handleGenerate/handlePrint
+// so the Export page itself stays lightweight for users who are only previewing
+// their totals. Repeat imports resolve instantly from the module cache.
 
 interface PdfExportProps {
   drives: DriveEntry[];
@@ -58,6 +62,7 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
     setError(null);
 
     try {
+      const { generatePDF, downloadPDF } = await import('../utils/pdf');
       const blob = await generatePDF(drives, driver, vehicle, selectedState);
       downloadPDF(blob, `DriveLog-${state.code}-${new Date().toISOString().split('T')[0]}.pdf`);
       // Business analytics: export volume per state (no PII)
@@ -86,6 +91,7 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
     setError(null);
 
     try {
+      const { generatePDF } = await import('../utils/pdf');
       const blob = await generatePDF(drives, driver, vehicle, selectedState);
       const url = URL.createObjectURL(blob);
       const printWindow = window.open(url, '_blank');

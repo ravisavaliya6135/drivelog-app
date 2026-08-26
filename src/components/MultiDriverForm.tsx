@@ -153,7 +153,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-            <User className="w-4 h-4 text-teal-600" /> Drivers & Supervisors
+            <User className="w-4 h-4 text-teal-700" /> Drivers & Supervisors
           </h3>
           <button
             type="button"
@@ -260,7 +260,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
                     type="checkbox"
                     checked={driverForm.isPrimaryDriver}
                     onChange={e => setDriverForm(prev => ({ ...prev, isPrimaryDriver: e.target.checked }))}
-                    className="w-4 h-4 text-teal-600 rounded"
+                    className="w-4 h-4 text-teal-700 rounded"
                   />
                   Set as primary default driver
                 </label>
@@ -284,7 +284,7 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
       <section className="space-y-3 pt-2">
         <div className="flex items-center justify-between">
           <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Car className="w-4 h-4 text-teal-600" /> Vehicle Profiles
+            <Car className="w-4 h-4 text-teal-700" /> Vehicle Profiles
           </h3>
           <button
             type="button"

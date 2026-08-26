@@ -9,6 +9,8 @@ interface DriveTimerProps {
     durationMinutes: number;
     startTime: Date;
     endTime: Date;
+    /** Supervisor selected at stop time — saved onto the drive entry */
+    driverId: string;
   }) => void;
 }
 
@@ -32,13 +34,13 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
 
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
 
-  const [selectedDriverId] = useState(() => {
+  const [selectedDriverId, setSelectedDriverId] = useState<string>(() => {
     const primary = drivers.find(d => d.isPrimaryDriver) || drivers[0];
     return primary?.id || '';
   });
 
   // Automatic legal night detection — no user input required.
-  const { isNight } = useNightDetection();
+  const { isNight, polarNote } = useNightDetection();
   const isNightEffective = isNight;
 
   const handleStart = () => {
@@ -59,6 +61,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
       durationMinutes: result.durationMinutes,
       startTime: result.startTime || new Date(),
       endTime: result.endTime,
+      driverId: selectedDriverId || drivers[0]?.id || '',
     });
   };
 
@@ -107,7 +110,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
             <button
               type="button"
               onClick={dismissRecoveryToast}
-              className="text-[11px] font-bold text-teal-600 dark:text-teal-400 px-2 py-1 rounded-lg hover:bg-teal-50 dark:hover:bg-teal-950"
+              className="text-[11px] font-bold text-teal-700 dark:text-teal-400 px-2 py-1 rounded-lg hover:bg-teal-50 dark:hover:bg-teal-950"
             >
               OK
             </button>
@@ -124,9 +127,22 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
           </div>
           <div className="flex-1 min-w-0">
             <span className="text-[10px] uppercase font-bold text-slate-400 block">Supervisor</span>
-            <span className="font-bold text-xs text-slate-800 dark:text-slate-200 truncate block">
-              {currentSupervisor?.name || 'Primary Supervisor'}
-            </span>
+            {drivers.length > 1 ? (
+              <select
+                value={selectedDriverId}
+                onChange={(e) => setSelectedDriverId(e.target.value)}
+                aria-label="Supervisor"
+                className="w-full bg-transparent font-bold text-xs text-slate-800 dark:text-slate-200 focus:outline-none truncate cursor-pointer"
+              >
+                {drivers.map(d => (
+                  <option key={d.id} value={d.id} className="dark:bg-slate-900">{d.name}</option>
+                ))}
+              </select>
+            ) : (
+              <span className="font-bold text-xs text-slate-800 dark:text-slate-200 truncate block">
+                {currentSupervisor?.name || 'Primary Supervisor'}
+              </span>
+            )}
           </div>
         </div>
 
@@ -153,6 +169,13 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
         </div>
       </div>
 
+      {/* Polar day/night info (Alaska extreme latitudes only) */}
+      {polarNote && (
+        <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center -mt-3" role="note">
+          ℹ️ {polarNote}
+        </p>
+      )}
+
       {/* 2. Main Live Timer Display */}
       <div className="w-full app-card-elevated p-8 text-center space-y-4 relative overflow-hidden">
 
@@ -175,11 +198,16 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
           )}
         </div>
 
-        {/* Digital Tabular Clock */}
+        {/* Digital Tabular Clock (role=timer; SRs announce via the sr-only
+            per-minute live region below instead of every second) */}
         <div className="py-2">
-          <div className="font-mono text-5xl sm:text-6xl font-extrabold text-slate-900 dark:text-white tabular-nums tracking-tight">
+          <div role="timer" className="font-mono text-5xl sm:text-6xl font-extrabold text-slate-900 dark:text-white tabular-nums tracking-tight">
             {time.hours}:{time.minutes}:{time.seconds}
           </div>
+          {/* Screen reader announcement — once per minute, not once per second */}
+          <span aria-live="polite" className="sr-only">
+            {isRunning ? `${Math.floor(seconds / 60)} minutes elapsed` : 'Timer ready'}
+          </span>
           <div className="grid grid-cols-3 text-center max-w-[240px] mx-auto text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">
             <span>Hours</span>
             <span>Mins</span>
@@ -213,6 +241,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
           <button
             type="button"
             onClick={handleStart}
+            aria-label="Start drive"
             className="w-full h-16 rounded-2xl bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white font-bold text-lg shadow-teal flex items-center justify-center gap-3 transition-all focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
           >
             <Play className="w-6 h-6 fill-white" />
@@ -224,6 +253,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
             <button
               type="button"
               onClick={handlePauseResume}
+              aria-label={isPaused ? 'Resume drive' : 'Pause drive'}
               className={`h-16 rounded-2xl font-bold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-offset-1 ${
                 isPaused
                   ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm focus:ring-emerald-500'
@@ -237,6 +267,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
             <button
               type="button"
               onClick={() => void handleFinish()}
+              aria-label="Stop drive"
               className="h-16 rounded-2xl bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white font-bold text-base shadow-sm flex items-center justify-center gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
             >
               <Square className="w-5 h-5 fill-white" />

@@ -76,23 +76,32 @@ export default defineConfig(({ mode }) => {
             handler: 'NetworkFirst',
             options: {
               cacheName: 'html-cache',
-              expiration: { maxEntries: 10 },
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },
           {
             urlPattern: ({ request }) => request.destination === 'style',
             handler: 'StaleWhileRevalidate',
-            options: { cacheName: 'css-cache' },
+            options: {
+              cacheName: 'css-cache',
+              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
           },
           {
             urlPattern: ({ request }) => request.destination === 'font',
             handler: 'StaleWhileRevalidate',
-            options: { cacheName: 'font-cache' },
+            options: {
+              cacheName: 'font-cache',
+              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
           },
           {
             urlPattern: ({ request }) => request.destination === 'image',
             handler: 'CacheFirst',
-            options: { cacheName: 'image-cache' },
+            options: {
+              cacheName: 'image-cache',
+              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
           },
         ],
       },

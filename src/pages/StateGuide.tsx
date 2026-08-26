@@ -63,12 +63,62 @@ export function StateGuide() {
   const otherStates = US_STATES.filter(s => s.code !== state.code).slice(0, 11);
   const year = new Date().getFullYear();
 
+  // FAQPage structured data for rich search snippets — generated per state
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `How many driving hours are required in ${state.name}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `${state.name} requires ${state.requiredHours} total supervised driving hours, including at least ${state.requiredNightHours} hours of night driving.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `What counts as night driving in ${state.name}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `Night driving generally begins around civil twilight or roughly 30 minutes after sunset and ends at sunrise. ${state.name} requires at least ${state.requiredNightHours} of the ${state.requiredHours} supervised hours to be completed at night.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `What is the official DMV driving log form for ${state.name}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: state.dmvFormName
+            ? `${state.name} uses form ${state.dmvFormName}. DriveLog generates a printable log formatted to match its requirements.`
+            : `${state.name} accepts a generic supervised driving log that includes dates, durations, and supervisor initials.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `Can I use a digital driving log app in ${state.name}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `Yes. DriveLog is a free offline-first app that automatically tracks your ${state.name} supervised driving hours, detects legal night driving, and exports a printable DMV-ready PDF log.`,
+        },
+      },
+    ],
+  };
+
   return (
     <article className="space-y-6 animate-fade-in max-w-3xl">
 
+      {/* FAQPage structured data for rich search snippets.
+          dangerouslySetInnerHTML is required so quotes are NOT HTML-escaped
+          (crawlers parse this as raw JSON). Content is app-generated, no user input. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs">
-        <Link to="/" className="text-teal-600 dark:text-teal-400 font-semibold hover:underline inline-flex items-center gap-1">
+        <Link to="/" className="text-teal-700 dark:text-teal-400 font-semibold hover:underline inline-flex items-center gap-1">
           <ArrowLeft className="w-3.5 h-3.5" /> DriveLog
         </Link>
         <span className="text-slate-400">/</span>
@@ -141,7 +191,7 @@ export function StateGuide() {
                     href={state.dmvFormUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-teal-600 dark:text-teal-400 font-bold hover:underline"
+                    className="inline-flex items-center gap-1 text-teal-700 dark:text-teal-400 font-bold hover:underline"
                   >
                     <FileText className="w-3.5 h-3.5" />
                     {hasFormCode(state.dmvFormName) ? `Form ${state.dmvFormName}` : 'Official supervised driving log'}
@@ -170,15 +220,15 @@ export function StateGuide() {
         </p>
         <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
           <li className="flex items-start gap-2">
-            <CheckCircle2 className="w-4 h-4 text-teal-500 mt-0.5 flex-shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
             <span>{state.name} requires at least <strong>{state.requiredNightHours} of your {state.requiredHours} hours</strong> to be completed at night.</span>
           </li>
           <li className="flex items-start gap-2">
-            <CheckCircle2 className="w-4 h-4 text-teal-500 mt-0.5 flex-shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
             <span>Sunset shifts daily — a fixed schedule like "drive after 7 PM" can misclassify hours on your DMV log.</span>
           </li>
           <li className="flex items-start gap-2">
-            <CheckCircle2 className="w-4 h-4 text-teal-500 mt-0.5 flex-shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
             <span>DriveLog calculates sunset for your location automatically and classifies each session as day or night using official astronomical data — no guesswork.</span>
           </li>
         </ul>

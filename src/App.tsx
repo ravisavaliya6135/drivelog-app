@@ -71,7 +71,7 @@ function TopHeader({ activeRole, onToggleRole }: { activeRole: 'teen' | 'parent'
             end
             className={({ isActive }) =>
               `px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-600 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`
             }
           >
@@ -81,7 +81,7 @@ function TopHeader({ activeRole, onToggleRole }: { activeRole: 'teen' | 'parent'
             to="/log"
             className={({ isActive }) =>
               `px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-600 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`
             }
           >
@@ -91,7 +91,7 @@ function TopHeader({ activeRole, onToggleRole }: { activeRole: 'teen' | 'parent'
             to="/export"
             className={({ isActive }) =>
               `px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-600 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`
             }
           >
@@ -101,7 +101,7 @@ function TopHeader({ activeRole, onToggleRole }: { activeRole: 'teen' | 'parent'
             to="/settings"
             className={({ isActive }) =>
               `px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-600 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`
             }
           >
@@ -125,7 +125,7 @@ function BottomNavbar() {
           end
           className={({ isActive }) =>
             `flex flex-col items-center justify-center py-1 transition-colors ${
-              isActive ? 'text-teal-600 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
+              isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
             }`
           }
         >
@@ -138,7 +138,7 @@ function BottomNavbar() {
           to="/log"
           className={({ isActive }) =>
             `flex flex-col items-center justify-center py-1 transition-colors ${
-              isActive ? 'text-teal-600 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
+              isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
             }`
           }
         >
@@ -162,7 +162,7 @@ function BottomNavbar() {
           to="/export"
           className={({ isActive }) =>
             `flex flex-col items-center justify-center py-1 transition-colors ${
-              isActive ? 'text-teal-600 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
+              isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
             }`
           }
         >
@@ -175,7 +175,7 @@ function BottomNavbar() {
           to="/settings"
           className={({ isActive }) =>
             `flex flex-col items-center justify-center py-1 transition-colors ${
-              isActive ? 'text-teal-600 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
+              isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
             }`
           }
         >

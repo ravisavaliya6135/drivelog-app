@@ -1,5 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 
+/** iOS Safari exposes navigator.standalone (not part of the standard TS DOM types). */
+interface NavigatorStandalone extends Navigator {
+  standalone?: boolean;
+}
+
 export interface PwaInstallState {
   isInstalled: boolean;
   isStandalone: boolean;
@@ -55,7 +60,7 @@ export function usePwaInstall(): PwaInstallState {
     const checkStandalone = () => {
       const isStandaloneMode =
         window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as any).standalone === true ||
+        (window.navigator as NavigatorStandalone).standalone === true ||
         document.referrer.includes('android-app://');
 
       setIsStandalone(isStandaloneMode);

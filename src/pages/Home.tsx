@@ -5,6 +5,7 @@ import { useDriveLog } from '../hooks/useDriveLog';
 import { useEntitlement } from '../contexts/EntitlementContext';
 import { UpgradeCard, UpgradeModal } from '../components/UpgradeModal';
 import { US_STATES } from '../types';
+import type { DriveEntry } from '../types';
 import { DriveTimer } from '../components/DriveTimer';
 import { DriveLogEntry } from '../components/DriveLogEntry';
 import { useSeo } from '../hooks/useSeo';
@@ -88,25 +89,26 @@ export function Home() {
     setSearchParams(params, { replace: true });
   };
 
-  const handleTimerComplete = (data: { durationMinutes: number; startTime: Date; endTime: Date }) => {
+  const handleTimerComplete = (data: { durationMinutes: number; startTime: Date; endTime: Date; driverId: string }) => {
     setShowTimerModal(false);
     setShowLogEntry(true);
     updateModalUrl('log-entry');
-    const today = new Date().toISOString().split('T')[0];
-    const primaryDriver = drivers.find(d => d.isPrimaryDriver) || drivers[0];
+    // DMV logs group drives by the date the drive STARTED, so a session
+    // spanning midnight (11:30 PM → 12:15 AM) is logged on the start date.
+    const driveDate = data.startTime.toISOString().split('T')[0];
     const primaryVehicle = vehicles[0];
 
     sessionStorage.setItem('timer-drive-data', JSON.stringify({
-      date: today,
+      date: driveDate,
       startTime: data.startTime.toISOString(),
       endTime: data.endTime.toISOString(),
       durationMinutes: data.durationMinutes,
-      driverId: primaryDriver?.id || '',
+      driverId: data.driverId || drivers.find(d => d.isPrimaryDriver)?.id || drivers[0]?.id || '',
       vehicleId: primaryVehicle?.id || '',
     }));
   };
 
-  const handleLogEntrySave = (entry: any) => {
+  const handleLogEntrySave = (entry: DriveEntry) => {
     addDrive(entry);
     setShowLogEntry(false);
     setEditingDrive(null);
@@ -145,7 +147,7 @@ export function Home() {
         {/* Card Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400">
+            <span className="p-1.5 rounded-lg bg-teal-500/10 text-teal-700 dark:text-teal-400">
               <ShieldCheck className="w-4 h-4" />
             </span>
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -256,7 +258,7 @@ export function Home() {
               setShowLogEntry(true);
               updateModalUrl('log-entry');
             }}
-            className="text-xs font-semibold text-teal-600 dark:text-teal-400 hover:underline inline-flex items-center gap-1"
+            className="text-xs font-semibold text-teal-700 dark:text-teal-400 hover:underline inline-flex items-center gap-1"
           >
             <Plus className="w-3.5 h-3.5" /> Log past trip manually
           </button>
@@ -290,7 +292,7 @@ export function Home() {
           <button
             type="button"
             onClick={() => navigate('/log')}
-            className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline flex items-center gap-1"
+            className="text-xs font-bold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1"
           >
             View All ({drives.length}) <ChevronRight className="w-3.5 h-3.5" />
           </button>
@@ -344,7 +346,7 @@ export function Home() {
           </div>
         ) : (
           <div className="app-card p-8 text-center space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 dark:bg-teal-950/50 dark:text-teal-400 flex items-center justify-center mx-auto">
+            <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-400 flex items-center justify-center mx-auto">
               <Car className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-sm text-slate-900 dark:text-white">No drives logged yet</h3>

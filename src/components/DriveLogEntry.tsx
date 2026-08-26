@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import {
   Sun,
   Moon,
@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import type { DriveEntry, DriverProfile, VehicleProfile } from '../types';
 import { useNightDetection } from '../hooks/useNightDetection';
+import { generateId } from '../utils/db';
 
 interface DriveLogEntryProps {
   initialData?: Partial<DriveEntry>;
@@ -22,7 +23,9 @@ interface DriveLogEntryProps {
   isEditing?: boolean;
 }
 
-export function DriveLogEntry({
+// Memoized: parent lists re-render on timer ticks / context updates —
+// entry cards should not unless their own data changes.
+export const DriveLogEntry = memo(function DriveLogEntry({
   initialData,
   drivers,
   vehicles,
@@ -69,7 +72,7 @@ export function DriveLogEntry({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const entry: DriveEntry = {
-      id: initialData?.id || `drive_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: initialData?.id || generateId(),
       date: formData.date || new Date().toISOString().split('T')[0],
       startTime: formData.startTime || new Date().toISOString(),
       endTime: formData.endTime || new Date().toISOString(),
@@ -262,6 +265,7 @@ export function DriveLogEntry({
           type="button"
           onClick={() => setFormData(prev => ({ ...prev, isVerified: !prev.isVerified }))}
           aria-pressed={Boolean(formData.isVerified)}
+          aria-label="Mark as verified by parent"
           className={`w-full p-4 rounded-2xl border flex items-center gap-3 text-left transition-all ${
             formData.isVerified
               ? 'border-emerald-300 bg-emerald-50/70 dark:border-emerald-800 dark:bg-emerald-950/40'
@@ -326,4 +330,4 @@ export function DriveLogEntry({
 
     </form>
   );
-}
+});

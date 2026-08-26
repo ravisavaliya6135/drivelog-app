@@ -4,22 +4,15 @@ import {
   Text,
   View,
   StyleSheet,
-  Font,
   pdf,
 } from '@react-pdf/renderer';
 import type { DriveEntry, DriverProfile, VehicleProfile, StateInfo } from '../types';
 import { US_STATES } from '../types';
 
-// Register fonts
-Font.register({
-  family: 'Helvetica',
-  fonts: [
-    { src: 'https://cdn.jsdelivr.net/npm/@react-pdf/fonts@2.0.0/Helvetica/Helvetica.woff2' },
-    { src: 'https://cdn.jsdelivr.net/npm/@react-pdf/fonts@2.0.0/Helvetica/Helvetica-Bold.woff2', fontWeight: 'bold' },
-    { src: 'https://cdn.jsdelivr.net/npm/@react-pdf/fonts@2.0.0/Helvetica/Helvetica-Oblique.woff2', fontStyle: 'italic' },
-    { src: 'https://cdn.jsdelivr.net/npm/@react-pdf/fonts@2.0.0/Helvetica/Helvetica-BoldOblique.woff2', fontWeight: 'bold', fontStyle: 'italic' },
-  ],
-});
+// NOTE: We intentionally do NOT call Font.register here. @react-pdf/renderer
+// ships built-in standard-14 fonts (Helvetica, Courier, etc.), so PDF export
+// works 100% offline. Registering web fonts from a CDN would break the
+// offline-first guarantee — the DMV log must be exportable without network.
 
 const styles = StyleSheet.create({
   page: {

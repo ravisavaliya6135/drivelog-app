@@ -85,7 +85,7 @@ export function UpgradeModal({
                     <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
                       🎉 You just hit {FREE_HOURS_LIMIT} hours!
                     </h3>
-                    <p className="text-[11px] text-teal-600 dark:text-teal-400 font-bold">
+                    <p className="text-[11px] text-teal-700 dark:text-teal-400 font-bold">
                       Milestone unlocked — keep the streak going
                     </p>
                   </>
@@ -94,7 +94,7 @@ export function UpgradeModal({
                     <h3 className="font-bold text-sm text-slate-900 dark:text-white">
                       Unlock DriveLog Lifetime Pro
                     </h3>
-                    <p className="text-[11px] text-teal-600 dark:text-teal-400 font-bold">
+                    <p className="text-[11px] text-teal-700 dark:text-teal-400 font-bold">
                       {PRO_LIFETIME_PRICE} One-Time • No Recurring Fees
                     </p>
                   </>
@@ -150,28 +150,28 @@ export function UpgradeModal({
           {/* Feature List Bento */}
           <div className="space-y-2 py-1">
             <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
-              <div className="w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
+              <div className="w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
                 <Check className="w-3.5 h-3.5" />
               </div>
               <span><strong>Unlimited driving hours</strong> (Free tier capped at 20h)</span>
             </div>
 
             <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
-              <div className="w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
+              <div className="w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
                 <Check className="w-3.5 h-3.5" />
               </div>
               <span><strong>Official DMV PDF export</strong> for all 50 states</span>
             </div>
 
             <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
-              <div className="w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
+              <div className="w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
                 <Check className="w-3.5 h-3.5" />
               </div>
               <span><strong>Multiple supervisors & vehicles</strong> tracking</span>
             </div>
 
             <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
-              <div className="w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
+              <div className="w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
                 <Check className="w-3.5 h-3.5" />
               </div>
               <span><strong>100% Offline & Private</strong> — never expires</span>

@@ -36,8 +36,8 @@ serve(async (req: Request) => {
       signature,
       stripeWebhookSecret
     );
-  } catch (err: any) {
-    console.error(`⚠️ Webhook signature verification failed: ${err.message}`);
+  } catch (err) {
+    console.error(`⚠️ Webhook signature verification failed: ${err instanceof Error ? err.message : String(err)}`);
     return new Response(`Webhook Error: ${err.message}`, { status: 400 });
   }
 

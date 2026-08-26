@@ -17,6 +17,8 @@ declare module 'suncalc' {
   export function getTimes(date: Date, lat: number, lng: number): SunTimes;
   export function getSunrise(date: Date, lat: number, lng: number): Date;
   export function getSunset(date: Date, lat: number, lng: number): Date;
+  /** Sun altitude above the horizon in radians (0 = horizon, negative = below) */
+  export function getAltitude(date: Date, lat: number, lng: number): number;
   export function getPosition(date: Date, lat: number, lng: number): {
     azimuth: number;
     altitude: number;

@@ -207,9 +207,13 @@ export async function getSetting<T>(key: string): Promise<T | undefined> {
   return result?.value as T | undefined;
 }
 
-// Utility: generate unique ID
+// Utility: generate unique ID (crypto.randomUUID where available — collision-safe)
 export function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  // Fallback for non-secure contexts / very old browsers
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 }
 
 // Utility: format duration

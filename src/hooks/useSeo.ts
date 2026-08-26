@@ -1,29 +1,36 @@
 import { useEffect } from 'react';
 
+const DEFAULT_OG_IMAGE = 'https://drivehours.app/pwa-512x512.png';
+
 interface SeoProps {
   title: string;
   description?: string;
   canonicalUrl?: string;
   noindex?: boolean;
+  /** Social share image; defaults to the DriveLog card */
+  ogImage?: string;
 }
 
-export function useSeo({ title, description, canonicalUrl, noindex = false }: SeoProps) {
+/** Finds (or creates) a meta tag and sets its content. */
+function setMeta(attr: 'name' | 'property', key: string, content: string): void {
+  let tag = document.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
+  if (!tag) {
+    tag = document.createElement('meta');
+    tag.setAttribute(attr, key);
+    document.head.appendChild(tag);
+  }
+  tag.setAttribute('content', content);
+}
+
+export function useSeo({ title, description, canonicalUrl, noindex = false, ogImage = DEFAULT_OG_IMAGE }: SeoProps) {
   useEffect(() => {
     // Update document title
     document.title = title;
 
+    const descriptionOrFallback = description ?? title;
+
     // Update meta description
-    if (description) {
-      let metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc) {
-        metaDesc.setAttribute('content', description);
-      } else {
-        metaDesc = document.createElement('meta');
-        metaDesc.setAttribute('name', 'description');
-        metaDesc.setAttribute('content', description);
-        document.head.appendChild(metaDesc);
-      }
-    }
+    setMeta('name', 'description', descriptionOrFallback);
 
     // Update canonical link
     if (canonicalUrl) {
@@ -36,18 +43,27 @@ export function useSeo({ title, description, canonicalUrl, noindex = false }: Se
     // Update robots noindex for private routes
     let metaRobots = document.querySelector('meta[name="robots"]');
     if (noindex) {
-      if (metaRobots) {
-        metaRobots.setAttribute('content', 'noindex, nofollow');
-      } else {
+      if (!metaRobots) {
         metaRobots = document.createElement('meta');
         metaRobots.setAttribute('name', 'robots');
-        metaRobots.setAttribute('content', 'noindex, nofollow');
         document.head.appendChild(metaRobots);
       }
-    } else {
-      if (metaRobots) {
-        metaRobots.setAttribute('content', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
-      }
+      metaRobots.setAttribute('content', 'noindex, nofollow');
+    } else if (metaRobots) {
+      metaRobots.setAttribute('content', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
     }
-  }, [title, description, canonicalUrl, noindex]);
+
+    // Open Graph tags — kept in sync across SPA route navigations
+    setMeta('property', 'og:title', title);
+    setMeta('property', 'og:description', descriptionOrFallback);
+    setMeta('property', 'og:type', 'website');
+    setMeta('property', 'og:image', ogImage);
+    setMeta('property', 'og:url', canonicalUrl ?? window.location.origin);
+
+    // Twitter Card tags
+    setMeta('name', 'twitter:card', 'summary_large_image');
+    setMeta('name', 'twitter:title', title);
+    setMeta('name', 'twitter:description', descriptionOrFallback);
+    setMeta('name', 'twitter:image', ogImage);
+  }, [title, description, canonicalUrl, noindex, ogImage]);
 }
