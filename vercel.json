@@ -23,7 +23,7 @@
       "destination": "/dmv/:stateCode.html"
     },
     {
-      "source": "/(.*)",
+      "source": "/:path((?!.*\\.).*)",
       "destination": "/index.html"
     }
   ],
