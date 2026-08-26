@@ -4,6 +4,19 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "vite",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "drivelog-app\\.vercel\\.app"
+        }
+      ],
+      "destination": "https://drivehours.app/:path*",
+      "statusCode": 301
+    }
+  ],
   "rewrites": [
     {
       "source": "/dmv/:stateCode",
