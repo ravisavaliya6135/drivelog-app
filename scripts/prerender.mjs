@@ -83,7 +83,7 @@ for (const state of stateData) {
 console.log(`[prerender] Generated ${generated} static /dmv/:stateCode pages into dist/dmv/`);
 
 // Regenerate sitemap.xml including all state guide URLs (replaces public/sitemap.xml in dist)
-const staticPaths = ['/', '/log', '/export', '/settings', '/about', '/help', '/privacy', '/terms', '/contact'];
+const staticPaths = ['/', '/log', '/export', '/settings', '/about', '/help', '/privacy', '/terms', '/contact', '/dmv'];
 const today = new Date().toISOString().split('T')[0];
 const urls = [
   ...staticPaths.map(

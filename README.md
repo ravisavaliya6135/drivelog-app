@@ -1,121 +1,82 @@
-# 🚗 DriveLog — Teen Driving Hours Tracker
+# 🚗 DriveHours (formerly DriveLog) — Teen Supervised Driving Log
 
-> **PWA Progressive Web App | Offline-First | DMV-Ready PDF | Parent-Teen Friendly**
+> **drivehours.app** | Offline-first PWA | DMV-Ready PDF | Parent-Teen Friendly
+> *"It's not complicated, it's just a log."*
 
----
+DriveHours helps US teens log supervised driving hours (40–70 hrs depending on state) and export
+DMV-ready PDF logs — with automatic legal night detection, crash-proof timers, parent sign-off,
+and zero ads. Free for the first 20 hours; $4.99 one-time Lifetime Pro unlock. No subscription.
 
-## 🎯 The Problem
+## ✨ Key Features
 
-US teens must log **40–60 supervised driving hours** before getting a license. Official apps like **RoadReady** are broken:
-- **Crash** and lose all logged hours
-- **Ads** every drive, no offline mode
-- **No pause button** — stop for gas = start a new drive
-- **No night detection** — uses sunset, not legal "30 mins after sunset"
-- **No state-specific DMV PDF export**
-
-## ✅ The Solution
-
-**DriveLog** — a simple, offline-first, parent-friendly driving log app that works like a **native app you install on your phone**. No ads, no recurring subscriptions, no data loss.
-
-**Key features:**
-- **Distraction-Free Timer** (Start/Pause/Resume/Stop) — 100% offline
-- **Auto Night Detection** — calculates legal twilight & sunset hours per state
-- **Multi-Driver & Vehicles** — parents and teens log separately with vehicle tags
-- **50-State DMV PDF Export** — printable, formatted for state DMV licensing requirements
-- **PWA Installation** — install on iOS Safari and Android with offline caching
-- **Fair Pricing** — free for first 20 hours, then $4.99 one-time Lifetime Pro
-
----
+- **Crash-proof timer** — wall-clock based, persisted to IndexedDB every second; closing the app
+  for hours credits exactly on return
+- **Legal night detection** — real sunset calculations per state (SunCalc), not fixed clock times;
+  handles Alaska polar day/night
+- **50-state DMV requirements** — hour targets, permit ages, official form references
+  (FL HSMV 71143, NY MV-262, PA DL-180C, …)
+- **DMV-ready PDF export** — 100% client-side and offline, with signature blocks and
+  per-entry supervisor initials
+- **Parent sign-off flow** — per-drive verification with initials
+- **Offline-first everything** — no account required; data lives in IndexedDB on your device
+- **No ads, no tracking** — zero third-party trackers or font CDNs
+- **Installable PWA** — iOS Safari, Android Chrome, desktop
 
 ## 🛠️ Tech Stack
 
 | Layer | Technology |
 |---|---|
-| **Frontend** | React 18 + Vite + TypeScript + Tailwind CSS |
-| **Icons** | Lucide React |
-| **Storage** | `idb` (IndexedDB) — 100% offline persistence |
-| **Backend & Auth** | Supabase Auth (Passwordless Magic Link) + PostgreSQL RLS |
-| **Payments** | Stripe Checkout ($4.99 one-time) + Server-side Webhook |
-| **PDF** | `@react-pdf/renderer` (Lazy-loaded client-side generation) |
-| **Solar Calc** | `SunCalc` (legal twilight/sunset per state coordinates) |
-| **PWA** | Vite PWA Plugin + Workbox Service Worker |
-
----
+| Frontend | React 18 + Vite 5 + TypeScript (strict) |
+| Styling | Tailwind CSS 3.4 + Lucide icons |
+| Storage | IndexedDB (`idb`) — offline-first persistence |
+| Auth | Supabase magic link (optional) |
+| Payments | Stripe Checkout via Supabase Edge Functions ($4.99 one-time) |
+| PDF | `@react-pdf/renderer` (click-time lazy loaded) |
+| Night math | `suncalc` |
+| PWA | `vite-plugin-pwa` (Workbox) |
+| SEO | SSG-prerendered pages for all 50 states (`/dmv/:stateCode`) + sitemap |
 
 ## 🚀 Quick Start
 
 ```bash
-# 1. Clone the project
 git clone https://github.com/ravisavaliya6135/drivelog-app.git
 cd drivelog-app
-
-# 2. Install dependencies
 npm install
 
-# 3. Start dev server
-npm run dev
-# → opens http://localhost:5173
-
-# 4. Build for production
-npm run build
+npm run dev        # http://localhost:5173
+npm run build      # production build + SSG prerender (50 state pages + sitemap)
+npm run typecheck  # tsc --noEmit (strict)
+npm run lint       # eslint src
 ```
 
----
+Optional: copy `.env.example` to `.env` and add your Supabase project URL + anon key.
+The app works fully without them (guest mode).
 
 ## 📁 Project Structure
 
 ```
 src/
-├── components/
-│   ├── DriveTimer.tsx          # High-contrast live driving clock & telemetry
-│   ├── DriveLogEntry.tsx       # Celebratory save drive & condition selector
-│   ├── MultiDriverForm.tsx     # Supervisor and vehicle manager
-│   ├── StateSelector.tsx       # 50-state DMV target selector
-│   ├── PwaInstallPrompt.tsx    # iOS 3-step & Android native install sheet
-│   ├── AuthModal.tsx           # Passwordless magic-link sign-in dialog
-│   └── UpgradeModal.tsx        # Lifetime Pro ($4.99) checkout modal
-├── contexts/
-│   ├── AuthContext.tsx         # Supabase Auth provider
-│   └── EntitlementContext.tsx  # Free vs Lifetime Pro state & caching
-├── hooks/
-│   ├── useDriveLog.ts          # IndexedDB CRUD state
-│   ├── useNightDetection.ts    # Legal night solar calculations
-│   ├── usePwaInstall.ts        # beforeinstallprompt & standalone detection
-│   ├── useSeo.ts               # Dynamic route metadata & canonical tags
-│   └── useTheme.ts             # Light / Dark / System theme switcher
-├── pages/
-│   ├── Home.tsx                # Dashboard, hero progress & start drive CTA
-│   ├── LogDrive.tsx            # Driving History hub with search & filters
-│   ├── ExportDocs.tsx          # DMV PDF generator & compliance check
-│   └── Settings.tsx            # Account, state goals, backup & appearance
-├── utils/
-│   ├── db.ts                   # IndexedDB database wrapper
-│   ├── pdf.tsx                 # DMV PDF export layout (on-demand chunk)
-│   └── sunCalc.ts              # State-based astronomical calculations
+├── components/    # DriveTimer, PdfExport, UpgradeModal, SiteFooter, ErrorBoundary, ...
+├── contexts/      # AuthContext, EntitlementContext (offline-cached Pro state)
+├── hooks/         # useDriveTimer (wall-clock), useNightDetection, useSeo, ...
+├── pages/         # Home, LogDrive, ExportDocs, Settings,
+│                  # StateGuide (+Index), Privacy, Terms, Help, Contact, About
+├── prerender/     # SSR entry for the 50-state prerender step
+├── types/         # DriveEntry, StateInfo (all 50 states + DMV form data)
+└── utils/         # db (IndexedDB v3), pdf, suncalc, analytics, feedback
 supabase/
-├── functions/
-│   ├── create-checkout-session # Secure Stripe checkout session creator
-│   └── stripe-webhook          # Cryptographic Stripe webhook processor
-└── migrations/
-    ├── 20260815_profiles_auth.sql # Profiles schema with Row Level Security
-    └── 20260815_monetization_schema.sql # Entitlements schema & triggers
+├── functions/     # create-checkout-session, stripe-webhook (signature-verified)
+└── migrations/    # profiles, entitlements, analytics_events, feedback_submissions
+scripts/
+├── generate-assets.ps1   # PWA icons + og-image generator
+└── prerender.mjs         # SSG step: /dmv/* pages, sitemap.xml
 ```
 
----
+## 🔒 Privacy
 
-## 🎨 Design Language
-
-- **Color:** Deep Navy (`#0F172A`) + Warm Slate (`#334155`) + Accent Teal (`#0D9488`)
-- **Font:** Inter (system font stack) + Tabular Mono numbers
-- **Tone:** Clean, calm, trustworthy, high contrast for outdoor use
-- **Mood:** "It's not complicated, it's just a log"
-
----
+No ads. No trackers. No third-party font CDNs. Driving logs never leave your device unless you
+create an account or send feedback. See the in-app Privacy Policy (`/privacy`).
 
 ## 📝 License
 
 MIT
-
----
-
-*Built for parents and teen drivers — no ads, no recurring subscriptions, no lost data.*

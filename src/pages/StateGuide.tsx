@@ -105,6 +105,17 @@ export function StateGuide() {
     ],
   };
 
+  // Breadcrumb structured data: Home -> State Guides -> This State
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'DriveLog', item: 'https://drivehours.app/' },
+      { '@type': 'ListItem', position: 2, name: 'State Guides', item: 'https://drivehours.app/dmv' },
+      { '@type': 'ListItem', position: 3, name: state.name + ' Driving Requirements', item: 'https://drivehours.app/dmv/' + state.code.toLowerCase() },
+    ],
+  };
+
   return (
     <article className="space-y-6 animate-fade-in max-w-3xl">
 
@@ -115,12 +126,18 @@ export function StateGuide() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
 
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs">
         <Link to="/" className="text-teal-700 dark:text-teal-400 font-semibold hover:underline inline-flex items-center gap-1">
           <ArrowLeft className="w-3.5 h-3.5" /> DriveLog
         </Link>
+        <span className="text-slate-400">/</span>
+        <Link to="/dmv" className="text-teal-700 dark:text-teal-400 font-semibold hover:underline">State Guides</Link>
         <span className="text-slate-400">/</span>
         <span className="text-slate-500 dark:text-slate-400 font-medium">{state.name} Driving Requirements</span>
       </nav>

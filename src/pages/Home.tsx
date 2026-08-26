@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Play, Sun, Moon, ChevronRight, Plus, ShieldCheck, Car, X } from 'lucide-react';
 import { useDriveLog } from '../hooks/useDriveLog';
 import { useEntitlement } from '../contexts/EntitlementContext';
@@ -151,8 +151,10 @@ export function Home() {
               <ShieldCheck className="w-4 h-4" />
             </span>
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <Link to="/dmv" className="hover:text-teal-700 dark:hover:text-teal-400 transition-colors">
               {state.name} Requirement
-            </span>
+            </Link>
+          </span>
           </div>
           
           <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
