@@ -1,12 +1,13 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
-import { Home as HomeIcon, Clock, Play, FileText, Settings as SettingsIcon, Car } from 'lucide-react';
+import { Home as HomeIcon, Clock, Play, FileText, Settings as SettingsIcon } from 'lucide-react';
 import { ThemeProvider } from './hooks/useTheme';
 import { AuthProvider } from './contexts/AuthContext';
 import { EntitlementProvider } from './contexts/EntitlementContext';
 import { PwaInstallPrompt } from './components/PwaInstallPrompt';
 import { SiteFooter } from './components/SiteFooter';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { DriveLogLogo } from './components/DriveLogLogo';
 
 // Lazy load pages for fast code-split performance
 const HomePage = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
@@ -37,9 +38,7 @@ function TopHeader() {
       <div className="max-w-4xl mx-auto h-16 px-4 flex items-center justify-between">
         {/* Brand */}
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-sm">
-            <Car className="w-5 h-5" />
-          </div>
+          <DriveLogLogo className="h-10 w-10 shrink-0 shadow-sm" />
           <div>
             <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">DriveLog</span>
             <span className="hidden sm:inline-block ml-2 text-xs font-medium text-slate-600 dark:text-slate-300 uppercase tracking-wider">Supervised Log</span>
@@ -52,8 +51,8 @@ function TopHeader() {
             to="/"
             end
             className={({ isActive }) =>
-              `min-h-11 inline-flex items-center px-3 rounded-lg text-sm font-semibold transition-colors ${
-                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              `shell-nav-link ${
+                isActive ? 'shell-nav-link-active' : ''
               }`
             }
           >
@@ -62,8 +61,8 @@ function TopHeader() {
           <NavLink
             to="/log"
             className={({ isActive }) =>
-              `min-h-11 inline-flex items-center px-3 rounded-lg text-sm font-semibold transition-colors ${
-                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              `shell-nav-link ${
+                isActive ? 'shell-nav-link-active' : ''
               }`
             }
           >
@@ -72,8 +71,8 @@ function TopHeader() {
           <NavLink
             to="/export"
             className={({ isActive }) =>
-              `min-h-11 inline-flex items-center px-3 rounded-lg text-sm font-semibold transition-colors ${
-                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              `shell-nav-link ${
+                isActive ? 'shell-nav-link-active' : ''
               }`
             }
           >
@@ -82,8 +81,8 @@ function TopHeader() {
           <NavLink
             to="/settings"
             className={({ isActive }) =>
-              `min-h-11 inline-flex items-center px-3 rounded-lg text-sm font-semibold transition-colors ${
-                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              `shell-nav-link ${
+                isActive ? 'shell-nav-link-active' : ''
               }`
             }
           >
@@ -105,26 +104,28 @@ function BottomNavbar() {
         <NavLink
           to="/"
           end
+          aria-label="Home"
           className={({ isActive }) =>
-            `min-h-16 flex flex-col items-center justify-center py-1 transition-colors ${
-              isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
+            `mobile-nav-link ${
+              isActive ? 'mobile-nav-link-active' : ''
             }`
           }
         >
-          <HomeIcon className="w-5 h-5 mb-0.5" />
+          <HomeIcon aria-hidden="true" className="w-5 h-5 mb-0.5" />
           <span className="text-xs">Home</span>
         </NavLink>
 
         {/* History */}
         <NavLink
           to="/log"
+          aria-label="Driving history"
           className={({ isActive }) =>
-            `min-h-16 flex flex-col items-center justify-center py-1 transition-colors ${
-              isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
+            `mobile-nav-link ${
+              isActive ? 'mobile-nav-link-active' : ''
             }`
           }
         >
-          <Clock className="w-5 h-5 mb-0.5" />
+          <Clock aria-hidden="true" className="w-5 h-5 mb-0.5" />
           <span className="text-xs">History</span>
         </NavLink>
 
@@ -142,26 +143,28 @@ function BottomNavbar() {
         {/* Export */}
         <NavLink
           to="/export"
+          aria-label="Export documents"
           className={({ isActive }) =>
-            `min-h-16 flex flex-col items-center justify-center py-1 transition-colors ${
-              isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
+            `mobile-nav-link ${
+              isActive ? 'mobile-nav-link-active' : ''
             }`
           }
         >
-          <FileText className="w-5 h-5 mb-0.5" />
+          <FileText aria-hidden="true" className="w-5 h-5 mb-0.5" />
           <span className="text-xs">Export</span>
         </NavLink>
 
         {/* Settings */}
         <NavLink
           to="/settings"
+          aria-label="Settings"
           className={({ isActive }) =>
-            `min-h-16 flex flex-col items-center justify-center py-1 transition-colors ${
-              isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
+            `mobile-nav-link ${
+              isActive ? 'mobile-nav-link-active' : ''
             }`
           }
         >
-          <SettingsIcon className="w-5 h-5 mb-0.5" />
+          <SettingsIcon aria-hidden="true" className="w-5 h-5 mb-0.5" />
           <span className="text-xs">Settings</span>
         </NavLink>
 

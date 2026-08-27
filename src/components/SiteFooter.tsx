@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { getActiveTimerRecord } from '../utils/db';
+import { DriveLogLogo } from './DriveLogLogo';
 
 /**
  * Sitewide trust/support footer. Hidden during an active drive session
@@ -32,6 +33,13 @@ export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-slate-200/80 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm">
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
+        <div className="flex items-center justify-center gap-2.5">
+          <DriveLogLogo className="h-8 w-8 shrink-0" />
+          <p className="text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">
+            DriveLog
+          </p>
+        </div>
+
         <nav aria-label="Footer" className="flex flex-wrap justify-center gap-x-6 gap-y-2">
           <FooterLink to="/about">About</FooterLink>
           <FooterLink to="/help">Help</FooterLink>
