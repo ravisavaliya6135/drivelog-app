@@ -36,3 +36,5 @@ dist-ssr
 .zcode
 dev-dist
 
+# Local isolated worktrees
+.worktrees/
