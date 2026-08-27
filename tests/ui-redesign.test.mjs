@@ -42,3 +42,13 @@ test('shared visual system exposes the approved reusable class contracts', async
     assert.match(css, new RegExp(`\\.${selector}\\s*\\{`));
   }
 });
+
+test('home presents the approved cockpit hierarchy without changing drive controls', async () => {
+  const home = await source('src/pages/Home.tsx');
+  assert.match(home, /License goal/);
+  assert.match(home, /Start a driving session/);
+  assert.match(home, /Day driving/);
+  assert.match(home, /Night driving/);
+  assert.match(home, /DriveTimer/);
+  assert.match(home, /timer-drive-data/);
+});

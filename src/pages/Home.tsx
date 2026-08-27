@@ -139,6 +139,7 @@ export function Home() {
   const nightProgress = state.requiredNightHours > 0 ? Math.min(100, Math.round((nightHoursVal / state.requiredNightHours) * 100)) : 100;
   
   const remainingTotal = Math.max(0, state.requiredHours - totalHoursVal).toFixed(1);
+  const remainingNight = Math.max(0, state.requiredNightHours - nightHoursVal).toFixed(1);
   const isTotalComplete = totalHoursVal >= state.requiredHours && nightHoursVal >= state.requiredNightHours;
 
   // Parent sign-off tracking: drives awaiting verification
@@ -147,99 +148,60 @@ export function Home() {
   const primaryDriver = drivers.find(d => d.isPrimaryDriver) || drivers[0];
 
   return (
-    <div className="space-y-5 animate-fade-in">
-      
-      {/* 1. Main Overall Progress Card */}
-      <section className="app-card p-5 sm:p-6 space-y-4">
-        {/* Card Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-teal-500/10 text-teal-700 dark:text-teal-400">
-              <ShieldCheck className="w-4 h-4" />
-            </span>
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            <Link to="/dmv" className="hover:text-teal-700 dark:hover:text-teal-400 transition-colors">
-              {state.name} Requirement
-            </Link>
-          </span>
+    <div className="space-y-6 animate-fade-in">
+      <header className="page-header">
+        <p className="page-kicker">Driving cockpit</p>
+        <h1 className="page-title">
+          {primaryDriver ? `Welcome back, ${primaryDriver.name}` : 'Ready for the road?'}
+        </h1>
+        <p className="page-subtitle">
+          Tracking your supervised driving toward the{' '}
+          <Link to="/dmv" className="font-semibold text-teal-800 underline decoration-teal-300 underline-offset-4 hover:text-teal-900 dark:text-teal-300 dark:decoration-teal-700 dark:hover:text-teal-200">
+            {state.name} license requirement
+          </Link>
+          .
+        </p>
+      </header>
+
+      <section className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 p-5 text-white shadow-elevated sm:p-6" aria-labelledby="license-goal-title">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-teal-300">
+              <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+              <h2 id="license-goal-title" className="text-xs font-bold uppercase tracking-[0.16em]">License goal</h2>
+            </div>
+            <p className="mt-2 text-sm text-slate-300">{state.name} supervised driving target</p>
           </div>
-          
-          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-            isTotalComplete
-              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
-              : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
-          }`}>
-            {isTotalComplete ? 'Goal Met ✓' : `${totalProgress}% Complete`}
+          <span className="inline-flex shrink-0 items-center rounded-lg border border-white/15 bg-white/10 px-2.5 py-1 text-xs font-bold text-white">
+            {isTotalComplete ? 'Goal met' : `${totalProgress}% complete`}
           </span>
         </div>
 
-        {/* Hero Hours Display */}
-        <div className="flex items-baseline justify-between pt-1">
-          <div className="flex items-baseline gap-2">
-            <span className="font-mono text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tabular-nums tracking-tight">
-              {totalHoursVal}
-            </span>
-            <span className="text-lg sm:text-xl font-bold text-slate-400 dark:text-slate-500">
-              / {state.requiredHours} hrs
-            </span>
-          </div>
-          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-            {remainingTotal}h left
-          </span>
+        <div className="mt-6 flex items-end gap-2">
+          <span className="font-mono text-5xl font-extrabold tracking-tight tabular-nums sm:text-6xl">{totalHoursVal}</span>
+          <span className="pb-1 text-lg font-bold text-slate-300">/ {state.requiredHours} hrs</span>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full h-3.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="mt-5 h-3 overflow-hidden rounded-full bg-slate-700" role="progressbar" aria-label="License goal progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={totalProgress}>
           <div
-            className={`h-full rounded-full transition-all duration-700 ${
-              isTotalComplete
-                ? 'bg-emerald-500'
-                : 'bg-gradient-to-r from-teal-500 to-teal-600'
-            }`}
+            className={`h-full rounded-full transition-[width] duration-200 ${isTotalComplete ? 'bg-emerald-400' : 'bg-teal-400'}`}
             style={{ width: `${totalProgress}%` }}
           />
         </div>
 
-        {/* Day & Night Breakdown Bento */}
-        <div className="grid grid-cols-2 gap-3 pt-2">
-          {/* Day */}
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
-                <Sun className="w-3.5 h-3.5 text-amber-500" /> Day
-              </span>
-              <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{dayProgress}%</span>
-            </div>
-            <div className="flex items-baseline gap-1">
-              <span className="font-mono text-xl font-bold text-slate-900 dark:text-white tabular-nums">{dayHoursVal}h</span>
-              <span className="text-xs text-slate-400">/ {state.requiredHours - state.requiredNightHours}h</span>
-            </div>
-            <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-              <div className="h-full bg-amber-500 rounded-full transition-all" style={{ width: `${dayProgress}%` }} />
-            </div>
+        <dl className="mt-5 grid grid-cols-2 gap-3 border-t border-slate-700 pt-4">
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Total remaining</dt>
+            <dd className="mt-1 font-mono text-xl font-bold tabular-nums">{remainingTotal}h</dd>
           </div>
-
-          {/* Night */}
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
-                <Moon className="w-3.5 h-3.5 text-indigo-500" /> Night
-              </span>
-              <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{nightProgress}%</span>
-            </div>
-            <div className="flex items-baseline gap-1">
-              <span className="font-mono text-xl font-bold text-slate-900 dark:text-white tabular-nums">{nightHoursVal}h</span>
-              <span className="text-xs text-slate-400">/ {state.requiredNightHours}h</span>
-            </div>
-            <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-              <div className="h-full bg-indigo-500 rounded-full transition-all" style={{ width: `${nightProgress}%` }} />
-            </div>
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Night remaining</dt>
+            <dd className="mt-1 font-mono text-xl font-bold tabular-nums">{remainingNight}h</dd>
           </div>
-        </div>
+        </dl>
       </section>
 
-      {/* 2. Primary Start Drive Action */}
-      <section className="space-y-2">
+      <section className="space-y-3" aria-label="Drive actions">
         <button
           type="button"
           onClick={() => {
@@ -251,14 +213,14 @@ export function Home() {
             setShowTimerModal(true);
             updateModalUrl('timer');
           }}
-          className="w-full h-14 rounded-2xl bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white font-bold text-base shadow-teal flex items-center justify-center gap-3 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-slate-950"
+          className="btn-primary w-full text-base"
         >
-          <Play className="w-5 h-5 fill-white" />
-          <span>Start Driving Session</span>
+          <Play className="h-5 w-5" aria-hidden="true" />
+          Start a driving session
         </button>
 
-        <div className="flex justify-between items-center px-1">
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+        <div className="flex flex-col gap-2 px-1 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-slate-600 dark:text-slate-300">
             Supervisor: <strong className="text-slate-700 dark:text-slate-300">{primaryDriver?.name || 'Primary Supervisor'}</strong>
           </p>
           <button
@@ -267,49 +229,93 @@ export function Home() {
               setShowLogEntry(true);
               updateModalUrl('log-entry');
             }}
-            className="text-xs font-semibold text-teal-700 dark:text-teal-400 hover:underline inline-flex items-center gap-1"
+            className="btn-quiet -ml-3 self-start text-teal-800 dark:text-teal-300 sm:ml-0 sm:self-auto"
           >
-            <Plus className="w-3.5 h-3.5" /> Log past trip manually
+            <Plus className="h-4 w-4" aria-hidden="true" /> Log past trip manually
           </button>
         </div>
       </section>
 
-      {/* 3. Tasteful Upgrade Card (only if approaching / at 20h limit) */}
+      <section className="grid grid-cols-1 gap-3 sm:grid-cols-2" aria-label="Day and night driving progress">
+        <article className="app-card space-y-3 p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-3">
+            <span className="badge-amber">
+              <Sun className="h-4 w-4" aria-hidden="true" />
+              Day driving
+            </span>
+            <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{dayProgress}%</span>
+          </div>
+          <p className="font-mono text-2xl font-bold text-slate-950 tabular-nums dark:text-white">
+            {dayHoursVal}h <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">/ {state.requiredHours - state.requiredNightHours}h</span>
+          </p>
+          <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700" role="progressbar" aria-label="Day driving progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={dayProgress}>
+            <div className="h-full rounded-full bg-amber-500 transition-[width] duration-200" style={{ width: `${dayProgress}%` }} />
+          </div>
+        </article>
+
+        <article className="app-card space-y-3 p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-3">
+            <span className="badge-slate">
+              <Moon className="h-4 w-4 text-indigo-600 dark:text-indigo-300" aria-hidden="true" />
+              Night driving
+            </span>
+            <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{nightProgress}%</span>
+          </div>
+          <p className="font-mono text-2xl font-bold text-slate-950 tabular-nums dark:text-white">
+            {nightHoursVal}h <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">/ {state.requiredNightHours}h</span>
+          </p>
+          <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700" role="progressbar" aria-label="Night driving progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={nightProgress}>
+            <div className="h-full rounded-full bg-indigo-500 transition-[width] duration-200" style={{ width: `${nightProgress}%` }} />
+          </div>
+        </article>
+      </section>
+
+      {(drivers.length === 0 || vehicles.length === 0) && (
+        <section className="app-card-accent flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between" aria-labelledby="setup-title">
+          <div>
+            <h2 id="setup-title" className="font-bold text-slate-950 dark:text-white">Finish your driving setup</h2>
+            <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">Add a driver and vehicle so completed sessions are ready to save.</p>
+          </div>
+          <Link to="/settings" className="btn-secondary shrink-0">Open settings</Link>
+        </section>
+      )}
+
       {(isApproachingLimit || isLimitReached) && (
         <UpgradeCard onUpgradeClick={() => setShowUpgradeModal(true)} />
       )}
 
-      {/* 3b. Parent Sign-Off Nudge (weekly reminder when many drives are unverified) */}
       {unverifiedCount > 5 && (
-        <div className="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 flex items-start gap-3 animate-fade-in">
+        <section className="app-card flex items-start gap-3 border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/40" aria-labelledby="sign-off-title">
           <ClipboardCheck className="h-5 w-5 shrink-0 text-amber-700 dark:text-amber-300" aria-hidden="true" />
           <div>
-            <h4 className="font-bold text-xs text-amber-800 dark:text-amber-300">
+            <h2 id="sign-off-title" className="font-bold text-sm text-amber-900 dark:text-amber-200">
               You have {unverifiedCount} unverified drives
-            </h4>
-            <p className="text-xs text-amber-800 dark:text-amber-200 mt-0.5">
+            </h2>
+            <p className="mt-1 text-sm text-amber-900 dark:text-amber-200">
               Ask your parent to sign off before DMV submission.
             </p>
           </div>
-        </div>
+        </section>
       )}
 
-      {/* 4. Recent Drives List */}
-      <section className="space-y-3 pt-2">
+      <section className="space-y-3" aria-labelledby="latest-drive-title">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Recent Drives</h2>
+          <div>
+            <p className="section-kicker">History</p>
+            <h2 id="latest-drive-title" className="mt-1 text-lg font-bold text-slate-950 dark:text-white">Latest drive</h2>
+          </div>
           <button
             type="button"
             onClick={() => navigate('/log')}
-            className="text-xs font-bold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1"
+            className="btn-quiet text-teal-800 dark:text-teal-300"
           >
-            View All ({drives.length}) <ChevronRight className="w-3.5 h-3.5" />
+            View all ({drives.length}) <ChevronRight className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
 
         {drives.length > 0 ? (
-          <div className="space-y-2.5">
-            {drives.slice(0, 4).map((drive) => {
+          <div>
+            {drives.slice(0, 1).map((drive) => {
               const driver = drivers.find(d => d.id === drive.driverId);
               const durationHours = Math.floor(drive.durationMinutes / 60);
               const durationMins = drive.durationMinutes % 60;
@@ -324,44 +330,44 @@ export function Home() {
                     setShowLogEntry(true);
                     updateModalUrl('log-entry', drive.id);
                   }}
-                  className="app-card w-full p-3.5 flex items-center justify-between text-left hover:border-teal-500/50 transition-all focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="app-card w-full p-4 flex items-center justify-between gap-3 text-left hover:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500 sm:p-5"
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                    <div className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl ${
                       drive.dayNight === 'night'
                         ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400'
                         : 'bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400'
                     }`}>
-                      {drive.dayNight === 'night' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                      {drive.dayNight === 'night' ? <Moon className="h-5 w-5" aria-hidden="true" /> : <Sun className="h-5 w-5" aria-hidden="true" />}
                     </div>
                     <div>
-                      <div className="font-bold text-sm text-slate-900 dark:text-white">
+                      <div className="font-mono text-lg font-bold text-slate-950 tabular-nums dark:text-white">
                         {formattedDuration}
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                      <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-sm text-slate-600 dark:text-slate-300">
                         <span>{new Date(drive.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                        <span>•</span>
+                        <span aria-hidden="true">•</span>
                         <span>{driver?.name || 'Supervisor'}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
-                    <span className="capitalize text-slate-600 dark:text-slate-300">{drive.weather || 'Clear'}</span>
-                    <ChevronRight className="w-4 h-4" />
+                  <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400">
+                    <span className="hidden capitalize sm:inline">{drive.weather || 'Clear'}</span>
+                    <ChevronRight className="h-4 w-4" aria-hidden="true" />
                   </div>
                 </button>
               );
             })}
           </div>
         ) : (
-          <div className="app-card p-8 text-center space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-400 flex items-center justify-center mx-auto">
-              <Car className="w-6 h-6" />
+          <div className="app-card space-y-3 p-8 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-400">
+              <Car className="h-6 w-6" aria-hidden="true" />
             </div>
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white">No drives logged yet</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
-              Tap "Start Driving Session" above or log a previous drive to start tracking towards your {state.requiredHours}h state license goal.
+            <h3 className="font-bold text-slate-950 dark:text-white">No drives logged yet</h3>
+            <p className="mx-auto max-w-sm text-sm leading-6 text-slate-600 dark:text-slate-300">
+              Start a driving session above or log a previous drive to begin tracking toward your {state.requiredHours}-hour license goal.
             </p>
           </div>
         )}
