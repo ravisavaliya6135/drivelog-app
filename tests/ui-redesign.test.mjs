@@ -34,3 +34,11 @@ test('DriveLog logo exposes the road marking and optional title semantics', asyn
   assert.match(logo, /aria-hidden=\{title \? undefined : true\}/);
   assert.match(logo, /aria-labelledby=\{title \? titleId : undefined\}/);
 });
+
+test('shared visual system exposes the approved reusable class contracts', async () => {
+  const css = await source('src/index.css');
+
+  for (const selector of ['section-kicker', 'btn-quiet', 'nav-item-active']) {
+    assert.match(css, new RegExp(`\\.${selector}\\s*\\{`));
+  }
+});

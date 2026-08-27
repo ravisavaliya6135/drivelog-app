@@ -46,6 +46,10 @@
     @apply text-xs font-bold uppercase tracking-[0.16em] text-teal-700 dark:text-teal-400;
   }
 
+  .section-kicker {
+    @apply text-xs font-bold uppercase tracking-[0.16em] text-teal-700 dark:text-teal-400;
+  }
+
   .page-title {
     @apply text-2xl font-extrabold tracking-tight text-slate-950 dark:text-white;
   }
@@ -76,6 +80,10 @@
     @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm transition-[background-color,border-color,box-shadow,transform] duration-150 hover:bg-slate-50 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:pointer-events-none disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700;
   }
 
+  .btn-quiet {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-transparent px-3 py-2 text-sm font-semibold text-slate-600 transition-[color,background-color] duration-150 hover:bg-slate-100 hover:text-slate-950 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:pointer-events-none disabled:opacity-50 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white;
+  }
+
   .btn-ghost {
     @apply inline-flex min-h-11 min-w-11 items-center justify-center gap-2 p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800 transition-colors focus:outline-none;
   }
@@ -91,6 +99,10 @@
 
   .shell-nav-link-active {
     @apply border-teal-200 bg-teal-50 text-teal-800 shadow-sm dark:border-teal-800 dark:bg-teal-950 dark:text-teal-300;
+  }
+
+  .nav-item-active {
+    @apply border-teal-200 bg-teal-50 font-bold text-teal-800 shadow-sm dark:border-teal-800 dark:bg-teal-950 dark:text-teal-300;
   }
 
   .mobile-nav-link {
