@@ -15,7 +15,7 @@ export function TermsOfUse() {
   useSeo({
     title: 'Terms of Use | DriveLog',
     description: 'The simple terms for using DriveLog: an informational logging tool, not legal advice. You are responsible for accurate entries and verifying DMV requirements.',
-    canonicalUrl: 'https://www.drivehours.app/terms',
+    canonicalUrl: 'https://drivehours.app/terms',
   });
 
   return (

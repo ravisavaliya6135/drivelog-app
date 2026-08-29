@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { getSupabaseClient, isSupabaseConfigured } from '../lib/supabase';
 
 interface AuthContextType {
   user: User | null;
@@ -26,30 +26,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isActive = true;
+    let unsubscribe: (() => void) | undefined;
+
     if (!isSupabaseConfigured) {
       setLoading(false);
       return;
     }
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    }).catch(err => {
-      console.warn('[DriveLog Auth] Error fetching initial session (offline mode active):', err);
-      setLoading(false);
-    });
+    const initializeAuth = async () => {
+      try {
+        const supabase = await getSupabaseClient();
+        if (!isActive) return;
 
-    // Listen for auth changes (sign in, sign out, token refresh)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+        // Listen before reading the session so auth transitions are never missed.
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+          if (!isActive) return;
+          setSession(nextSession);
+          setUser(nextSession?.user ?? null);
+          setLoading(false);
+        });
+        unsubscribe = () => subscription.unsubscribe();
+
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        if (!isActive) return;
+        setSession(initialSession);
+        setUser(initialSession?.user ?? null);
+        setLoading(false);
+      } catch (err) {
+        if (!isActive) return;
+        console.warn('[DriveLog Auth] Error fetching initial session (offline mode active):', err);
+        setLoading(false);
+      }
+    };
+
+    void initializeAuth();
 
     return () => {
-      subscription.unsubscribe();
+      isActive = false;
+      unsubscribe?.();
     };
   }, []);
 
@@ -61,6 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
+      const supabase = await getSupabaseClient();
       const { error } = await supabase.auth.signInWithOtp({
         email: email.trim(),
         options: {
@@ -76,6 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     if (isSupabaseConfigured) {
       try {
+        const supabase = await getSupabaseClient();
         await supabase.auth.signOut();
       } catch (err) {
         console.error('[DriveLog Auth] Error signing out:', err);

@@ -21,7 +21,7 @@ export function ContactFeedback({ source = 'contact_page' }: ContactFeedbackProp
   useSeo({
     title: 'Contact & Feedback | DriveLog',
     description: 'Questions, bugs, or DMV feedback about DriveLog? Send us a note — it works offline too.',
-    canonicalUrl: 'https://www.drivehours.app/contact',
+    canonicalUrl: 'https://drivehours.app/contact',
   });
 
   const [name, setName] = useState('');

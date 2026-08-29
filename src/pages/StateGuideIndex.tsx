@@ -11,7 +11,7 @@ export function StateGuideIndex() {
   useSeo({
     title: 'Teen Driving Log Requirements by State (All 50) | DriveLog',
     description: 'Browse supervised driving hour requirements, night-hour rules, and official DMV log forms for all 50 US states. Free offline tracking with DriveLog.',
-    canonicalUrl: 'https://www.drivehours.app/dmv',
+    canonicalUrl: 'https://drivehours.app/dmv',
   });
 
   return (

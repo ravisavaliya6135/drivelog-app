@@ -16,4 +16,4 @@ Use for route metadata, canonical URLs, sitemap, robots, prerendering, JSON-LD, 
 
 ## SEO rules
 
-Use `https://www.drivehours.app` for canonical, Open Graph, JSON-LD, sitemap, and robots URLs. Keep sitemap routes aligned with real static and prerendered routes, including all 50 lowercase `/dmv/:stateCode` pages. Use valid, factual Schema.org JSON-LD; never invent DMV requirements or claims. Ensure crawler-facing static files remain directly served rather than rewritten to the SPA shell.
+Use `https://drivehours.app` for canonical, Open Graph, JSON-LD, sitemap, and robots URLs. Keep sitemap routes aligned with real static and prerendered routes, including all 50 lowercase `/dmv/:stateCode` pages. Use valid, factual Schema.org JSON-LD; never invent DMV requirements or claims. Ensure crawler-facing static files remain directly served rather than rewritten to the SPA shell.

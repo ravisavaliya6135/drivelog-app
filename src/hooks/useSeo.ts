@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const SITE_URL = 'https://www.drivehours.app';
+const SITE_URL = 'https://drivehours.app';
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 interface SeoProps {

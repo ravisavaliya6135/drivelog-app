@@ -4,9 +4,17 @@
     {
       "source": "/:path*",
       "has": [
+        { "type": "host", "value": "www\\.drivehours\\.app" }
+      ],
+      "destination": "https://drivehours.app/:path*",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path*",
+      "has": [
         { "type": "host", "value": "drivelog-app\\.vercel\\.app" }
       ],
-      "destination": "https://www.drivehours.app/:path*",
+      "destination": "https://drivehours.app/:path*",
       "statusCode": 301
     }
   ],

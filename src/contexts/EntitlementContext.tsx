@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { useDriveLog } from '../hooks/useDriveLog';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { getSupabaseClient, isSupabaseConfigured } from '../lib/supabase';
 import { getSetting, saveSetting } from '../utils/db';
 
 export const FREE_HOURS_LIMIT = 20;
@@ -86,6 +86,7 @@ export function EntitlementProvider({ children }: { children: React.ReactNode })
 
     setLoading(true);
     try {
+      const supabase = await getSupabaseClient();
       const { data, error } = await supabase
         .from('entitlements')
         .select('plan, status, purchased_at')
@@ -158,6 +159,7 @@ export function EntitlementProvider({ children }: { children: React.ReactNode })
     }
 
     try {
+      const supabase = await getSupabaseClient();
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         headers: {
           Authorization: `Bearer ${session.access_token}`,

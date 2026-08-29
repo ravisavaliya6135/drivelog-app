@@ -8,7 +8,7 @@
  */
 import { getDB, generateId } from './db';
 import type { FeedbackSubmission } from './db';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { getSupabaseClient, isSupabaseConfigured } from '../lib/supabase';
 
 export type FeedbackCategory = FeedbackSubmission['category'];
 export type FeedbackSource = FeedbackSubmission['source'];
@@ -23,7 +23,7 @@ export interface FeedbackInput {
 
 /** Best-effort sync of pending submissions. Safe to call anywhere. */
 async function trySyncPending(): Promise<boolean> {
-  if (!isSupabaseConfigured || !supabase) return false;
+  if (!isSupabaseConfigured) return false;
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return false;
 
   try {
@@ -32,6 +32,7 @@ async function trySyncPending(): Promise<boolean> {
     if (pending.length === 0) return true;
 
     const batch = pending.slice(0, 50);
+    const supabase = await getSupabaseClient();
     const { error } = await supabase.from('feedback_submissions').insert(
       batch.map(f => ({
         id: f.id,

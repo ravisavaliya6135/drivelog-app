@@ -167,7 +167,7 @@ export function HelpCenter() {
   useSeo({
     title: 'Help Center & FAQ | DriveLog',
     description: 'How to start a drive, how night hours are calculated, parent verification, offline PDF export, installing on iPhone & Android, and unlocking Pro.',
-    canonicalUrl: 'https://www.drivehours.app/help',
+    canonicalUrl: 'https://drivehours.app/help',
   });
 
   const [openId, setOpenId] = useState<string | null>('first-drive');

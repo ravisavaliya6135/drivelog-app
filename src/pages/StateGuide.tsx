@@ -4,7 +4,7 @@ import type { StateInfo } from '../types';
 import { US_STATES } from '../types';
 import { useSeo } from '../hooks/useSeo';
 
-const SITE_URL = 'https://www.drivehours.app';
+const SITE_URL = 'https://drivehours.app';
 
 function formatAge(age?: number): string {
   if (age === undefined) return 'Varies — check DMV';
@@ -32,7 +32,7 @@ export function StateGuide() {
   useSeo({
     title: `${seoState.name} Teen Driving Log Requirements | DriveLog`,
     description: `Track your ${seoState.name} supervised driving hours with legal night detection. DMV-ready PDF export. Free to start.`,
-    canonicalUrl: `${SITE_URL}/dmv/${seoState.code}`,
+    canonicalUrl: `${SITE_URL}/dmv/${seoState.code.toLowerCase()}`,
     noindex: !seoValid,
   });
 

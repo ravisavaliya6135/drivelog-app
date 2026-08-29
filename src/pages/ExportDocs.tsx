@@ -17,7 +17,7 @@ export function ExportDocs() {
   useSeo({
     title: 'DMV Driving Log PDF Export & 50-State Compliance | DriveLog',
     description: 'Generate an official state DMV-compliant supervised driving practice log PDF report for your road test licensing appointment.',
-    canonicalUrl: 'https://www.drivehours.app/export',
+    canonicalUrl: 'https://drivehours.app/export',
     noindex: true,
   });
 

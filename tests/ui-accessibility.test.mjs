@@ -60,3 +60,10 @@ test('home drive editing uses semantic controls and no structural emoji', async 
   assert.doesNotMatch(home, /<div[^>]*onClick=/);
   assert.doesNotMatch(`${home}${upgrade}${summary}${timer}`, /[🎉📝ℹ️]/);
 });
+
+test('Supabase SDK is loaded on demand instead of in the startup bundle', async () => {
+  const supabase = await source('src/lib/supabase.ts');
+
+  assert.match(supabase, /import\('@supabase\/supabase-js'\)/);
+  assert.doesNotMatch(supabase, /import\s+\{\s*createClient\s*\}\s+from/);
+});

@@ -4,8 +4,8 @@
 
 ## Key Information
 
-- **Name**: DriveLog (www.drivehours.app) — Teen Driving Hours Tracker
-- **URL**: https://www.drivehours.app/
+- **Name**: DriveLog (drivehours.app) — Teen Driving Hours Tracker
+- **URL**: https://drivehours.app/
 - **Type**: Progressive Web App (PWA)
 - **Platform**: Web, iOS, Android (installable)
 - **Cost**: Free for the first 20.0 logged hours; $4.99 one-time Lifetime Pro unlock thereafter
@@ -29,11 +29,11 @@
 
 ## Key URLs
 
-- **Home/Dashboard**: https://www.drivehours.app/
-- **State requirements**: https://www.drivehours.app/dmv
-- **Help Center**: https://www.drivehours.app/help
-- **Sitemap**: https://www.drivehours.app/sitemap.xml
-- **Robots**: https://www.drivehours.app/robots.txt
+- **Home/Dashboard**: https://drivehours.app/
+- **State requirements**: https://drivehours.app/dmv
+- **Help Center**: https://drivehours.app/help
+- **Sitemap**: https://drivehours.app/sitemap.xml
+- **Robots**: https://drivehours.app/robots.txt
 
 ## Structured Data Available
 

@@ -10,7 +10,7 @@
  */
 import { getDB, generateId } from './db';
 import type { AnalyticsEventRecord } from './db';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { getSupabaseClient, isSupabaseConfigured } from '../lib/supabase';
 
 const MAX_BATCH_SIZE = 100;
 
@@ -68,7 +68,7 @@ export async function trackEvent(
  * IndexedDB when offline, unconfigured, or on any upload error.
  */
 export async function flushEvents(): Promise<void> {
-  if (!isSupabaseConfigured || !supabase) return;
+  if (!isSupabaseConfigured) return;
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
 
   try {
@@ -77,6 +77,7 @@ export async function flushEvents(): Promise<void> {
     if (pending.length === 0) return;
 
     const batch = pending.slice(0, MAX_BATCH_SIZE);
+    const supabase = await getSupabaseClient();
 
     const { error } = await supabase.from('analytics_events').insert(
       batch.map(event => ({
