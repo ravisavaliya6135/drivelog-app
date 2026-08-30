@@ -65,7 +65,7 @@ export default defineConfig(({ mode }) => {
           type: 'module',
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,woff2,woff}'],
           // Prerendered SEO pages are served statically and cached at runtime
           // (NetworkFirst document strategy below) instead of being precached,
           // keeping the offline bundle small.

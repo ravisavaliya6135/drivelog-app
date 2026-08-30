@@ -229,14 +229,16 @@ function AppShell() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <EntitlementProvider>
-          <ThemeProvider>
-            <AppShell />
-          </ThemeProvider>
-        </EntitlementProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <EntitlementProvider>
+            <ThemeProvider>
+              <AppShell />
+            </ThemeProvider>
+          </EntitlementProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
