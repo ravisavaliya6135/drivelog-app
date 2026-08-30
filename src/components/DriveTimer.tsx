@@ -166,25 +166,25 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
       {/* 1. Supervisor & Day/Night Context Bar */}
       <div className="w-full grid grid-cols-2 gap-3">
         {/* Supervisor Card */}
-        <div className="app-card p-3 flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 flex items-center justify-center flex-shrink-0 font-bold text-xs">
+        <div className="app-card p-3.5 flex items-center gap-2.5 bg-white/90 dark:bg-[#131C2E]/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl">
+          <div className="w-9 h-9 rounded-xl bg-teal-500/15 text-teal-400 border border-teal-500/25 flex items-center justify-center flex-shrink-0 font-extrabold text-xs shadow-sm">
             {currentSupervisor?.name ? currentSupervisor.name[0].toUpperCase() : 'S'}
           </div>
           <div className="flex-1 min-w-0">
-            <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Supervisor</span>
+            <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block tracking-wider">Supervisor</span>
             {drivers.length > 1 ? (
               <select
                 value={selectedDriverId}
                 onChange={(e) => setSelectedDriverId(e.target.value)}
                 aria-label="Supervisor"
-                className="w-full bg-transparent font-bold text-xs text-slate-800 dark:text-slate-200 focus:outline-none truncate cursor-pointer"
+                className="w-full bg-transparent font-bold text-xs text-slate-900 dark:text-white focus:outline-none truncate cursor-pointer"
               >
                 {drivers.map(d => (
-                  <option key={d.id} value={d.id} className="dark:bg-slate-900">{d.name}</option>
+                  <option key={d.id} value={d.id} className="dark:bg-[#131C2E] dark:text-white">{d.name}</option>
                 ))}
               </select>
             ) : (
-              <span className="font-bold text-xs text-slate-800 dark:text-slate-200 truncate block">
+              <span className="font-bold text-xs text-slate-900 dark:text-white truncate block">
                 {currentSupervisor?.name || 'Primary Supervisor'}
               </span>
             )}
@@ -195,24 +195,26 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
         <div
           aria-live="polite"
           className={cn(
-            'app-card p-3 flex items-center gap-2.5 text-left transition-colors',
+            'app-card p-3.5 flex items-center gap-2.5 text-left transition-all rounded-2xl backdrop-blur-md',
             isNightEffective
-              ? 'border-indigo-500/40 bg-indigo-50/50 dark:bg-indigo-950/30'
-              : 'border-amber-500/40 bg-amber-50/50 dark:bg-amber-950/30'
+              ? 'border-indigo-500/30 bg-indigo-50/70 dark:bg-indigo-950/40'
+              : 'border-amber-500/30 bg-amber-50/70 dark:bg-amber-950/40'
           )}
         >
           <div className={cn(
             'w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-white shadow-sm',
-            isNightEffective ? 'bg-indigo-500' : 'bg-amber-500'
+            isNightEffective
+              ? 'bg-gradient-to-br from-indigo-500 to-purple-600 shadow-[0_0_15px_rgba(99,102,241,0.35)]'
+              : 'bg-gradient-to-br from-amber-400 to-orange-500 shadow-[0_0_15px_rgba(245,158,11,0.35)]'
           )}>
             {isNightEffective ? (
-              <Moon className="w-4 h-4" strokeWidth={1.75} />
+              <Moon className="w-4 h-4 text-white" strokeWidth={1.75} />
             ) : (
-              <Sun className="w-4 h-4" strokeWidth={1.75} />
+              <Sun className="w-4 h-4 text-white" strokeWidth={1.75} />
             )}
           </div>
           <div className="min-w-0">
-            <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Auto-detected</span>
+            <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block tracking-wider">Auto-detected</span>
             <span className="font-bold text-xs text-slate-900 dark:text-white capitalize flex items-center gap-1">
               {isNightEffective ? 'Night Drive' : 'Day Drive'}
             </span>
@@ -227,34 +229,34 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
         </p>
       )}
 
-      {/* 2. Main Live Timer Display */}
-      <div className="w-full app-card-elevated p-8 text-center space-y-4 relative overflow-hidden">
+      {/* 2. Main Live Timer Display (Automotive HUD) */}
+      <div className="w-full rounded-3xl p-7 sm:p-8 text-center space-y-5 relative overflow-hidden bg-gradient-to-b from-[#131C2E] via-[#0F172A] to-[#0B0F19] border border-teal-500/25 shadow-[0_0_50px_rgba(20,184,166,0.15)]">
 
         {/* Status Indicator */}
         <div className="flex items-center justify-center gap-2">
           {isRunning && !isPaused ? (
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 text-xs font-bold border border-emerald-200 dark:border-emerald-800">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 text-emerald-300 text-xs font-extrabold border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.25)]">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               Drive In Progress
             </span>
           ) : isRunning && isPaused ? (
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 text-xs font-bold border border-amber-200 dark:border-amber-800">
-              <span className="w-2 h-2 rounded-full bg-amber-500" />
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/15 text-amber-300 text-xs font-extrabold border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.25)]">
+              <span className="w-2 h-2 rounded-full bg-amber-400" />
               Drive Paused
             </span>
           ) : (
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 text-xs font-bold">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800 text-slate-300 text-xs font-bold border border-slate-700/60">
               Ready to Start
             </span>
           )}
         </div>
 
-        {/* Digital Tabular Clock with aria-live="off" to prevent 1-second screen-reader flooding */}
-        <div className="py-2">
+        {/* Ambient Ring Digital Clock with aria-live="off" */}
+        <div className="py-3 px-4 rounded-2xl bg-[#0B0F19]/70 border border-teal-500/20 shadow-[0_0_35px_rgba(20,184,166,0.15)] max-w-xs mx-auto">
           <div
             role="timer"
             aria-live="off"
-            className="font-mono text-5xl sm:text-6xl font-extrabold text-slate-900 dark:text-white tabular-nums tracking-tight"
+            className="font-mono text-5xl sm:text-6xl font-extrabold text-white tabular-nums tracking-wider drop-shadow-[0_2px_15px_rgba(255,255,255,0.25)]"
           >
             {time.hours}:{time.minutes}:{time.seconds}
           </div>
@@ -264,7 +266,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
             {srAnnouncement}
           </div>
 
-          <div className="grid grid-cols-3 text-center max-w-[240px] mx-auto text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300 mt-1">
+          <div className="grid grid-cols-3 text-center max-w-[220px] mx-auto text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">
             <span>Hours</span>
             <span>Mins</span>
             <span>Secs</span>
@@ -273,16 +275,16 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
 
         {/* Telemetry Bento */}
         {!isRunning && (
-          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
-            <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl text-center">
-              <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Est. Distance</span>
-              <span className="font-mono font-bold text-base text-slate-900 dark:text-white tabular-nums">
+          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-800/80">
+            <div className="bg-[#17233B]/60 p-3.5 rounded-xl text-center border border-slate-700/60">
+              <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Est. Distance</span>
+              <span className="font-mono font-bold text-base text-white tabular-nums">
                 {estimatedMiles} mi
               </span>
             </div>
-            <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl text-center">
-              <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Average Speed</span>
-              <span className="font-mono font-bold text-base text-slate-900 dark:text-white tabular-nums">
+            <div className="bg-[#17233B]/60 p-3.5 rounded-xl text-center border border-slate-700/60">
+              <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Average Speed</span>
+              <span className="font-mono font-bold text-base text-white tabular-nums">
                 {avgSpeed} mph
               </span>
             </div>
@@ -298,7 +300,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
             type="button"
             onClick={handleStart}
             aria-label="Start drive"
-            className="w-full min-h-[64px] h-16 rounded-2xl bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white font-extrabold text-lg shadow-teal flex items-center justify-center gap-3 transition-all focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+            className="w-full min-h-[64px] h-16 rounded-2xl bg-gradient-to-r from-teal-500 via-teal-600 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 active:scale-[0.98] text-white font-extrabold text-lg shadow-[0_4px_25px_rgba(20,184,166,0.4)] hover:shadow-[0_6px_30px_rgba(20,184,166,0.55)] border border-teal-400/30 flex items-center justify-center gap-3 transition-all focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 dark:focus:ring-offset-[#0B0F19]"
           >
             <Play className="w-6 h-6 fill-white" strokeWidth={1.75} />
             <span>Start Drive</span>
@@ -311,10 +313,10 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
               onClick={handlePauseResume}
               aria-label={isPaused ? 'Resume drive' : 'Pause drive'}
               className={cn(
-                'min-h-[64px] h-16 rounded-2xl font-extrabold text-base flex items-center justify-center gap-2.5 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-900',
+                'min-h-[64px] h-16 rounded-2xl font-extrabold text-base flex items-center justify-center gap-2.5 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-[#0B0F19]',
                 isPaused
-                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md focus:ring-emerald-500'
-                  : 'bg-slate-200 hover:bg-slate-300 text-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700 focus:ring-slate-400'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white shadow-[0_4px_20px_rgba(16,185,129,0.4)] focus:ring-emerald-400 border border-emerald-400/30'
+                  : 'bg-slate-700/80 hover:bg-slate-600/80 text-white border border-slate-600/80 focus:ring-slate-400'
               )}
             >
               {isPaused ? (
@@ -329,7 +331,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
               type="button"
               onClick={() => void handleFinish()}
               aria-label="Stop drive"
-              className="min-h-[64px] h-16 rounded-2xl bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white font-extrabold text-base shadow-md flex items-center justify-center gap-2.5 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+              className="min-h-[64px] h-16 rounded-2xl bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-400 hover:to-rose-500 active:scale-[0.98] text-white font-extrabold text-base shadow-[0_4px_20px_rgba(239,68,68,0.4)] border border-red-400/30 flex items-center justify-center gap-2.5 transition-all focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 dark:focus:ring-offset-[#0B0F19]"
             >
               <Square className="w-5 h-5 fill-white" strokeWidth={1.75} />
               <span>Stop & Log</span>
@@ -346,7 +348,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
                 triggerHaptic([20]);
                 setShowDiscardConfirm(true);
               }}
-              className="min-h-[44px] px-4 py-2 inline-flex items-center text-xs font-bold text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+              className="min-h-[44px] px-4 py-2 inline-flex items-center text-xs font-bold text-red-400 hover:text-red-300 transition-colors"
             >
               Discard this session
             </button>

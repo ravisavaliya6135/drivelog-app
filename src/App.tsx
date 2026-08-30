@@ -34,27 +34,29 @@ function PageSkeleton() {
 
 function TopHeader() {
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 pt-safe transition-colors">
+    <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-[#0B0F19]/85 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 pt-safe transition-colors">
       <div className="max-w-4xl mx-auto h-16 px-4 flex items-center justify-between">
         {/* Brand */}
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-sm">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-400 text-white flex items-center justify-center shadow-[0_2px_12px_rgba(20,184,166,0.35)]">
             <Car className="w-5 h-5" />
           </div>
           <div>
-            <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">DriveLog</span>
-            <span className="hidden sm:inline-block ml-2 text-xs font-medium text-slate-600 dark:text-slate-300 uppercase tracking-wider">Supervised Log</span>
+            <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">DriveHours</span>
+            <span className="hidden sm:inline-block ml-2 text-xs font-semibold text-teal-600 dark:text-teal-400/90 uppercase tracking-wider">Supervised Log</span>
           </div>
         </div>
 
         {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-1.5">
           <NavLink
             to="/"
             end
             className={({ isActive }) =>
-              `min-h-11 inline-flex items-center px-3 rounded-lg text-sm font-semibold transition-colors ${
-                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              `min-h-11 inline-flex items-center px-3.5 rounded-xl text-sm font-semibold transition-all ${
+                isActive 
+                  ? 'bg-teal-50 dark:bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-500/30 shadow-sm' 
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
               }`
             }
           >
@@ -63,8 +65,10 @@ function TopHeader() {
           <NavLink
             to="/log"
             className={({ isActive }) =>
-              `min-h-11 inline-flex items-center px-3 rounded-lg text-sm font-semibold transition-colors ${
-                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              `min-h-11 inline-flex items-center px-3.5 rounded-xl text-sm font-semibold transition-all ${
+                isActive 
+                  ? 'bg-teal-50 dark:bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-500/30 shadow-sm' 
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
               }`
             }
           >
@@ -73,8 +77,10 @@ function TopHeader() {
           <NavLink
             to="/export"
             className={({ isActive }) =>
-              `min-h-11 inline-flex items-center px-3 rounded-lg text-sm font-semibold transition-colors ${
-                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              `min-h-11 inline-flex items-center px-3.5 rounded-xl text-sm font-semibold transition-all ${
+                isActive 
+                  ? 'bg-teal-50 dark:bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-500/30 shadow-sm' 
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
               }`
             }
           >
@@ -83,8 +89,10 @@ function TopHeader() {
           <NavLink
             to="/settings"
             className={({ isActive }) =>
-              `min-h-11 inline-flex items-center px-3 rounded-lg text-sm font-semibold transition-colors ${
-                isActive ? 'bg-slate-100 dark:bg-slate-800 text-teal-700 dark:text-teal-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              `min-h-11 inline-flex items-center px-3.5 rounded-xl text-sm font-semibold transition-all ${
+                isActive 
+                  ? 'bg-teal-50 dark:bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-500/30 shadow-sm' 
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
               }`
             }
           >
@@ -97,9 +105,8 @@ function TopHeader() {
 }
 
 function BottomNavbar() {
-
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200/80 dark:border-slate-800 pb-safe transition-colors">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/85 dark:bg-[#0B0F19]/90 backdrop-blur-xl border-t border-slate-200/80 dark:border-slate-800/80 pb-safe transition-colors">
       <div className="max-w-md mx-auto grid grid-cols-5 items-center h-16 px-2">
         
         {/* Home */}
@@ -108,7 +115,7 @@ function BottomNavbar() {
           end
           className={({ isActive }) =>
             `min-h-16 flex flex-col items-center justify-center py-1 transition-colors ${
-              isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
+              isActive ? 'text-teal-600 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
             }`
           }
         >
@@ -121,7 +128,7 @@ function BottomNavbar() {
           to="/log"
           className={({ isActive }) =>
             `min-h-16 flex flex-col items-center justify-center py-1 transition-colors ${
-              isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
+              isActive ? 'text-teal-600 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
             }`
           }
         >
@@ -133,7 +140,7 @@ function BottomNavbar() {
         <div className="flex justify-center -mt-5">
           <NavLink
             to="/?modal=timer"
-            className="w-16 h-16 rounded-full bg-teal-600 hover:bg-teal-700 text-white shadow-teal flex items-center justify-center active:scale-95 transition-all duration-150 border-4 border-white dark:border-slate-900"
+            className="w-16 h-16 rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white shadow-[0_0_25px_rgba(20,184,166,0.45)] flex items-center justify-center active:scale-95 transition-all duration-150 border-4 border-white dark:border-[#0B0F19]"
             aria-label="Record driving session"
           >
             <Play className="w-6 h-6 fill-white translate-x-0.5" />
@@ -145,7 +152,7 @@ function BottomNavbar() {
           to="/export"
           className={({ isActive }) =>
             `min-h-16 flex flex-col items-center justify-center py-1 transition-colors ${
-              isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
+              isActive ? 'text-teal-600 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
             }`
           }
         >
@@ -158,7 +165,7 @@ function BottomNavbar() {
           to="/settings"
           className={({ isActive }) =>
             `min-h-16 flex flex-col items-center justify-center py-1 transition-colors ${
-              isActive ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
+              isActive ? 'text-teal-600 dark:text-teal-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-medium'
             }`
           }
         >
@@ -175,7 +182,7 @@ function AppShell() {
   const { resolvedTheme } = useTheme();
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col pb-24 md:pb-8 selection:bg-teal-500 selection:text-white antialiased transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex flex-col pb-24 md:pb-8 selection:bg-teal-500 selection:text-white antialiased transition-colors">
       <Toaster
         position="top-center"
         richColors

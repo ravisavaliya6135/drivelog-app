@@ -66,7 +66,7 @@ export function ExportDocs() {
     try {
       const { generatePDF, downloadPDF } = await import('../utils/pdf');
       const blob = await generatePDF(drives, primaryDriver, primaryVehicle, selectedState);
-      downloadPDF(blob, `DriveLog-${state.code}-${new Date().toISOString().split('T')[0]}.pdf`);
+      downloadPDF(blob, `DriveHours-${state.code}-${new Date().toISOString().split('T')[0]}.pdf`);
       setDownloadSuccess(true);
       setTimeout(() => setDownloadSuccess(false), 4000);
     } catch (err) {
@@ -80,7 +80,7 @@ export function ExportDocs() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `DriveLog Supervised Practice Report (${state.code})`,
+          title: `DriveHours Supervised Practice Report (${state.code})`,
           text: `Teen driving progress: ${totalHoursVal} total hours logged (${dayHoursVal}h Day, ${nightHoursVal}h Night).`,
           url: window.location.origin,
         });
@@ -104,13 +104,13 @@ export function ExportDocs() {
       </div>
 
       {/* 2. State & Format Selector */}
-      <div className="app-card p-4 space-y-3">
+      <div className="app-card p-4.5 space-y-3 bg-white/90 dark:bg-[#131C2E]/90 backdrop-blur-md rounded-2xl">
         <div className="flex items-center justify-between">
           <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-teal-700" />
+            <MapPin className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
             Target State Requirement
           </label>
-          <span className="badge-teal">
+          <span className="badge-teal text-xs font-bold">
             {state.code} DMV Form
           </span>
         </div>
@@ -125,12 +125,12 @@ export function ExportDocs() {
       </div>
 
       {/* 3. Document Readiness Preview Card */}
-      <div className="app-card-elevated p-6 space-y-5">
+      <div className="app-card-elevated p-6 sm:p-7 space-y-5 rounded-3xl">
         
         {/* Document Header Preview */}
         <div className="flex items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center shadow-teal flex-shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-400 text-white flex items-center justify-center shadow-[0_2px_12px_rgba(20,184,166,0.35)] flex-shrink-0">
               <FileCheck className="w-6 h-6" />
             </div>
             <div>
@@ -138,15 +138,15 @@ export function ExportDocs() {
                 {state.name} Driving Log Report
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Driver: <strong className="text-slate-700 dark:text-slate-300">{primaryDriver.name}</strong> • Vehicle: <strong className="text-slate-700 dark:text-slate-300">{primaryVehicle.name}</strong>
+                Driver: <strong className="text-slate-700 dark:text-slate-200">{primaryDriver.name}</strong> • Vehicle: <strong className="text-slate-700 dark:text-slate-200">{primaryVehicle.name}</strong>
               </p>
             </div>
           </div>
 
-          <span className={`text-xs font-bold px-3 py-1 rounded-full flex-shrink-0 flex items-center gap-1 ${
+          <span className={`text-xs font-bold px-3 py-1 rounded-full flex-shrink-0 flex items-center gap-1 border ${
             isDmvReady
-              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-              : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+              ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+              : 'bg-amber-500/15 text-amber-300 border-amber-500/30'
           }`}>
             {isDmvReady ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Clock className="w-3.5 h-3.5" />}
             {isDmvReady ? 'DMV Ready' : 'In Progress'}
@@ -155,35 +155,35 @@ export function ExportDocs() {
 
         {/* Readiness Bento Stats */}
         <div className="grid grid-cols-3 gap-2 sm:gap-3 text-center">
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
-            <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Total Logged</span>
-            <span className="font-mono text-lg sm:text-xl font-bold text-slate-900 dark:text-white tabular-nums">
+          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#17233B]/75 border border-slate-200/60 dark:border-slate-700/60">
+            <span className="text-[10px] sm:text-xs uppercase font-bold text-slate-500 dark:text-slate-400 block tracking-wider">Total Logged</span>
+            <span className="font-mono text-lg sm:text-2xl font-extrabold text-slate-900 dark:text-white tabular-nums">
               {totalHoursVal}h
             </span>
-            <span className="text-xs text-slate-600 dark:text-slate-300 block">/ {state.requiredHours}h target</span>
+            <span className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 block">/ {state.requiredHours}h target</span>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
-            <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Day Practice</span>
-            <span className="font-mono text-lg sm:text-xl font-bold text-slate-900 dark:text-white tabular-nums">
+          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#17233B]/75 border border-slate-200/60 dark:border-slate-700/60">
+            <span className="text-[10px] sm:text-xs uppercase font-bold text-slate-500 dark:text-slate-400 block tracking-wider">Day Practice</span>
+            <span className="font-mono text-lg sm:text-2xl font-extrabold text-slate-900 dark:text-white tabular-nums">
               {dayHoursVal}h
             </span>
-            <span className="text-xs text-slate-600 dark:text-slate-300 block">/ {state.requiredHours - state.requiredNightHours}h target</span>
+            <span className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 block">/ {state.requiredHours - state.requiredNightHours}h target</span>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
-            <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Night Practice</span>
-            <span className="font-mono text-lg sm:text-xl font-bold text-slate-900 dark:text-white tabular-nums">
+          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#17233B]/75 border border-slate-200/60 dark:border-slate-700/60">
+            <span className="text-[10px] sm:text-xs uppercase font-bold text-slate-500 dark:text-slate-400 block tracking-wider">Night Practice</span>
+            <span className="font-mono text-lg sm:text-2xl font-extrabold text-slate-900 dark:text-white tabular-nums">
               {nightHoursVal}h
             </span>
-            <span className="text-xs text-slate-600 dark:text-slate-300 block">/ {state.requiredNightHours}h target</span>
+            <span className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 block">/ {state.requiredNightHours}h target</span>
           </div>
         </div>
 
         {/* Success Alert */}
         {downloadSuccess && (
-          <div className="p-3.5 rounded-xl bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold flex items-center gap-2 animate-fade-in">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+          <div className="p-3.5 rounded-xl bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center gap-2 animate-fade-in">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
             <span>PDF generated and downloaded successfully!</span>
           </div>
         )}
@@ -194,7 +194,7 @@ export function ExportDocs() {
             type="button"
             disabled={isGenerating || drives.length === 0}
             onClick={handleGeneratePdf}
-            className="btn-primary w-full h-14 text-base font-bold shadow-teal flex items-center justify-center gap-2 disabled:opacity-50"
+            className="btn-primary w-full min-h-[56px] h-14 text-base font-extrabold shadow-[0_4px_25px_rgba(20,184,166,0.35)] flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isGenerating ? (
               <>
@@ -209,11 +209,11 @@ export function ExportDocs() {
             )}
           </button>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2.5">
             <button
               type="button"
               onClick={handleShare}
-              className="btn-secondary py-3 text-xs font-bold"
+              className="btn-secondary min-h-[48px] py-3 text-xs font-bold"
             >
               <Share2 className="w-4 h-4" />
               <span>Share Summary</span>
@@ -222,7 +222,7 @@ export function ExportDocs() {
             <button
               type="button"
               onClick={handleGeneratePdf}
-              className="btn-secondary py-3 text-xs font-bold"
+              className="btn-secondary min-h-[48px] py-3 text-xs font-bold"
             >
               <Printer className="w-4 h-4" />
               <span>Print Preview</span>
@@ -230,7 +230,7 @@ export function ExportDocs() {
           </div>
         </div>
 
-        <p className="text-xs text-center text-slate-600 dark:text-slate-300">
+        <p className="text-xs text-center text-slate-500 dark:text-slate-400">
           Complies with state DMV log formats. All calculations are stored locally on your device.
         </p>
 

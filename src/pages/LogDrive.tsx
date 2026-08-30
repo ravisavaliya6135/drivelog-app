@@ -179,30 +179,30 @@ export function LogDrive() {
       </div>
 
       {/* 2. Search & Filter Bar */}
-      <div className="app-card p-3 flex flex-col sm:flex-row gap-2.5">
+      <div className="app-card p-3 flex flex-col sm:flex-row gap-2.5 bg-white/90 dark:bg-[#131C2E]/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-2xl">
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" strokeWidth={1.75} />
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" strokeWidth={1.75} />
           <input
             type="text"
             placeholder="Search by driver, notes, or date..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl pl-9 pr-3 py-2.5 min-h-[44px] text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="w-full bg-slate-50 dark:bg-[#0B0F19]/70 border border-slate-200 dark:border-slate-700/80 rounded-xl pl-9 pr-3.5 py-2.5 min-h-[44px] text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
           />
         </div>
 
         {/* Filter Pills */}
-        <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl" role="radiogroup" aria-label="Drive filter">
+        <div className="flex gap-1 bg-slate-100 dark:bg-[#17233B] p-1 rounded-xl border border-transparent dark:border-slate-700/60" role="radiogroup" aria-label="Drive filter">
           <button
             type="button"
             role="radio"
             aria-checked={filterType === 'all'}
             onClick={() => setFilterType('all')}
             className={cn(
-              'px-3 py-1.5 min-h-[40px] text-xs font-semibold rounded-lg transition-all',
+              'px-3.5 py-1.5 min-h-[40px] text-xs font-bold rounded-lg transition-all',
               filterType === 'all'
-                ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
+                ? 'bg-white dark:bg-[#0B0F19] text-slate-900 dark:text-teal-300 dark:border dark:border-teal-500/30 shadow-sm'
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             )}
           >
@@ -214,13 +214,13 @@ export function LogDrive() {
             aria-checked={filterType === 'day'}
             onClick={() => setFilterType('day')}
             className={cn(
-              'px-3 py-1.5 min-h-[40px] text-xs font-semibold rounded-lg transition-all flex items-center gap-1',
+              'px-3.5 py-1.5 min-h-[40px] text-xs font-bold rounded-lg transition-all flex items-center gap-1.5',
               filterType === 'day'
-                ? 'bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm'
+                ? 'bg-white dark:bg-[#0B0F19] text-amber-600 dark:text-amber-300 dark:border dark:border-amber-500/30 shadow-sm'
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             )}
           >
-            <Sun className="w-3 h-3" strokeWidth={1.75} /> Day
+            <Sun className="w-3.5 h-3.5 text-amber-500" strokeWidth={1.75} /> Day
           </button>
           <button
             type="button"
@@ -228,13 +228,13 @@ export function LogDrive() {
             aria-checked={filterType === 'night'}
             onClick={() => setFilterType('night')}
             className={cn(
-              'px-3 py-1.5 min-h-[40px] text-xs font-semibold rounded-lg transition-all flex items-center gap-1',
+              'px-3.5 py-1.5 min-h-[40px] text-xs font-bold rounded-lg transition-all flex items-center gap-1.5',
               filterType === 'night'
-                ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                ? 'bg-white dark:bg-[#0B0F19] text-indigo-600 dark:text-indigo-300 dark:border dark:border-indigo-500/30 shadow-sm'
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             )}
           >
-            <Moon className="w-3 h-3" strokeWidth={1.75} /> Night
+            <Moon className="w-3.5 h-3.5 text-indigo-500" strokeWidth={1.75} /> Night
           </button>
         </div>
       </div>
@@ -256,15 +256,15 @@ export function LogDrive() {
                   setEditingDrive(drive);
                   setShowManualForm(true);
                 }}
-                className="app-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:border-teal-500/50 transition-all group"
+                className="app-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 cursor-pointer hover:border-teal-500/50 hover:shadow-[0_8px_30px_rgba(20,184,166,0.12)] transition-all group rounded-2xl"
               >
                 {/* Left side: Time, Condition & Date */}
                 <div className="flex items-start sm:items-center gap-3.5">
                   <div className={cn(
                     'w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 mt-0.5 sm:mt-0 shadow-sm',
                     drive.dayNight === 'night'
-                      ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400'
-                      : 'bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400'
+                      ? 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/25'
+                      : 'bg-amber-500/15 text-amber-400 border border-amber-500/25'
                   )}>
                     {drive.dayNight === 'night' ? (
                       <Moon className="w-5 h-5" strokeWidth={1.75} />
@@ -279,10 +279,10 @@ export function LogDrive() {
                         {formattedDuration}
                       </span>
                       <span className={cn(
-                        'text-xs font-bold px-2 py-0.5 rounded-md',
+                        'text-xs font-bold px-2 py-0.5 rounded-md border',
                         drive.dayNight === 'night'
-                          ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
-                          : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
+                          ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/25'
+                          : 'bg-amber-500/15 text-amber-300 border-amber-500/25'
                       )}>
                         {drive.dayNight === 'night' ? 'Night' : 'Day'}
                       </span>
@@ -290,19 +290,19 @@ export function LogDrive() {
 
                     <div className="text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-2">
                       <span className="flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5" strokeWidth={1.75} />
+                        <Calendar className="w-3.5 h-3.5 text-slate-400" strokeWidth={1.75} />
                         {new Date(drive.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
                       </span>
                       <span>•</span>
                       <span className="flex items-center gap-1">
-                        <User className="w-3.5 h-3.5" strokeWidth={1.75} />
+                        <User className="w-3.5 h-3.5 text-slate-400" strokeWidth={1.75} />
                         {driver?.name || 'Supervisor'}
                       </span>
                       {vehicle && (
                         <>
                           <span>•</span>
                           <span className="flex items-center gap-1">
-                            <Car className="w-3.5 h-3.5" strokeWidth={1.75} />
+                            <Car className="w-3.5 h-3.5 text-slate-400" strokeWidth={1.75} />
                             {vehicle.name}
                           </span>
                         </>
@@ -320,8 +320,8 @@ export function LogDrive() {
                   )}
 
                   {drive.isVerified ? (
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 text-xs font-bold border border-emerald-200/80 dark:border-emerald-800/60 shadow-sm">
-                      <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" strokeWidth={1.75} />
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-300 text-xs font-bold border border-emerald-500/30 shadow-sm">
+                      <ShieldCheck className="w-4 h-4 text-emerald-400" strokeWidth={1.75} />
                       <span>Signed ({drive.initials || 'SUP'})</span>
                     </div>
                   ) : (
@@ -329,14 +329,14 @@ export function LogDrive() {
                       type="button"
                       onClick={(e) => void handleQuickSign(e, drive)}
                       aria-label={`Sign off drive for ${drive.date}`}
-                      className="min-h-[44px] px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-[0.97] text-white font-bold text-xs shadow-sm inline-flex items-center gap-1.5 transition-all focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-1 dark:focus:ring-offset-slate-900"
+                      className="min-h-[44px] px-3.5 py-2 rounded-xl bg-teal-500/15 hover:bg-teal-500/25 active:scale-[0.97] text-teal-300 border border-teal-500/30 font-bold text-xs shadow-sm inline-flex items-center gap-1.5 transition-all focus:outline-none focus:ring-2 focus:ring-teal-400"
                     >
                       <ShieldCheck className="w-4 h-4" strokeWidth={1.75} />
                       <span>Sign Off</span>
                     </button>
                   )}
 
-                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors flex-shrink-0" strokeWidth={1.75} />
+                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-teal-400 transition-colors flex-shrink-0" strokeWidth={1.75} />
                 </div>
               </div>
             );

@@ -1,5 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import '@fontsource-variable/plus-jakarta-sans'
+import '@fontsource-variable/inter'
 import App from './App'
 import './index.css'
 import { registerSW } from 'virtual:pwa-register'

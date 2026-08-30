@@ -188,7 +188,7 @@ export function Settings() {
       </div>
 
       {/* 2. Tab Navigation */}
-      <div className="app-card p-1.5 overflow-x-auto hide-scrollbar">
+      <div className="app-card p-1.5 overflow-x-auto hide-scrollbar bg-slate-100/80 dark:bg-[#131C2E] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl">
         <nav className="flex gap-1 min-w-max" aria-label="Settings tabs">
           <TabButton active={activeTab === 'account'} onClick={() => setActiveTab('account')}>
             <User className="w-3.5 h-3.5" /> Account
@@ -215,14 +215,14 @@ export function Settings() {
         <section className="space-y-4 animate-fade-in">
 
           {/* Beta / Support entry point */}
-          <div className="p-4 rounded-2xl bg-teal-50/70 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 flex items-center justify-between gap-3">
+          <div className="p-4 rounded-2xl bg-teal-500/10 dark:bg-teal-950/40 border border-teal-500/20 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-400 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
                 <LifeBuoy className="w-5 h-5" />
               </div>
               <div className="min-w-0">
                 <h4 className="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-2">
-                  Need help? <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">BETA</span>
+                  Need help? <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/30">BETA</span>
                 </h4>
                 <p className="text-xs text-slate-600 dark:text-slate-300 truncate">
                   Guides, FAQ, and direct feedback to the team.
@@ -231,7 +231,7 @@ export function Settings() {
             </div>
             <Link
               to="/help"
-              className="btn-primary py-2 px-3.5 text-xs font-bold whitespace-nowrap shadow-teal flex-shrink-0"
+              className="btn-primary py-2 px-3.5 text-xs font-bold whitespace-nowrap shadow-[0_2px_12px_rgba(20,184,166,0.3)] flex-shrink-0"
             >
               Get help
             </Link>
@@ -239,9 +239,9 @@ export function Settings() {
 
           {/* Payment Success Alert */}
           {paymentSuccessNotice && (
-            <div className="p-4 rounded-2xl bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
                 <div>
                   <h4 className="font-bold text-sm">Payment Successful!</h4>
                   <p className="text-xs">Your DriveHours Lifetime Pro entitlement is now active.</p>
@@ -250,7 +250,7 @@ export function Settings() {
               <button
                 type="button"
                 onClick={() => setPaymentSuccessNotice(false)}
-                className="text-xs font-bold px-3 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-900"
+                className="text-xs font-bold px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
               >
                 Dismiss
               </button>
@@ -258,10 +258,10 @@ export function Settings() {
           )}
 
           {/* User Profile Card */}
-          <div className="app-card p-5 space-y-4">
+          <div className="app-card p-5 sm:p-6 space-y-4 rounded-2xl bg-white/90 dark:bg-[#131C2E]/90 backdrop-blur-md">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-2xl bg-teal-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-400 text-white flex items-center justify-center shadow-sm flex-shrink-0">
                   <User className="w-5 h-5" />
                 </div>
                 <div>
@@ -288,7 +288,7 @@ export function Settings() {
                 <button
                   type="button"
                   onClick={() => setShowAuthModal(true)}
-                  className="btn-primary py-2 px-4 text-xs font-bold self-start sm:self-auto"
+                  className="btn-primary py-2 px-4 text-xs font-bold self-start sm:self-auto shadow-sm"
                 >
                   <Lock className="w-3.5 h-3.5" /> Sign In / Create Account
                 </button>
@@ -297,11 +297,11 @@ export function Settings() {
           </div>
 
           {/* Membership Tier Card */}
-          <div className="app-card p-5 space-y-4">
+          <div className="app-card-glow p-5 sm:p-6 space-y-4 rounded-2xl border border-teal-500/30">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-teal-700" />
+                  <Sparkles className="w-4 h-4 text-teal-400" />
                   Membership Status
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -310,11 +310,11 @@ export function Settings() {
               </div>
 
               {isPro ? (
-                <span className="badge-teal text-xs font-bold">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-teal-700" /> Lifetime Pro
+                <span className="badge-teal text-xs font-bold border border-teal-500/30">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-teal-400" /> Lifetime Pro
                 </span>
               ) : (
-                <span className="badge-amber text-xs font-bold">
+                <span className="badge-amber text-xs font-bold border border-amber-500/30">
                   Free ({totalHoursLogged}/20h)
                 </span>
               )}
@@ -322,13 +322,17 @@ export function Settings() {
 
             {!isPro && (
               <div className="space-y-1.5">
-                <div className="flex justify-between text-xs font-medium text-slate-600 dark:text-slate-400">
+                <div className="flex justify-between text-xs font-medium text-slate-600 dark:text-slate-300">
                   <span>Free Progress</span>
-                  <span>{totalHoursLogged} / 20 hours ({freeHoursRemaining}h left)</span>
+                  <span className="font-mono">{totalHoursLogged} / 20 hours ({freeHoursRemaining}h left)</span>
                 </div>
-                <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-900 rounded-full overflow-hidden border border-slate-200/60 dark:border-slate-800 p-0.5">
                   <div
-                    className={`h-full transition-all ${isLimitReached ? 'bg-red-500' : 'bg-teal-600'}`}
+                    className={`h-full rounded-full transition-all ${
+                      isLimitReached 
+                        ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' 
+                        : 'bg-gradient-to-r from-teal-400 to-emerald-400 shadow-[0_0_10px_rgba(20,184,166,0.5)]'
+                    }`}
                     style={{ width: `${Math.min(100, (totalHoursLogged / 20) * 100)}%` }}
                   />
                 </div>
@@ -336,25 +340,25 @@ export function Settings() {
             )}
 
             {!isPro ? (
-              <div className="p-4 rounded-xl bg-teal-50/60 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-teal-500/10 via-emerald-500/10 to-teal-500/10 border border-teal-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
                 <div>
                   <h4 className="font-bold text-xs text-teal-900 dark:text-teal-200">
                     DriveHours Lifetime Pro — {PRO_LIFETIME_PRICE}
                   </h4>
-                  <p className="text-xs text-teal-700 dark:text-teal-300">
+                  <p className="text-xs text-teal-700 dark:text-teal-300 mt-0.5">
                     One-time payment • Unlimited driving logs • DMV exports • No subscriptions
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowUpgradeModal(true)}
-                  className="btn-primary py-2 px-4 text-xs font-bold whitespace-nowrap shadow-teal"
+                  className="btn-primary py-2.5 px-4 text-xs font-extrabold whitespace-nowrap shadow-[0_4px_15px_rgba(20,184,166,0.35)]"
                 >
                   Unlock for {PRO_LIFETIME_PRICE}
                 </button>
               </div>
             ) : (
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-300">
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#17233B]/70 border border-slate-700/60 text-xs text-slate-300">
                 ✓ Unlimited hours logging active. 100% offline capable.
               </div>
             )}
@@ -364,7 +368,7 @@ export function Settings() {
               <button
                 type="button"
                 onClick={handleRestorePurchase}
-                className="text-xs text-teal-700 dark:text-teal-400 font-bold hover:underline inline-flex items-center gap-1"
+                className="text-xs text-teal-600 dark:text-teal-400 font-bold hover:underline inline-flex items-center gap-1"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 Restore Purchase / Refresh Status
