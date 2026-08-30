@@ -13,8 +13,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export function PrivacyPolicy() {
   useSeo({
-    title: 'Privacy Policy | DriveLog',
-    description: 'What DriveLog stores on your device, what (little) leaves it, and why. No ads, no GPS tracking, no sale of personal data.',
+    title: 'Privacy Policy | DriveHours',
+    description: 'What DriveHours stores on your device, what (little) leaves it, and why. No ads, no GPS tracking, no sale of personal data.',
     canonicalUrl: 'https://drivehours.app/privacy',
   });
 
@@ -29,9 +29,9 @@ export function PrivacyPolicy() {
         <p className="text-xs text-slate-500 dark:text-slate-400">Last updated: {new Date().getFullYear()}</p>
       </header>
 
-      <Section title="What DriveLog does">
+      <Section title="What DriveHours does">
         <p>
-          DriveLog is a simple tool for teens and parents to log supervised driving practice hours and
+          DriveHours is a simple tool for teens and parents to log supervised driving practice hours and
           export a printable log formatted for DMV appointments. It is a record-keeping utility — nothing more,
           nothing hidden.
         </p>
@@ -75,7 +75,7 @@ export function PrivacyPolicy() {
       <Section title="No GPS tracking while driving">
         <p className="flex items-start gap-2">
           <Car className="w-4 h-4 text-teal-700 mt-0.5 flex-shrink-0" />
-          DriveLog does not access your GPS location. Night detection uses your state's approximate coordinates
+          DriveHours does not access your GPS location. Night detection uses your state's approximate coordinates
           (the state capital) to compute sunset times — your precise location is never recorded or transmitted.
         </p>
       </Section>
@@ -84,14 +84,14 @@ export function PrivacyPolicy() {
         <p>
           Every core feature — starting drives, logging hours, verifying entries, and exporting PDFs — works
           completely without internet. Data is saved locally first; any account sync is optional and secondary.
-          If you never sign in, DriveLog works identically forever.
+          If you never sign in, DriveHours works identically forever.
         </p>
       </Section>
 
       <Section title="Shared family use">
         <p className="flex items-start gap-2">
           <Users className="w-4 h-4 text-teal-700 mt-0.5 flex-shrink-0" />
-          DriveLog is designed to be used openly by teens and parents together on a shared device. Parents can
+          DriveHours is designed to be used openly by teens and parents together on a shared device. Parents can
           review every entry and verify them before DMV submission. We recommend keeping verification honest —
           DMV officials may ask about recorded hours.
         </p>
@@ -99,7 +99,7 @@ export function PrivacyPolicy() {
 
       <Section title="Cookies & local storage">
         <p>
-          DriveLog sets no advertising or tracking cookies. We use only browser local storage
+          DriveHours sets no advertising or tracking cookies. We use only browser local storage
           (IndexedDB and localStorage) to remember your logs and preferences on your own device —
           the same mechanism any notes app uses. There is nothing to "accept" because there is
           nothing tracking you across sites.
@@ -126,7 +126,7 @@ export function PrivacyPolicy() {
 
       <Section title="Accuracy disclaimer">
         <p>
-          DriveLog is a logging tool, not an authority on licensing law. You are responsible for verifying your
+          DriveHours is a logging tool, not an authority on licensing law. You are responsible for verifying your
           state's current requirements with your local DMV. DMV acceptance of exported documents may vary by state
           and situation — please review your exported PDF before submitting it.
         </p>

@@ -15,7 +15,7 @@ import { useSeo } from '../hooks/useSeo';
 
 export function ExportDocs() {
   useSeo({
-    title: 'DMV Driving Log PDF Export & 50-State Compliance | DriveLog',
+    title: 'DMV Driving Log PDF Export & 50-State Compliance | DriveHours',
     description: 'Generate an official state DMV-compliant supervised driving practice log PDF report for your road test licensing appointment.',
     canonicalUrl: 'https://drivehours.app/export',
     noindex: true,

@@ -1,7 +1,8 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import { Home as HomeIcon, Clock, Play, FileText, Settings as SettingsIcon, Car } from 'lucide-react';
-import { ThemeProvider } from './hooks/useTheme';
+import { Toaster } from 'sonner';
+import { ThemeProvider, useTheme } from './hooks/useTheme';
 import { AuthProvider } from './contexts/AuthContext';
 import { EntitlementProvider } from './contexts/EntitlementContext';
 import { PwaInstallPrompt } from './components/PwaInstallPrompt';
@@ -170,45 +171,62 @@ function BottomNavbar() {
   );
 }
 
+function AppShell() {
+  const { resolvedTheme } = useTheme();
+
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col pb-24 md:pb-8 selection:bg-teal-500 selection:text-white antialiased transition-colors">
+      <Toaster
+        position="top-center"
+        richColors
+        closeButton
+        theme={resolvedTheme}
+        toastOptions={{
+          className: 'rounded-2xl font-sans text-xs font-semibold shadow-xl border border-slate-200 dark:border-slate-800',
+        }}
+      />
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[70] rounded-xl bg-teal-700 px-4 py-3 font-bold text-white">
+        Skip to main content
+      </a>
+      <TopHeader />
+
+      <main id="main" className="flex-1 w-full max-w-4xl mx-auto px-4 py-4 md:py-6">
+        <Suspense fallback={<PageSkeleton />}>
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/log" element={<LogDrive />} />
+              <Route path="/export" element={<ExportDocs />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              {/* Programmatic SEO state guides — /dmv/ca, /dmv/tx, ... all 50 states */}
+              <Route path="/dmv" element={<StateGuideIndex />} />
+              <Route path="/dmv/:stateCode" element={<StateGuide />} />
+              {/* Trust & support pages */}
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfUse />} />
+              <Route path="/help" element={<HelpCenter />} />
+              <Route path="/contact" element={<ContactFeedback />} />
+              <Route path="/about" element={<About />} />
+              <Route path="*" element={<div className="app-card p-8 text-center"><h1 className="text-2xl font-bold">Page not found</h1><p className="mt-2 text-slate-500">This page does not exist.</p></div>} />
+            </Routes>
+          </ErrorBoundary>
+        </Suspense>
+      </main>
+
+      <PwaInstallPrompt />
+      <SiteFooter />
+      <BottomNavbar />
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <EntitlementProvider>
           <ThemeProvider>
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col pb-24 md:pb-8 selection:bg-teal-500 selection:text-white antialiased transition-colors">
-              <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[70] rounded-xl bg-teal-700 px-4 py-3 font-bold text-white">
-                Skip to main content
-              </a>
-              <TopHeader />
-
-              <main id="main" className="flex-1 w-full max-w-4xl mx-auto px-4 py-4 md:py-6">
-                <Suspense fallback={<PageSkeleton />}>
-                  <ErrorBoundary>
-                    <Routes>
-                      <Route path="/" element={<HomePage />} />
-                      <Route path="/log" element={<LogDrive />} />
-                      <Route path="/export" element={<ExportDocs />} />
-                      <Route path="/settings" element={<SettingsPage />} />
-                      {/* Programmatic SEO state guides — /dmv/ca, /dmv/tx, ... all 50 states */}
-                      <Route path="/dmv" element={<StateGuideIndex />} />
-                      <Route path="/dmv/:stateCode" element={<StateGuide />} />
-                      {/* Trust & support pages */}
-                      <Route path="/privacy" element={<PrivacyPolicy />} />
-                      <Route path="/terms" element={<TermsOfUse />} />
-                      <Route path="/help" element={<HelpCenter />} />
-                      <Route path="/contact" element={<ContactFeedback />} />
-                      <Route path="/about" element={<About />} />
-                      <Route path="*" element={<div className="app-card p-8 text-center"><h1 className="text-2xl font-bold">Page not found</h1><p className="mt-2 text-slate-500">This page does not exist.</p></div>} />
-                    </Routes>
-                  </ErrorBoundary>
-                </Suspense>
-              </main>
-
-              <PwaInstallPrompt />
-              <SiteFooter />
-              <BottomNavbar />
-            </div>
+            <AppShell />
           </ThemeProvider>
         </EntitlementProvider>
       </AuthProvider>

@@ -31,7 +31,7 @@ const HELP_ITEMS: HelpItem[] = [
     question: 'How are night hours calculated?',
     answer: (
       <>
-        <p>DriveLog doesn't guess from clock times. It calculates the actual sunset for your state, then counts hours beginning about <strong>30 minutes after sunset</strong> — matching how most DMVs define legal night driving.</p>
+        <p>DriveHours doesn't guess from clock times. It calculates the actual sunset for your state, then counts hours beginning about <strong>30 minutes after sunset</strong> — matching how most DMVs define legal night driving.</p>
         <p>A sun or moon badge appears automatically during a drive. You never have to mark it yourself.</p>
       </>
     ),

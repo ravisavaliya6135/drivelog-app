@@ -18,7 +18,7 @@ import {
   LogOut, 
   Sparkles, 
   RotateCcw,
-  X
+  HardDrive
 } from 'lucide-react';
 import { MultiDriverForm } from '../components/MultiDriverForm';
 import { StateSelector } from '../components/StateSelector';
@@ -35,7 +35,7 @@ import { LifeBuoy } from 'lucide-react';
 
 export function Settings() {
   useSeo({
-    title: 'State DMV Requirements & App Settings | DriveLog',
+    title: 'State DMV Requirements & App Settings | DriveHours',
     description: 'Configure your state driving targets, manage student drivers & supervisor profiles, and customize app appearance.',
     canonicalUrl: 'https://drivehours.app/settings',
     noindex: true,
@@ -59,8 +59,6 @@ export function Settings() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [paymentSuccessNotice, setPaymentSuccessNotice] = useState(false);
-  const [showExportData, setShowExportData] = useState(false);
-  const [exportData, setExportData] = useState('');
   const [restoreMessage, setRestoreMessage] = useState<string | null>(null);
 
   // Check for Stripe Checkout return
@@ -101,16 +99,11 @@ export function Settings() {
     ]);
     const data = { drives: allDrives, drivers: allDrivers, vehicles: allVehicles, state: selectedState, exportedAt: new Date().toISOString() };
     const json = JSON.stringify(data, null, 2);
-    setExportData(json);
-    setShowExportData(true);
-  };
-
-  const handleDownloadExport = () => {
-    const blob = new Blob([exportData], { type: 'application/json' });
+    const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `DriveLog-backup-${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `DriveHours-backup-${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -251,7 +244,7 @@ export function Settings() {
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
                 <div>
                   <h4 className="font-bold text-sm">Payment Successful!</h4>
-                  <p className="text-xs">Your DriveLog Lifetime Pro entitlement is now active.</p>
+                  <p className="text-xs">Your DriveHours Lifetime Pro entitlement is now active.</p>
                 </div>
               </div>
               <button
@@ -346,7 +339,7 @@ export function Settings() {
               <div className="p-4 rounded-xl bg-teal-50/60 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h4 className="font-bold text-xs text-teal-900 dark:text-teal-200">
-                    DriveLog Lifetime Pro — {PRO_LIFETIME_PRICE}
+                    DriveHours Lifetime Pro — {PRO_LIFETIME_PRICE}
                   </h4>
                   <p className="text-xs text-teal-700 dark:text-teal-300">
                     One-time payment • Unlimited driving logs • DMV exports • No subscriptions
@@ -490,13 +483,13 @@ export function Settings() {
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               {pwa.isStandalone
-                ? 'DriveLog is running as an installed standalone app with full offline capabilities.'
-                : 'Install DriveLog to your home screen for quick offline access while driving.'}
+                ? 'DriveHours is running as an installed standalone app with full offline capabilities.'
+                : 'Install DriveHours to your home screen for quick offline access while driving.'}
             </p>
 
             {pwa.isStandalone ? (
               <span className="badge-teal">
-                <CheckCircle2 className="w-3.5 h-3.5 text-teal-700" /> DriveLog is Installed
+                <CheckCircle2 className="w-3.5 h-3.5 text-teal-700" /> DriveHours is Installed
               </span>
             ) : (
               <button
@@ -505,7 +498,7 @@ export function Settings() {
                 className="btn-primary py-2.5 px-4 text-xs font-bold"
               >
                 <Download className="w-4 h-4" />
-                {pwa.isIOS ? 'Add to Home Screen Instructions' : 'Install DriveLog App'}
+                {pwa.isIOS ? 'Add to Home Screen Instructions' : 'Install DriveHours App'}
               </button>
             )}
           </div>
@@ -513,21 +506,23 @@ export function Settings() {
           {/* Backup & Restore */}
           <div className="app-card p-5 space-y-3">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Download className="w-4 h-4 text-teal-700" /> Data Backup & Restore
+              <HardDrive className="w-4 h-4 text-teal-700" /> Data Backup & Transfer
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Export all local driving logs and vehicle profiles as a JSON file to transfer between devices.
+              Your driving logs and profiles are stored 100% locally in your browser (IndexedDB). Export a JSON backup to transfer data to another device.
             </p>
-            <div className="flex flex-wrap gap-2">
+
+            <div className="flex flex-wrap gap-2 pt-1">
               <button
                 type="button"
                 onClick={handleExportAllData}
-                className="btn-secondary py-2.5 px-4 text-xs font-bold"
+                className="btn-secondary py-2 px-3.5 text-xs font-semibold flex items-center gap-1.5"
               >
-                <Download className="w-4 h-4" /> Export Backup (.json)
+                <Upload className="w-3.5 h-3.5 rotate-180" /> Export JSON Backup
               </button>
-              <label className="btn-secondary py-2.5 px-4 text-xs font-bold cursor-pointer">
-                <Upload className="w-4 h-4" /> Import Backup
+
+              <label className="btn-secondary py-2 px-3.5 text-xs font-semibold cursor-pointer flex items-center gap-1.5">
+                <Download className="w-3.5 h-3.5 rotate-180" /> Restore from JSON
                 <input
                   type="file"
                   accept=".json"
@@ -536,46 +531,22 @@ export function Settings() {
                 />
               </label>
             </div>
-
-            {showExportData && (
-              <div className="mt-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800 space-y-2">
-                <div className="flex justify-between items-center text-xs font-bold">
-                  <span>Backup JSON Preview</span>
-                  <button onClick={() => setShowExportData(false)} className="text-slate-400 hover:text-slate-900">
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-                <textarea
-                  value={exportData}
-                  readOnly
-                  rows={4}
-                  className="form-input font-mono text-xs"
-                />
-                <button
-                  type="button"
-                  onClick={handleDownloadExport}
-                  className="btn-primary py-1.5 px-3 text-xs font-bold"
-                >
-                  Download .json File
-                </button>
-              </div>
-            )}
           </div>
 
           {/* Danger Zone */}
-          <div className="app-card p-5 border-red-200 dark:border-red-900/60 space-y-3">
-            <h3 className="text-sm font-bold text-red-600 dark:text-red-400 flex items-center gap-2">
-              <Trash2 className="w-4 h-4" /> Clear Local Data
+          <div className="app-card p-5 border-red-200 dark:border-red-950/60 space-y-3">
+            <h3 className="text-sm font-bold text-red-700 dark:text-red-400 flex items-center gap-2">
+              <Trash2 className="w-4 h-4" /> Danger Zone
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Permanently erase all driving logs, drivers, and vehicles stored on this device.
+              Permanently delete all driving logs, driver profiles, and vehicle records from this device.
             </p>
             <button
               type="button"
               onClick={handleClearAllData}
-              className="btn-danger py-2 px-4 text-xs font-bold"
+              className="btn-danger py-2 px-3.5 text-xs font-bold"
             >
-              Clear All Local Data
+              Clear Local Data
             </button>
           </div>
 
@@ -590,7 +561,7 @@ export function Settings() {
               <Car className="w-7 h-7" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">DriveLog</h2>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">DriveHours</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">Supervised Teen Driving Log • Version 1.0.0</p>
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-300 max-w-sm mx-auto">
@@ -603,7 +574,7 @@ export function Settings() {
               <Shield className="w-4 h-4" /> Important Legal Disclaimer
             </h4>
             <p className="text-xs text-amber-900/80 dark:text-amber-200/80">
-              DriveLog is a record-keeping utility. Requirements vary by state and change periodically. Always verify current DMV requirements in your jurisdiction prior to your licensing appointment.
+              DriveHours is a record-keeping utility. Requirements vary by state and change periodically. Always verify current DMV requirements in your jurisdiction prior to your licensing appointment.
             </p>
           </div>
 

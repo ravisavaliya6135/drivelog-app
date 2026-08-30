@@ -13,8 +13,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export function TermsOfUse() {
   useSeo({
-    title: 'Terms of Use | DriveLog',
-    description: 'The simple terms for using DriveLog: an informational logging tool, not legal advice. You are responsible for accurate entries and verifying DMV requirements.',
+    title: 'Terms of Use | DriveHours',
+    description: 'The simple terms for using DriveHours: an informational logging tool, not legal advice. You are responsible for accurate entries and verifying DMV requirements.',
     canonicalUrl: 'https://drivehours.app/terms',
   });
 
@@ -31,7 +31,7 @@ export function TermsOfUse() {
 
       <Section title="Acceptance of terms">
         <p>
-          By using DriveLog you agree to these terms. They are intentionally short and readable — we think
+          By using DriveHours you agree to these terms. They are intentionally short and readable — we think
           legal documents should be too.
         </p>
       </Section>
@@ -39,7 +39,7 @@ export function TermsOfUse() {
       <Section title="Informational tool — not legal advice">
         <p className="flex items-start gap-2">
           <Scale className="w-4 h-4 text-teal-700 mt-0.5 flex-shrink-0" />
-          DriveLog provides hour-tracking and document-formatting tools for general informational purposes.
+          DriveHours provides hour-tracking and document-formatting tools for general informational purposes.
           It does not provide legal advice and does not determine your eligibility for a driver's license.
           Licensing requirements change and vary by jurisdiction; always confirm current rules with your state DMV.
         </p>
@@ -64,7 +64,7 @@ export function TermsOfUse() {
 
       <Section title="Age requirements & parental consent">
         <p>
-          DriveLog is intended for teens of driving-permit age (typically 15+) and their parents or guardians.
+          DriveHours is intended for teens of driving-permit age (typically 15+) and their parents or guardians.
           The app is designed for shared family use on a family device, and parents supervising a minor's
           driving are expected to review and verify logged hours. The app does not knowingly collect personal
           information from children under 13; drive logs stay on the family's device by design.
@@ -82,7 +82,7 @@ export function TermsOfUse() {
       <Section title="Payments (Lifetime Pro)">
         <p className="flex items-start gap-2">
           <CreditCard className="w-4 h-4 text-teal-700 mt-0.5 flex-shrink-0" />
-          DriveLog's free tier includes up to 20 logged hours. An optional one-time payment of $4.99 unlocks
+          DriveHours's free tier includes up to 20 logged hours. An optional one-time payment of $4.99 unlocks
           unlimited logging and PDF export forever — no subscription, no recurring charges. Payments are processed
           securely by Stripe; we never see or store your card details. Because Pro is delivered instantly
           and in full, purchases are final — but if anything goes wrong, contact us through the feedback page
@@ -93,7 +93,7 @@ export function TermsOfUse() {
       <Section title="Limitation of liability">
         <p className="flex items-start gap-2">
           <ShieldAlert className="w-4 h-4 text-teal-700 mt-0.5 flex-shrink-0" />
-          To the maximum extent permitted by law, DriveLog is provided "as is" without warranties of any kind.
+          To the maximum extent permitted by law, DriveHours is provided "as is" without warranties of any kind.
           We are not liable for denied applications, lost data, missed appointments, or any indirect damages
           arising from use of the app. Keep backups of important records (the Settings page includes a JSON export).
         </p>

@@ -45,12 +45,12 @@ function setMetaContent(html, attr, key, value) {
 let generated = 0;
 
 const publicPages = [
-  ['/dmv', 'Teen Driving Log Requirements by State (All 50) | DriveLog', 'Browse supervised driving hour requirements, night-hour rules, and official DMV log forms for all 50 US states.'],
-  ['/about', 'About DriveLog — Why We Built It | DriveLog', "Why we built an offline-first, ad-free driving hours tracker for teens and parents."],
-  ['/help', 'Help Center | DriveLog', 'Answers about logging drives, night hours, parent verification, offline PDF export, and DriveLog Pro.'],
-  ['/privacy', 'Privacy Policy | DriveLog', 'What DriveLog stores on your device, what leaves it, and why.'],
-  ['/terms', 'Terms of Use | DriveLog', 'Terms for using DriveLog, the offline-first teen driving hours tracker.'],
-  ['/contact', 'Contact & Feedback | DriveLog', 'Questions, bugs, or DMV feedback about DriveLog? Contact the team.'],
+  ['/dmv', 'Teen Driving Log Requirements by State (All 50) | DriveHours', 'Browse supervised driving hour requirements, night-hour rules, and official DMV log forms for all 50 US states.'],
+  ['/about', 'About DriveHours — Why We Built It | DriveHours', "Why we built an offline-first, ad-free driving hours tracker for teens and parents."],
+  ['/help', 'Help Center | DriveHours', 'Answers about logging drives, night hours, parent verification, offline PDF export, and DriveHours Pro.'],
+  ['/privacy', 'Privacy Policy | DriveHours', 'What DriveHours stores on your device, what leaves it, and why.'],
+  ['/terms', 'Terms of Use | DriveHours', 'Terms for using DriveHours, the offline-first teen driving hours tracker.'],
+  ['/contact', 'Contact & Feedback | DriveHours', 'Questions, bugs, or DMV feedback about DriveHours? Contact the team.'],
 ];
 
 for (const [routePath, title, description] of publicPages) {
@@ -74,9 +74,9 @@ for (const [routePath, title, description] of publicPages) {
 }
 
 const noindexAppPages = [
-  ['/log', 'Driving History & Practice Log | DriveLog', 'Chronological log of supervised teen driving sessions with day/night filtering, road conditions, and supervisor signatures.'],
-  ['/export', 'DMV Driving Log PDF Export & 50-State Compliance | DriveLog', 'Generate an official state DMV-compliant supervised driving practice log PDF report for your road test licensing appointment.'],
-  ['/settings', 'State DMV Requirements & App Settings | DriveLog', 'Configure your state driving targets, manage student drivers and supervisor profiles, and customize app appearance.'],
+  ['/log', 'Driving History & Practice Log | DriveHours', 'Chronological log of supervised teen driving sessions with day/night filtering, road conditions, and supervisor signatures.'],
+  ['/export', 'DMV Driving Log PDF Export & 50-State Compliance | DriveHours', 'Generate an official state DMV-compliant supervised driving practice log PDF report for your road test licensing appointment.'],
+  ['/settings', 'State DMV Requirements & App Settings | DriveHours', 'Configure your state driving targets, manage student drivers and supervisor profiles, and customize app appearance.'],
 ];
 
 for (const [routePath, title, description] of noindexAppPages) {
@@ -102,7 +102,7 @@ for (const state of stateData) {
   const code = state.code.toLowerCase();
   const routePath = `/dmv/${code}`;
   const canonical = `${SITE_URL}${routePath}`;
-  const title = `${state.name} Teen Driving Log Requirements | DriveLog`;
+  const title = `${state.name} Teen Driving Log Requirements | DriveHours`;
   const description = `Track your ${state.name} supervised driving hours with legal night detection. DMV-ready PDF export. Free to start.`;
 
   // Render the full page content server-side (no JS execution needed)

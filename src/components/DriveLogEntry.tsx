@@ -12,6 +12,7 @@ import {
 import type { DriveEntry, DriverProfile, VehicleProfile } from '../types';
 import { useNightDetection } from '../hooks/useNightDetection';
 import { generateId } from '../utils/db';
+import { cn } from '../utils/cn';
 
 interface DriveLogEntryProps {
   initialData?: Partial<DriveEntry>;
@@ -54,6 +55,16 @@ export const DriveLogEntry = memo(function DriveLogEntry({
     ...initialData,
   });
 
+  // Sync with initialData whenever it changes (e.g. when opening via quick preset chips)
+  useEffect(() => {
+    if (initialData) {
+      setFormData(prev => ({
+        ...prev,
+        ...initialData,
+      }));
+    }
+  }, [initialData]);
+
   // Calculate duration from start and end time if available
   useEffect(() => {
     if (formData.startTime && formData.endTime) {
@@ -65,6 +76,20 @@ export const DriveLogEntry = memo(function DriveLogEntry({
       }
     }
   }, [formData.startTime, formData.endTime]);
+
+  const setPresetDuration = (mins: number) => {
+    const end = formData.endTime ? new Date(formData.endTime) : new Date();
+    const start = new Date(end.getTime() - mins * 60 * 1000);
+    const estMiles = Math.max(1, Math.round((mins / 60) * 28));
+
+    setFormData(prev => ({
+      ...prev,
+      durationMinutes: mins,
+      startTime: start.toISOString(),
+      endTime: end.toISOString(),
+      miles: prev.miles === 15 || !prev.miles ? estMiles : prev.miles,
+    }));
+  };
 
   const durationHours = Math.floor((formData.durationMinutes || 0) / 60);
   const durationMins = (formData.durationMinutes || 0) % 60;
@@ -113,29 +138,57 @@ export const DriveLogEntry = memo(function DriveLogEntry({
         </div>
 
         {/* Day / Night Condition Toggle */}
-        <div className="flex bg-white dark:bg-slate-900 p-1 rounded-xl border border-teal-200 dark:border-teal-800 shadow-sm">
+        <div className="flex bg-white dark:bg-slate-900 p-1 rounded-xl border border-teal-200 dark:border-teal-800 shadow-sm" role="radiogroup" aria-label="Day or night session">
           <button
             type="button"
+            role="radio"
+            aria-checked={formData.dayNight === 'day'}
             onClick={() => setFormData(prev => ({ ...prev, dayNight: 'day' }))}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
+            className={cn(
+              'px-3 py-1.5 min-h-[36px] rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all',
               formData.dayNight === 'day'
                 ? 'bg-amber-500 text-white shadow-sm'
-                : 'text-slate-500 hover:text-slate-900'
-            }`}
+                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+            )}
           >
-            <Sun className="w-3.5 h-3.5" /> Day
+            <Sun className="w-3.5 h-3.5" strokeWidth={1.75} /> Day
           </button>
           <button
             type="button"
+            role="radio"
+            aria-checked={formData.dayNight === 'night'}
             onClick={() => setFormData(prev => ({ ...prev, dayNight: 'night' }))}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
+            className={cn(
+              'px-3 py-1.5 min-h-[36px] rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all',
               formData.dayNight === 'night'
                 ? 'bg-indigo-600 text-white shadow-sm'
-                : 'text-slate-500 hover:text-slate-900'
-            }`}
+                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+            )}
           >
-            <Moon className="w-3.5 h-3.5" /> Night
+            <Moon className="w-3.5 h-3.5" strokeWidth={1.75} /> Night
           </button>
+        </div>
+      </div>
+
+      {/* Quick Duration Preset Chips */}
+      <div>
+        <span className="form-label">Quick Duration Presets</span>
+        <div className="grid grid-cols-4 gap-2">
+          {[15, 30, 45, 60].map((mins) => (
+            <button
+              key={mins}
+              type="button"
+              onClick={() => setPresetDuration(mins)}
+              className={cn(
+                'min-h-[44px] py-2 px-2 rounded-xl text-xs font-extrabold border transition-all active:scale-95',
+                formData.durationMinutes === mins
+                  ? 'border-teal-600 bg-teal-600 text-white shadow-sm'
+                  : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-teal-500/50'
+              )}
+            >
+              {mins === 60 ? '1 hr' : `${mins}m`}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -208,13 +261,14 @@ export const DriveLogEntry = memo(function DriveLogEntry({
               key={label}
               type="button"
               onClick={() => setFormData(prev => ({ ...prev, weather: label }))}
-              className={`py-2 px-1 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 border transition-all ${
+              className={cn(
+                'min-h-[52px] py-2 px-1 rounded-xl text-xs font-semibold flex flex-col items-center justify-center gap-1 border transition-all active:scale-95',
                 formData.weather === label
                   ? 'border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300 font-bold shadow-sm'
-                  : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50'
-              }`}
+                  : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+              )}
             >
-              <Icon className="w-4 h-4" />
+              <Icon className="w-4 h-4" strokeWidth={1.75} />
               <span>{label}</span>
             </button>
           ))}
@@ -273,18 +327,22 @@ export const DriveLogEntry = memo(function DriveLogEntry({
           onClick={() => setFormData(prev => ({ ...prev, isVerified: !prev.isVerified }))}
           aria-pressed={Boolean(formData.isVerified)}
           aria-label="Mark as verified by parent"
-          className={`w-full p-4 rounded-2xl border flex items-center gap-3 text-left transition-all ${
+          className={cn(
+            'w-full min-h-[64px] p-4 rounded-2xl border flex items-center gap-3 text-left transition-all',
             formData.isVerified
               ? 'border-emerald-300 bg-emerald-50/70 dark:border-emerald-800 dark:bg-emerald-950/40'
               : 'border-amber-300 bg-amber-50/70 dark:border-amber-800 dark:bg-amber-950/40'
-          }`}
+          )}
         >
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-            formData.isVerified
-              ? 'bg-emerald-600 text-white'
-              : 'bg-amber-500 text-white'
-          }`}>
-            {formData.isVerified ? <ShieldCheck className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
+          <div className={cn(
+            'w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white shadow-sm',
+            formData.isVerified ? 'bg-emerald-600' : 'bg-amber-500'
+          )}>
+            {formData.isVerified ? (
+              <ShieldCheck className="w-5 h-5" strokeWidth={1.75} />
+            ) : (
+              <Clock className="w-5 h-5" strokeWidth={1.75} />
+            )}
           </div>
           <div className="flex-1 min-w-0">
             {formData.isVerified ? (
@@ -308,9 +366,10 @@ export const DriveLogEntry = memo(function DriveLogEntry({
             )}
           </div>
           {/* Toggle switch visual */}
-          <div className={`w-10 h-6 rounded-full p-0.5 flex-shrink-0 transition-all ${
+          <div className={cn(
+            'w-10 h-6 rounded-full p-0.5 flex-shrink-0 transition-all flex items-center',
             formData.isVerified ? 'bg-emerald-600 justify-end' : 'bg-slate-300 dark:bg-slate-700 justify-start'
-          }`}>
+          )}>
             <div className="w-5 h-5 rounded-full bg-white shadow-sm" />
           </div>
         </button>
@@ -320,16 +379,16 @@ export const DriveLogEntry = memo(function DriveLogEntry({
       <div className="pt-2 space-y-2">
         <button
           type="submit"
-          className="btn-primary w-full h-16 text-base font-bold shadow-teal flex items-center justify-center gap-2"
+          className="btn-primary w-full min-h-[64px] h-16 text-base font-extrabold shadow-teal flex items-center justify-center gap-2"
         >
-          <Save className="w-5 h-5" />
+          <Save className="w-5 h-5" strokeWidth={1.75} />
           <span>{isEditing ? 'Update Drive Entry' : 'Save Drive to Log'}</span>
         </button>
 
         <button
           type="button"
           onClick={onCancel}
-          className="w-full min-h-12 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-300 transition-colors text-center block"
+          className="w-full min-h-[48px] py-3 text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors text-center block"
         >
           Cancel
         </button>
@@ -338,3 +397,4 @@ export const DriveLogEntry = memo(function DriveLogEntry({
     </form>
   );
 });
+

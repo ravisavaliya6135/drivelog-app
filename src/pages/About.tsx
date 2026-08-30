@@ -32,7 +32,7 @@ const PROMISES = [
 
 export function About() {
   useSeo({
-    title: 'About DriveLog — Why We Built It | DriveLog',
+    title: 'About DriveHours — Why We Built It | DriveHours',
     description: "It's not complicated, it's just a log. Why we built an offline-first, ad-free driving hours tracker for teens and parents.",
     canonicalUrl: 'https://drivehours.app/about',
   });
@@ -45,7 +45,7 @@ export function About() {
           It's not complicated, <span className="text-teal-700 dark:text-teal-400">it's just a log.</span>
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-          DriveLog helps American teens log supervised driving hours and walk into the DMV with paperwork
+          DriveHours helps American teens log supervised driving hours and walk into the DMV with paperwork
           that's organized, verified, and done.
         </p>
       </header>

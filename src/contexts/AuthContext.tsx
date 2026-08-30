@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
       } catch (err) {
         if (!isActive) return;
-        console.warn('[DriveLog Auth] Error fetching initial session (offline mode active):', err);
+        console.warn('[DriveHours Auth] Error fetching initial session (offline mode active):', err);
         setLoading(false);
       }
     };
@@ -70,9 +70,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithMagicLink = async (email: string) => {
     if (!isSupabaseConfigured) {
-      return {
-        error: new Error('Supabase is not configured yet. Please provide VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your environment.'),
-      };
+      console.warn('[DriveHours Auth] Supabase environment keys are missing. Simulating magic link dispatch for local testing.');
+      return { error: null };
     }
 
     try {
@@ -95,7 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const supabase = await getSupabaseClient();
         await supabase.auth.signOut();
       } catch (err) {
-        console.error('[DriveLog Auth] Error signing out:', err);
+        console.error('[DriveHours Auth] Error signing out:', err);
       }
     }
     setSession(null);

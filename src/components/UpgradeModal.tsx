@@ -94,7 +94,7 @@ export function UpgradeModal({
                 ) : (
                   <>
                     <h3 id="upgrade-modal-title" className="font-bold text-sm text-slate-900 dark:text-white">
-                      Unlock DriveLog Lifetime Pro
+                      Unlock DriveHours Lifetime Pro
                     </h3>
                     <p className="text-xs text-teal-700 dark:text-teal-300 font-bold">
                       {PRO_LIFETIME_PRICE} One-Time • No Recurring Fees

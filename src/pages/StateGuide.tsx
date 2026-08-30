@@ -30,7 +30,7 @@ export function StateGuide() {
   const seoValid = Boolean(state);
 
   useSeo({
-    title: `${seoState.name} Teen Driving Log Requirements | DriveLog`,
+    title: `${seoState.name} Teen Driving Log Requirements | DriveHours`,
     description: `Track your ${seoState.name} supervised driving hours with legal night detection. DMV-ready PDF export. Free to start.`,
     canonicalUrl: `${SITE_URL}/dmv/${seoState.code.toLowerCase()}`,
     noindex: !seoValid,
@@ -90,7 +90,7 @@ export function StateGuide() {
         acceptedAnswer: {
           '@type': 'Answer',
           text: state.dmvFormName
-            ? `${state.name} uses form ${state.dmvFormName}. DriveLog generates a printable log formatted to match its requirements.`
+            ? `${state.name} uses form ${state.dmvFormName}. DriveHours generates a printable log formatted to match its requirements.`
             : `${state.name} accepts a generic supervised driving log that includes dates, durations, and supervisor initials.`,
         },
       },
@@ -99,7 +99,7 @@ export function StateGuide() {
         name: `Can I use a digital driving log app in ${state.name}?`,
         acceptedAnswer: {
           '@type': 'Answer',
-          text: `Yes. DriveLog is a free offline-first app that automatically tracks your ${state.name} supervised driving hours, detects legal night driving, and exports a printable DMV-ready PDF log.`,
+          text: `Yes. DriveHours is a free offline-first app that automatically tracks your ${state.name} supervised driving hours, detects legal night driving, and exports a printable DMV-ready PDF log.`,
         },
       },
     ],
@@ -110,7 +110,7 @@ export function StateGuide() {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'DriveLog', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 1, name: 'DriveHours', item: `${SITE_URL}/` },
       { '@type': 'ListItem', position: 2, name: 'State Guides', item: `${SITE_URL}/dmv` },
       { '@type': 'ListItem', position: 3, name: state.name + ' Driving Requirements', item: `${SITE_URL}/dmv/${state.code.toLowerCase()}` },
     ],
@@ -134,7 +134,7 @@ export function StateGuide() {
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs">
         <Link to="/" className="text-teal-700 dark:text-teal-400 font-semibold hover:underline inline-flex items-center gap-1">
-          <ArrowLeft className="w-3.5 h-3.5" /> DriveLog
+          <ArrowLeft className="w-3.5 h-3.5" /> DriveHours
         </Link>
         <span className="text-slate-400">/</span>
         <Link to="/dmv" className="text-teal-700 dark:text-teal-400 font-semibold hover:underline">State Guides</Link>
@@ -264,19 +264,19 @@ export function StateGuide() {
           </li>
           <li className="flex items-start gap-2">
             <CheckCircle2 className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
-            <span>DriveLog calculates sunset for your location automatically and classifies each session as day or night using official astronomical data — no guesswork.</span>
+            <span>DriveHours calculates sunset for your location automatically and classifies each session as day or night using official astronomical data — no guesswork.</span>
           </li>
         </ul>
       </section>
 
-      {/* How DriveLog helps */}
+      {/* How DriveHours helps */}
       <section className="app-card p-5 space-y-3 bg-gradient-to-br from-teal-50/60 to-transparent dark:from-teal-950/30">
         <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <Sun className="w-4 h-4 text-amber-500" />
           Track your {state.name} hours the easy way
         </h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-          DriveLog's free driving timer works 100% offline, auto-detects legal night hours, tracks multiple
+          DriveHours's free driving timer works 100% offline, auto-detects legal night hours, tracks multiple
           supervisors and vehicles, and exports a printable{hasFormCode(state.dmvFormName) ? ` ${state.dmvFormName}-style` : ''} log
           formatted for the {state.name} DMV — including signature lines and per-entry initials.
         </p>

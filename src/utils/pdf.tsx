@@ -361,7 +361,7 @@ function PDFDocument({ drives, driver, vehicle, state, totals }: PDFProps) {
 
         {/* Fixed footer on every page */}
         <Text style={styles.pageFooter} fixed>
-          Generated with DriveLog (drivehours.app) — supervised driving log
+          Generated with DriveHours (drivehours.app) — supervised driving log
         </Text>
       </Page>
     </Document>
@@ -403,7 +403,7 @@ export async function generatePDF(
 
 export function downloadPDF(
   blob: Blob,
-  filename: string = 'DriveLog-Supervised-Driving-Log.pdf'
+  filename: string = 'DriveHours-Supervised-Driving-Log.pdf'
 ): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');

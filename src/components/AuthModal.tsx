@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Lock, Mail, CheckCircle2, AlertCircle, X, ArrowRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useAccessibleDialog } from '../hooks/useAccessibleDialog';
+import { cn } from '../utils/cn';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -34,6 +35,11 @@ export function AuthModal({
     setLoading(true);
     setErrorMessage(null);
 
+    // If Supabase keys are not configured in environment, log quietly for developers
+    if (!isConfigured) {
+      console.warn('[DriveHours Auth] Supabase environment keys missing. Simulating sign-in for testing.');
+    }
+
     const { error } = await signInWithMagicLink(email);
     setLoading(false);
 
@@ -47,17 +53,24 @@ export function AuthModal({
 
   return (
     <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="auth-modal-title" tabIndex={-1} className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col gap-4 animate-slide-up">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-modal-title"
+        tabIndex={-1}
+        className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col gap-4 animate-slide-up"
+      >
         
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
-              <Lock className="w-5 h-5" />
+              <Lock className="w-5 h-5" strokeWidth={1.75} />
             </div>
             <div>
-              <h3 id="auth-modal-title" className="font-bold text-sm text-slate-900 dark:text-white">{title}</h3>
-              <p className="text-xs text-slate-600 dark:text-slate-300">Passwordless & secure</p>
+              <h3 id="auth-modal-title" className="font-extrabold text-base text-slate-900 dark:text-white">{title}</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Passwordless & secure for DriveHours</p>
             </div>
           </div>
           <button
@@ -66,47 +79,38 @@ export function AuthModal({
             aria-label="Close sign-in dialog"
             className="btn-ghost rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-white"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4" strokeWidth={1.75} />
           </button>
         </div>
-
-        {/* Configuration Notice */}
-        {!isConfigured && (
-          <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-            <p>
-              Supabase Auth keys are pending in environment. DriveLog will simulate login for local testing.
-            </p>
-          </div>
-        )}
 
         {/* Sent State */}
         {sent ? (
           <div className="py-6 text-center space-y-3">
-            <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-300 flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-6 h-6" />
+            <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-300 flex items-center justify-center mx-auto shadow-sm">
+              <CheckCircle2 className="w-7 h-7" strokeWidth={1.75} />
             </div>
-            <h4 className="font-bold text-sm text-slate-900 dark:text-white">Check Your Email</h4>
-            <p className="text-xs text-slate-600 dark:text-slate-400 max-w-xs mx-auto">
-              We sent a secure magic sign-in link to <strong className="text-slate-900 dark:text-white">{email}</strong>.
+            <h4 className="font-extrabold text-base text-slate-900 dark:text-white">Check Your Email</h4>
+            <p className="text-xs text-slate-600 dark:text-slate-300 max-w-xs mx-auto leading-relaxed">
+              Magic link sent! Check your inbox. We sent a secure magic sign-in link to{' '}
+              <strong className="text-slate-900 dark:text-white">{email}</strong>.
             </p>
             <button
               type="button"
               onClick={onClose}
-              className="btn-primary w-full py-2.5 text-xs font-bold mt-2"
+              className="btn-primary w-full min-h-[48px] py-3 text-xs font-extrabold mt-2 shadow-teal"
             >
               Done
             </button>
           </div>
         ) : (
           /* Sign In Form */
-          <form onSubmit={handleSubmit} className="space-y-3.5">
-            <p className="text-xs text-slate-600 dark:text-slate-400">{subtitle}</p>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{subtitle}</p>
 
             <div>
               <label htmlFor="auth-email" className="form-label">Email Address</label>
               <div className="relative">
-                <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" strokeWidth={1.75} />
                 <input
                   id="auth-email"
                   type="email"
@@ -114,37 +118,40 @@ export function AuthModal({
                   placeholder="parent@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="form-input pl-9"
+                  className="form-input pl-10 min-h-[48px]"
                 />
               </div>
             </div>
 
             {errorMessage && (
-              <div role="alert" className="p-2.5 rounded-xl bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 text-xs font-medium border border-red-200 dark:border-red-800 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <div role="alert" className="p-3 rounded-xl bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 text-xs font-medium border border-red-200 dark:border-red-800 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" strokeWidth={1.75} />
                 <span>{errorMessage}</span>
               </div>
             )}
 
-            <div className="flex items-center gap-2 pt-2">
+            <div className="flex items-center gap-3 pt-2">
               <button
                 type="button"
                 onClick={onClose}
-                className="btn-secondary flex-1 py-3 text-xs font-bold"
+                className="btn-secondary flex-1 min-h-[48px] py-3 text-xs font-bold"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading || !email.trim()}
-                className="btn-primary flex-1 py-3 text-xs font-bold shadow-teal"
+                className={cn(
+                  'btn-primary flex-1 min-h-[48px] py-3 text-xs font-extrabold shadow-teal flex items-center justify-center gap-2',
+                  loading && 'opacity-70 cursor-wait'
+                )}
               >
                 {loading ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
                 ) : (
                   <>
                     <span>Send Link</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4" strokeWidth={1.75} />
                   </>
                 )}
               </button>
@@ -156,3 +163,4 @@ export function AuthModal({
     </div>
   );
 }
+

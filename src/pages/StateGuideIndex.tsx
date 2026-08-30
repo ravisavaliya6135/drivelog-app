@@ -9,8 +9,8 @@ import { useSeo } from '../hooks/useSeo';
  */
 export function StateGuideIndex() {
   useSeo({
-    title: 'Teen Driving Log Requirements by State (All 50) | DriveLog',
-    description: 'Browse supervised driving hour requirements, night-hour rules, and official DMV log forms for all 50 US states. Free offline tracking with DriveLog.',
+    title: 'Teen Driving Log Requirements by State (All 50) | DriveHours',
+    description: 'Browse supervised driving hour requirements, night-hour rules, and official DMV log forms for all 50 US states. Free offline tracking with DriveHours.',
     canonicalUrl: 'https://drivehours.app/dmv',
   });
 
@@ -18,7 +18,7 @@ export function StateGuideIndex() {
     <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
       <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs">
         <Link to="/" className="text-teal-700 dark:text-teal-400 font-semibold hover:underline inline-flex items-center gap-1">
-          <ArrowLeft className="w-3.5 h-3.5" /> DriveLog
+          <ArrowLeft className="w-3.5 h-3.5" /> DriveHours
         </Link>
         <span className="text-slate-400">/</span>
         <span className="text-slate-500 dark:text-slate-400 font-medium">State Guides</span>
@@ -34,7 +34,7 @@ export function StateGuideIndex() {
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
           Pick your state to see total supervised hours, night-hour rules, permit ages, and the official
-          DMV log form — plus how DriveLog tracks it all for free.
+          DMV log form — plus how DriveHours tracks it all for free.
         </p>
       </header>
 
