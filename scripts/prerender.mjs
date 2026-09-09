@@ -17,7 +17,7 @@ const rootDir = join(dirname(fileURLToPath(import.meta.url)), '..');
 const distDir = join(rootDir, 'dist');
 const ssrDir = join(rootDir, 'dist-ssr');
 
-const { renderStateGuide, renderPublicPage, stateData } = require(join(ssrDir, 'state-guide-ssr.js'));
+const { renderStateGuide, renderPublicPage, stateData, getStateGuideCanonical, getStateGuideSeo } = require(join(ssrDir, 'state-guide-ssr.js'));
 
 const SITE_URL = 'https://drivehours.app';
 const template = readFileSync(join(distDir, 'index.html'), 'utf8');
@@ -101,9 +101,9 @@ for (const [routePath, title, description] of noindexAppPages) {
 for (const state of stateData) {
   const code = state.code.toLowerCase();
   const routePath = `/dmv/${code}`;
-  const canonical = `${SITE_URL}${routePath}`;
-  const title = `${state.name} Teen Driving Log Requirements | DriveHours`;
-  const description = `Track your ${state.name} supervised driving hours with legal night detection. DMV-ready PDF export. Free to start.`;
+  const seo = getStateGuideSeo(state);
+  const canonical = getStateGuideCanonical(state);
+  const { title, description } = seo;
 
   // Render the full page content server-side (no JS execution needed)
   const appHtml = renderStateGuide(routePath);

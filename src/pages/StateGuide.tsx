@@ -3,6 +3,7 @@ import { MapPin, Moon, Sun, FileText, ArrowLeft, CheckCircle2 } from 'lucide-rea
 import type { StateInfo } from '../types';
 import { US_STATES } from '../types';
 import { useSeo } from '../hooks/useSeo';
+import { getStateGuideCanonical, getStateGuideSeo } from '../content/stateGuideSeo';
 
 const SITE_URL = 'https://drivehours.app';
 
@@ -28,11 +29,12 @@ export function StateGuide() {
   // Generate meta tags even before we know if the state is valid (avoids hook order issues)
   const seoState = state || US_STATES[0];
   const seoValid = Boolean(state);
+  const seo = getStateGuideSeo(seoState);
 
   useSeo({
-    title: `${seoState.name} Teen Driving Log Requirements | DriveHours`,
-    description: `Track your ${seoState.name} supervised driving hours with legal night detection. DMV-ready PDF export. Free to start.`,
-    canonicalUrl: `${SITE_URL}/dmv/${seoState.code.toLowerCase()}`,
+    title: seo.title,
+    description: seo.description,
+    canonicalUrl: getStateGuideCanonical(seoState),
     noindex: !seoValid,
   });
 
@@ -148,10 +150,33 @@ export function StateGuide() {
           {state.name} Teen Driving Log Requirements ({year})
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-          Everything teens and parents need to know about supervised practice hours,
-          night driving rules, and DMV paperwork for a {state.name} provisional license.
+          {seo.intro} Check current licensing rules with the official {state.name} source before your road test.
         </p>
       </header>
+
+      {seo.details && seo.officialSource && (
+        <section className="app-card p-5 space-y-3" aria-labelledby="state-road-test-checklist">
+          <h2 id="state-road-test-checklist" className="text-base font-bold text-slate-900 dark:text-white">
+            {state.name} driving-log checklist
+          </h2>
+          <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+            {seo.details.map(detail => (
+              <li key={detail} className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                <span>{detail}</span>
+              </li>
+            ))}
+          </ul>
+          <a
+            href={seo.officialSource.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center font-semibold text-teal-700 underline decoration-teal-400 underline-offset-2 hover:text-teal-800 dark:text-teal-300"
+          >
+            Check the official source: {seo.officialSource.label}
+          </a>
+        </section>
+      )}
 
       {/* Quick Reference Table */}
       <section className="app-card overflow-hidden" aria-label={`${state.name} quick reference`}>

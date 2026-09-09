@@ -8,6 +8,7 @@ import { PrivacyPolicy } from '../pages/PrivacyPolicy';
 import { TermsOfUse } from '../pages/TermsOfUse';
 import { ContactFeedback } from '../pages/ContactFeedback';
 import { US_STATES } from '../types';
+export { getStateGuideCanonical, getStateGuideSeo } from '../content/stateGuideSeo';
 
 export const stateData = US_STATES;
 
