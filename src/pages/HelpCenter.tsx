@@ -64,7 +64,7 @@ const HELP_ITEMS: HelpItem[] = [
     question: 'What happens if the app closes during a drive?',
     answer: (
       <>
-        <p>Nothing is lost. The timer saves itself every second, so if your phone dies, the app crashes, or iOS kills the tab — reopening DriveLog restores the exact time using real wall-clock math.</p>
+        <p>Nothing is lost. The timer saves itself every second, so if your phone dies, the app crashes, or iOS kills the tab — reopening DriveHours restores the exact time using real wall-clock math.</p>
         <p>You'll see a calm "Drive timer recovered. No time was lost." message. Even a drive that backgrounded overnight credits correctly.</p>
       </>
     ),
@@ -165,7 +165,7 @@ function AccordionItem({ item, isOpen, onToggle }: { item: HelpItem; isOpen: boo
 
 export function HelpCenter() {
   useSeo({
-    title: 'Help Center & FAQ | DriveLog',
+    title: 'Help Center & FAQ | DriveHours',
     description: 'How to start a drive, how night hours are calculated, parent verification, offline PDF export, installing on iPhone & Android, and unlocking Pro.',
     canonicalUrl: 'https://drivehours.app/help',
   });

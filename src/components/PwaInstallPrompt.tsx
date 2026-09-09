@@ -28,7 +28,7 @@ export function PwaInstallPrompt({ hook }: PwaInstallPromptProps) {
               </div>
               <div className="flex-1 min-w-0">
                 <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                  {pwa.isIOS ? 'Add DriveLog to Home Screen' : 'Install DriveLog App'}
+                  {pwa.isIOS ? 'Add DriveHours to Home Screen' : 'Install DriveHours App'}
                 </h4>
                 <p className="text-xs text-slate-600 dark:text-slate-300">
                   {pwa.isIOS 
@@ -57,7 +57,7 @@ export function PwaInstallPrompt({ hook }: PwaInstallPromptProps) {
               </button>
               <button
                 type="button"
-                aria-label="Install DriveLog app"
+                aria-label="Install DriveHours app"
                 onClick={pwa.triggerInstall}
                 className="flex-1 min-h-12 py-2 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white text-xs font-bold shadow-teal flex items-center justify-center gap-1.5 transition-all text-center"
               >
@@ -119,7 +119,7 @@ export function PwaInstallPrompt({ hook }: PwaInstallPromptProps) {
                   3
                 </span>
                 <div className="text-xs text-slate-700 dark:text-slate-300">
-                  Tap <strong className="text-slate-900 dark:text-white">Add</strong> in the top right corner to install DriveLog.
+                  Tap <strong className="text-slate-900 dark:text-white">Add</strong> in the top right corner to install DriveHours.
                 </div>
               </div>
             </div>

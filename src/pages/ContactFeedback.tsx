@@ -19,8 +19,8 @@ interface ContactFeedbackProps {
 
 export function ContactFeedback({ source = 'contact_page' }: ContactFeedbackProps) {
   useSeo({
-    title: 'Contact & Feedback | DriveLog',
-    description: 'Questions, bugs, or DMV feedback about DriveLog? Send us a note — it works offline too.',
+    title: 'Contact & Feedback | DriveHours',
+    description: 'Questions, bugs, or DMV feedback about DriveHours? Send us a note — it works offline too.',
     canonicalUrl: 'https://drivehours.app/contact',
   });
 

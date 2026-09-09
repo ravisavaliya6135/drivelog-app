@@ -39,3 +39,29 @@ test('built night-hours guide has static metadata and no FAQPage schema', () => 
   assert.match(page, /How Many Night Driving Hours Are Required\? \| DriveHours/);
   assert.doesNotMatch(page, /"@type":"FAQPage"/);
 });
+
+test('crawler-facing files use DriveHours and state guides avoid FAQPage markup', async () => {
+  const indexHtml = await source('index.html');
+  const llms = await source('public/llms.txt');
+  const guide = await source('src/pages/StateGuide.tsx');
+
+  assert.match(indexHtml, /<title>DriveHours — Supervised Teen Driving Hours Tracker & DMV Log<\/title>/);
+  assert.match(indexHtml, /"name": "DriveHours — Teen Driving Hours Tracker"/);
+  assert.doesNotMatch(indexHtml, /"@type": "FAQPage"/);
+  assert.doesNotMatch(guide, /'@type': 'FAQPage'/);
+  assert.match(llms, /^# DriveHours — Teen Driving Hours Tracker/m);
+});
+
+test('public component copy no longer calls the product DriveLog', async () => {
+  const files = [
+    'src/components/SiteFooter.tsx',
+    'src/components/PwaInstallPrompt.tsx',
+    'src/components/PdfExport.tsx',
+    'src/pages/HelpCenter.tsx',
+    'src/pages/ContactFeedback.tsx',
+  ];
+
+  for (const file of files) {
+    assert.doesNotMatch(await source(file), /DriveLog/);
+  }
+});

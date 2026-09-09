@@ -42,10 +42,10 @@ export function SiteFooter() {
 
         <div className="text-center space-y-1">
           <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-            DriveLog — it's not complicated, it's just a log.
+            DriveHours — it's not complicated, it's just a log.
           </p>
           <p className="text-xs text-slate-600 dark:text-slate-300">
-            © {new Date().getFullYear()} DriveLog · A record-keeping tool. Verify current requirements with your local DMV.
+            © {new Date().getFullYear()} DriveHours · A record-keeping tool. Verify current requirements with your local DMV.
           </p>
         </div>
       </div>

@@ -65,48 +65,6 @@ export function StateGuide() {
   const otherStates = US_STATES.filter(s => s.code !== state.code).slice(0, 11);
   const year = new Date().getFullYear();
 
-  // FAQPage structured data for rich search snippets — generated per state
-  const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: `How many driving hours are required in ${state.name}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `${state.name} requires ${state.requiredHours} total supervised driving hours, including at least ${state.requiredNightHours} hours of night driving.`,
-        },
-      },
-      {
-        '@type': 'Question',
-        name: `What counts as night driving in ${state.name}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `Night driving generally begins around civil twilight or roughly 30 minutes after sunset and ends at sunrise. ${state.name} requires at least ${state.requiredNightHours} of the ${state.requiredHours} supervised hours to be completed at night.`,
-        },
-      },
-      {
-        '@type': 'Question',
-        name: `What is the official DMV driving log form for ${state.name}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: state.dmvFormName
-            ? `${state.name} uses form ${state.dmvFormName}. DriveHours generates a printable log formatted to match its requirements.`
-            : `${state.name} accepts a generic supervised driving log that includes dates, durations, and supervisor initials.`,
-        },
-      },
-      {
-        '@type': 'Question',
-        name: `Can I use a digital driving log app in ${state.name}?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: `Yes. DriveHours is a free offline-first app that automatically tracks your ${state.name} supervised driving hours, detects legal night driving, and exports a printable DMV-ready PDF log.`,
-        },
-      },
-    ],
-  };
-
   // Breadcrumb structured data: Home -> State Guides -> This State
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -121,13 +79,6 @@ export function StateGuide() {
   return (
     <article className="space-y-6 animate-fade-in max-w-3xl">
 
-      {/* FAQPage structured data for rich search snippets.
-          dangerouslySetInnerHTML is required so quotes are NOT HTML-escaped
-          (crawlers parse this as raw JSON). Content is app-generated, no user input. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}

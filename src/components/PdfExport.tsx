@@ -64,7 +64,7 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
     try {
       const { generatePDF, downloadPDF } = await import('../utils/pdf');
       const blob = await generatePDF(drives, driver, vehicle, selectedState);
-      downloadPDF(blob, `DriveLog-${state.code}-${new Date().toISOString().split('T')[0]}.pdf`);
+      downloadPDF(blob, `DriveHours-${state.code}-${new Date().toISOString().split('T')[0]}.pdf`);
       // Business analytics: export volume per state (no PII)
       void trackEvent('pdf_exported', {
         state: selectedState,
