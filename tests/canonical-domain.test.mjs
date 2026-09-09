@@ -75,7 +75,7 @@ test('prerender script and SEO hooks use non-www SITE_URL', async () => {
 
   const stateGuide = await source('src/pages/StateGuide.tsx');
   assert.match(stateGuide, /const SITE_URL = 'https:\/\/drivehours\.app';/);
-  assert.match(stateGuide, /canonicalUrl:\s*`\$\{SITE_URL\}\/dmv\/\$\{seoState\.code\.toLowerCase\(\)\}`/);
+  assert.match(stateGuide, /canonicalUrl:\s*getStateGuideCanonical\(seoState\)/);
   assert.doesNotMatch(stateGuide, /www\.drivehours\.app/);
 });
 

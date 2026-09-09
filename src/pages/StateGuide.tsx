@@ -223,11 +223,9 @@ export function StateGuide() {
           What counts as night driving in {state.name}?
         </h2>
         <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-          Most states — including {state.name} — define legal night driving astronomically, not by a fixed
-          clock time. Night hours generally begin around civil twilight or roughly{' '}
-          <strong className="text-slate-800 dark:text-slate-200">30 minutes after sunset</strong>, and end
-          around sunrise. That means a drive at 8:45 PM in June may count as day, while a 6:00 PM drive in
-          December counts as night.
+          States set their own night-hour rules, so check the official {state.name} licensing source before
+          relying on a drive toward your night-hour requirement. Sunset changes through the year, which can
+          make a fixed clock-time plan misleading.
         </p>
         <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
           <li className="flex items-start gap-2">
@@ -236,11 +234,11 @@ export function StateGuide() {
           </li>
           <li className="flex items-start gap-2">
             <CheckCircle2 className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
-            <span>Sunset shifts daily — a fixed schedule like "drive after 7 PM" can misclassify hours on your DMV log.</span>
+            <span>Sunset shifts daily — confirm how {state.name} defines night driving instead of relying on a fixed schedule like "drive after 7 PM."</span>
           </li>
           <li className="flex items-start gap-2">
             <CheckCircle2 className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
-            <span>DriveHours calculates sunset for your location automatically and classifies each session as day or night using official astronomical data — no guesswork.</span>
+            <span>DriveHours uses local sunset data to help you plan; confirm the current state rule before treating a session as a required night hour.</span>
           </li>
         </ul>
       </section>

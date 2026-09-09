@@ -22,6 +22,13 @@ test('state guide SEO has focused CA, NC, and OH copy and one shared source', as
   assert.match(prerender, /getStateGuideSeo/);
 });
 
+test('state guide treats night-hour rules as state-specific', async () => {
+  const guide = await source('src/pages/StateGuide.tsx');
+
+  assert.match(guide, /States set their own night-hour rules/);
+  assert.doesNotMatch(guide, /Most states — including/);
+});
+
 test('night-hours guide is routed, prerendered, and placed in the sitemap', async () => {
   const app = await source('src/App.tsx');
   const ssr = await source('src/prerender/state-guide-ssr.tsx');
@@ -64,4 +71,25 @@ test('public component copy no longer calls the product DriveLog', async () => {
   for (const file of files) {
     assert.doesNotMatch(await source(file), /DriveLog/);
   }
+});
+
+test('built priority state pages and sitemap contain the SEO sprint output', () => {
+  const pages = [
+    ['dist/dmv/ca/index.html', 'California 50-Hour Driving Log: 10 Night Hours | DriveHours', 'ca'],
+    ['dist/dmv/nc/index.html', 'North Carolina 60-Hour Driving Log: 10 Night Hours | DriveHours', 'nc'],
+    ['dist/dmv/oh/index.html', 'Ohio 50-Hour Driving Log & BMV 5791 Affidavit | DriveHours', 'oh'],
+  ];
+
+  for (const [file, title, code] of pages) {
+    const html = fs.readFileSync(path.resolve(file), 'utf8');
+    const encodedTitle = title.replace(/&/g, '&amp;');
+
+    assert.match(html, new RegExp(encodedTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    assert.match(html, new RegExp(`https://drivehours\\.app/dmv/${code}`));
+    assert.doesNotMatch(html, /"@type":"FAQPage"/);
+  }
+
+  const sitemap = fs.readFileSync(path.resolve('dist/sitemap.xml'), 'utf8');
+  const nightHoursUrl = 'https://drivehours.app/night-driving-hours';
+  assert.strictEqual(sitemap.split(nightHoursUrl).length - 1, 1);
 });
