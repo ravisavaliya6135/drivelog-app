@@ -36,6 +36,9 @@ export function StateGuideIndex() {
           Pick your state to see total supervised hours, night-hour rules, permit ages, and the official
           DMV log form — plus how DriveHours tracks it all for free.
         </p>
+        <Link to="/night-driving-hours" className="inline-flex min-h-11 items-center font-semibold text-teal-700 hover:underline dark:text-teal-300">
+          See night driving-hour requirements for every state
+        </Link>
       </header>
 
       <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">

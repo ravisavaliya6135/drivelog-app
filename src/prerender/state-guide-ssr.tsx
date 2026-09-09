@@ -7,6 +7,7 @@ import { HelpCenter } from '../pages/HelpCenter';
 import { PrivacyPolicy } from '../pages/PrivacyPolicy';
 import { TermsOfUse } from '../pages/TermsOfUse';
 import { ContactFeedback } from '../pages/ContactFeedback';
+import { NightDrivingHoursGuide } from '../pages/NightDrivingHoursGuide';
 import { US_STATES } from '../types';
 export { getStateGuideCanonical, getStateGuideSeo } from '../content/stateGuideSeo';
 
@@ -33,6 +34,7 @@ export function renderPublicPage(path: string): string {
     <StaticRouter location={path}>
       <Routes>
         <Route path="/dmv" element={<StateGuideIndex />} />
+        <Route path="/night-driving-hours" element={<NightDrivingHoursGuide />} />
         <Route path="/about" element={<About />} />
         <Route path="/help" element={<HelpCenter />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />

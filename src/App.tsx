@@ -16,6 +16,7 @@ const ExportDocs = lazy(() => import('./pages/ExportDocs').then(m => ({ default:
 const SettingsPage = lazy(() => import('./pages/Settings').then(m => ({ default: m.Settings })));
 const StateGuide = lazy(() => import('./pages/StateGuide').then(m => ({ default: m.StateGuide })));
 const StateGuideIndex = lazy(() => import('./pages/StateGuideIndex').then(m => ({ default: m.StateGuideIndex })));
+const NightDrivingHoursGuide = lazy(() => import('./pages/NightDrivingHoursGuide').then(m => ({ default: m.NightDrivingHoursGuide })));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy').then(m => ({ default: m.PrivacyPolicy })));
 const TermsOfUse = lazy(() => import('./pages/TermsOfUse').then(m => ({ default: m.TermsOfUse })));
 const HelpCenter = lazy(() => import('./pages/HelpCenter').then(m => ({ default: m.HelpCenter })));
@@ -207,6 +208,7 @@ function AppShell() {
               <Route path="/settings" element={<SettingsPage />} />
               {/* Programmatic SEO state guides — /dmv/ca, /dmv/tx, ... all 50 states */}
               <Route path="/dmv" element={<StateGuideIndex />} />
+              <Route path="/night-driving-hours" element={<NightDrivingHoursGuide />} />
               <Route path="/dmv/:stateCode" element={<StateGuide />} />
               {/* Trust & support pages */}
               <Route path="/privacy" element={<PrivacyPolicy />} />
