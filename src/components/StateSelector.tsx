@@ -64,32 +64,32 @@ export function StateSelector({ value, onChange, className = '' }: StateSelector
             window.requestAnimationFrame(() => focusOption(value));
           }
         }}
-        className="w-full min-h-12 form-input text-left flex items-center justify-between cursor-pointer py-3"
+        className="w-full min-h-16 rounded-2xl border-slate-300 bg-white px-4 text-left shadow-sm transition-colors hover:border-teal-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-teal-400 dark:focus-visible:ring-teal-400 flex items-center justify-between cursor-pointer py-3"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-controls="state-options"
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 flex items-center justify-center flex-shrink-0">
             <MapPin className="w-4 h-4" />
           </div>
           <div>
-            <p className="font-bold text-xs text-slate-900 dark:text-white">
+            <p className="font-bold text-sm text-slate-900 dark:text-white">
               {selectedState.name} ({selectedState.code})
             </p>
-            <p className="text-xs text-slate-600 dark:text-slate-300">
+            <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-300">
               {selectedState.requiredHours}h total • {selectedState.requiredNightHours}h night required
             </p>
           </div>
         </div>
-        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-5 h-5 text-slate-500 transition-transform motion-reduce:transition-none ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
       </button>
 
       {isOpen && (
         <div
           ref={dropdownRef}
           id="state-options"
-          className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl max-h-64 overflow-y-auto animate-fade-in"
+          className="absolute z-50 mt-2 w-full overflow-y-auto rounded-2xl border border-slate-200 bg-white p-1 shadow-xl dark:border-slate-700 dark:bg-slate-900 max-h-72 animate-fade-in"
           role="listbox"
           aria-label="Select your state"
           onKeyDown={handleListboxKeyDown}
@@ -105,17 +105,17 @@ export function StateSelector({ value, onChange, className = '' }: StateSelector
               }}
               role="option"
               aria-selected={value === state.code}
-              className={`w-full min-h-12 px-4 py-3 text-left transition-colors flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 last:border-0 ${
+              className={`w-full min-h-12 rounded-xl px-3 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-600 dark:focus-visible:ring-teal-400 flex items-center justify-between ${
                 value === state.code
                   ? 'bg-teal-50/70 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300'
                   : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-900 dark:text-white'
               }`}
             >
               <div>
-                <p className="font-bold text-xs">
+                <p className="font-bold text-sm">
                   {state.name} <span className="text-slate-400 font-normal">({state.code})</span>
                 </p>
-                <p className="text-xs text-slate-600 dark:text-slate-300">
+                <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-300">
                   {state.requiredHours}h total • {state.requiredNightHours}h night
                 </p>
               </div>

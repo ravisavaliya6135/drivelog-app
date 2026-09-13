@@ -184,19 +184,18 @@ export function Settings() {
   };
 
   return (
-    <div className="space-y-5 animate-fade-in">
-      
-      {/* 1. Header */}
-      <div>
-        <h1 className="text-xl font-bold text-slate-900 dark:text-white">Settings</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
-          Manage your account, supervisors, vehicles, and app preferences.
+    <div className="space-y-6 animate-fade-in">
+      <header className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-700 dark:text-teal-300">Your DriveLog</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Settings</h1>
+        <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">
+          Manage your account, licensing goal, people, vehicles, and offline preferences.
         </p>
-      </div>
+      </header>
 
       {/* 2. Tab Navigation */}
-      <div className="app-card p-1.5 overflow-x-auto hide-scrollbar">
-        <nav className="flex gap-1 min-w-max" aria-label="Settings tabs">
+      <div className="app-card overflow-x-auto p-1.5 hide-scrollbar">
+        <nav className="flex min-w-max gap-1" aria-label="Settings sections">
           <TabButton active={activeTab === 'account'} onClick={() => setActiveTab('account')}>
             <User className="w-3.5 h-3.5" /> Account
           </TabButton>
@@ -222,7 +221,7 @@ export function Settings() {
         <section className="space-y-4 animate-fade-in">
 
           {/* Beta / Support entry point */}
-          <div className="p-4 rounded-2xl bg-teal-50/70 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 flex items-center justify-between gap-3">
+          <div className="flex items-center justify-between gap-3 rounded-2xl border border-teal-200 bg-teal-50 p-4 dark:border-teal-800 dark:bg-teal-950/40">
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center flex-shrink-0">
                 <LifeBuoy className="w-5 h-5" />
@@ -238,7 +237,7 @@ export function Settings() {
             </div>
             <Link
               to="/help"
-              className="btn-primary py-2 px-3.5 text-xs font-bold whitespace-nowrap shadow-teal flex-shrink-0"
+              className="btn-primary min-h-11 py-2 px-3.5 text-xs font-bold whitespace-nowrap shadow-teal flex-shrink-0"
             >
               Get help
             </Link>
@@ -265,7 +264,7 @@ export function Settings() {
           )}
 
           {/* User Profile Card */}
-          <div className="app-card p-5 space-y-4">
+          <div className="app-card space-y-4 p-5 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3.5">
                 <div className="w-11 h-11 rounded-2xl bg-teal-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
@@ -304,7 +303,7 @@ export function Settings() {
           </div>
 
           {/* Membership Tier Card */}
-          <div className="app-card p-5 space-y-4">
+          <div className="app-card space-y-4 p-5 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -377,7 +376,7 @@ export function Settings() {
                 Restore Purchase / Refresh Status
               </button>
               {restoreMessage && (
-                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{restoreMessage}</span>
+                <span role="status" className="text-xs text-slate-600 dark:text-slate-300 font-medium">{restoreMessage}</span>
               )}
             </div>
           </div>
@@ -387,14 +386,14 @@ export function Settings() {
 
       {/* TAB: State Requirements */}
       {activeTab === 'requirements' && (
-        <section className="app-card p-5 space-y-4 animate-fade-in">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-teal-700" />
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-              State DMV Licensing Targets
+        <section className="app-card space-y-4 p-5 animate-fade-in sm:p-6">
+          <div>
+            <h2 className="flex items-center gap-2 text-lg font-bold text-slate-900 dark:text-white">
+              <MapPin className="h-5 w-5 text-teal-700 dark:text-teal-400" aria-hidden="true" />
+              State licensing goal
             </h2>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
             Select your licensing state to automatically apply legal day/night driving hour requirements and DMV report formats.
           </p>
           <StateSelector
@@ -406,12 +405,13 @@ export function Settings() {
 
       {/* TAB: Drivers & Vehicles */}
       {activeTab === 'drivers' && (
-        <section className="app-card p-5 space-y-4 animate-fade-in">
-          <div className="flex items-center gap-2">
-            <Car className="w-4 h-4 text-teal-700" />
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-              Supervising Drivers & Vehicles
+        <section className="app-card space-y-5 p-5 animate-fade-in sm:p-6">
+          <div>
+            <h2 className="flex items-center gap-2 text-lg font-bold text-slate-900 dark:text-white">
+              <Car className="h-5 w-5 text-teal-700 dark:text-teal-400" aria-hidden="true" />
+              People and vehicles
             </h2>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Keep the names and vehicles that belong on your records ready to use.</p>
           </div>
           <MultiDriverForm
             drivers={drivers}
@@ -439,18 +439,18 @@ export function Settings() {
         <section className="space-y-4 animate-fade-in">
           
           {/* Appearance */}
-          <div className="app-card p-5 space-y-3">
+          <div className="app-card space-y-4 p-5 sm:p-6">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Sun className="w-4 h-4 text-amber-500" /> Color Appearance
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
               Choose your preferred color theme or match your device system settings.
             </p>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => setTheme('light')}
-                className={`py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 border transition-all ${
+                className={`min-h-12 py-2.5 px-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2 ${
                   theme === 'light'
                     ? 'border-teal-600 bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300'
                     : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
@@ -461,7 +461,7 @@ export function Settings() {
               <button
                 type="button"
                 onClick={() => setTheme('dark')}
-                className={`py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 border transition-all ${
+                className={`min-h-12 py-2.5 px-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2 ${
                   theme === 'dark'
                     ? 'border-teal-600 bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300'
                     : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
@@ -472,7 +472,7 @@ export function Settings() {
               <button
                 type="button"
                 onClick={() => setTheme('system')}
-                className={`py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 border transition-all ${
+                className={`min-h-12 py-2.5 px-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2 ${
                   theme === 'system'
                     ? 'border-teal-600 bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300'
                     : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
@@ -484,11 +484,11 @@ export function Settings() {
           </div>
 
           {/* PWA Installation */}
-          <div className="app-card p-5 space-y-3">
+          <div className="app-card space-y-4 p-5 sm:p-6">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Smartphone className="w-4 h-4 text-teal-700" /> App Installation (PWA)
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
               {pwa.isStandalone
                 ? 'DriveLog is running as an installed standalone app with full offline capabilities.'
                 : 'Install DriveLog to your home screen for quick offline access while driving.'}
@@ -502,7 +502,7 @@ export function Settings() {
               <button
                 type="button"
                 onClick={pwa.triggerInstall}
-                className="btn-primary py-2.5 px-4 text-xs font-bold"
+                className="btn-primary min-h-12 py-2.5 px-4 text-sm font-bold"
               >
                 <Download className="w-4 h-4" />
                 {pwa.isIOS ? 'Add to Home Screen Instructions' : 'Install DriveLog App'}
@@ -511,22 +511,22 @@ export function Settings() {
           </div>
 
           {/* Backup & Restore */}
-          <div className="app-card p-5 space-y-3">
+          <div className="app-card space-y-4 p-5 sm:p-6">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Download className="w-4 h-4 text-teal-700" /> Data Backup & Restore
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
               Export all local driving logs and vehicle profiles as a JSON file to transfer between devices.
             </p>
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={handleExportAllData}
-                className="btn-secondary py-2.5 px-4 text-xs font-bold"
+                className="btn-secondary min-h-12 py-2.5 px-4 text-sm font-bold"
               >
                 <Download className="w-4 h-4" /> Export Backup (.json)
               </button>
-              <label className="btn-secondary py-2.5 px-4 text-xs font-bold cursor-pointer">
+              <label className="btn-secondary min-h-12 py-2.5 px-4 text-sm font-bold cursor-pointer">
                 <Upload className="w-4 h-4" /> Import Backup
                 <input
                   type="file"
@@ -541,7 +541,7 @@ export function Settings() {
               <div className="mt-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800 space-y-2">
                 <div className="flex justify-between items-center text-xs font-bold">
                   <span>Backup JSON Preview</span>
-                  <button onClick={() => setShowExportData(false)} className="text-slate-400 hover:text-slate-900">
+                  <button type="button" onClick={() => setShowExportData(false)} className="min-h-11 min-w-11 text-slate-500 hover:text-slate-900 dark:hover:text-white" aria-label="Close backup preview">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -563,17 +563,17 @@ export function Settings() {
           </div>
 
           {/* Danger Zone */}
-          <div className="app-card p-5 border-red-200 dark:border-red-900/60 space-y-3">
+          <div className="app-card space-y-4 border-red-200 p-5 dark:border-red-900/60 sm:p-6">
             <h3 className="text-sm font-bold text-red-600 dark:text-red-400 flex items-center gap-2">
               <Trash2 className="w-4 h-4" /> Clear Local Data
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
               Permanently erase all driving logs, drivers, and vehicles stored on this device.
             </p>
             <button
               type="button"
               onClick={handleClearAllData}
-              className="btn-danger py-2 px-4 text-xs font-bold"
+              className="btn-danger min-h-12 py-2 px-4 text-sm font-bold"
             >
               Clear All Local Data
             </button>

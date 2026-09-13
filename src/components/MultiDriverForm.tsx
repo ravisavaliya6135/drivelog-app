@@ -109,18 +109,21 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       
       {/* 1. Drivers Section */}
       <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-            <User className="w-4 h-4 text-teal-700" /> Drivers & Supervisors
-          </h3>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
+              <User className="h-4 w-4 text-teal-700 dark:text-teal-400" aria-hidden="true" /> Drivers & supervisors
+            </h3>
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">Profiles appear on your DMV report.</p>
+          </div>
           <button
             type="button"
             onClick={() => { resetDriverForm(); setShowAddDriver(true); }}
-            className="btn-primary py-1.5 px-3 text-xs font-bold"
+            className="btn-primary min-h-11 py-2 px-3 text-xs font-bold whitespace-nowrap"
           >
             <Plus className="w-3.5 h-3.5" /> Add Driver
           </button>
@@ -128,19 +131,19 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
 
         <div className="space-y-2">
           {drivers.map(driver => (
-            <div key={driver.id} className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs ${
+            <div key={driver.id} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/60">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className={`w-10 h-10 shrink-0 rounded-xl flex items-center justify-center font-bold text-sm ${
                   driver.role === 'teen' ? 'bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-300' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200'
                 }`}>
                   {driver.name ? driver.name[0].toUpperCase() : 'D'}
                 </div>
-                <div>
-                  <p className="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+                <div className="min-w-0">
+                  <p className="flex flex-wrap items-center gap-1.5 font-bold text-sm text-slate-900 dark:text-white">
                     {driver.name}
                     {driver.isPrimaryDriver && <span className="badge-teal text-xs">Primary</span>}
                   </p>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 capitalize">
+                  <p className="mt-0.5 truncate text-xs text-slate-600 dark:text-slate-300 capitalize">
                     {driver.role === 'teen' ? 'Student Driver' : 'Supervising Adult'} {driver.phone ? `• ${driver.phone}` : ''}
                   </p>
                 </div>
@@ -150,16 +153,16 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
                 <button
                   type="button"
                   onClick={() => handleEditDriver(driver)}
-                  className="btn-ghost p-1.5"
-                  aria-label="Edit driver"
+                  className="btn-ghost min-h-11 min-w-11 p-2"
+                  aria-label={`Edit ${driver.name}`}
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                 </button>
                 <button
                   type="button"
                   onClick={() => handleDeleteDriver(driver.id)}
-                  className="btn-ghost p-1.5 text-red-500 hover:text-red-600"
-                  aria-label="Delete driver"
+                  className="btn-ghost min-h-11 min-w-11 p-2 text-red-600 hover:text-red-700 dark:text-red-400"
+                  aria-label={`Delete ${driver.name}`}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -220,21 +223,21 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
                   />
                 </div>
 
-                <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer pt-1">
+                <label className="flex min-h-11 items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 cursor-pointer pt-1">
                   <input
                     type="checkbox"
                     checked={driverForm.isPrimaryDriver}
                     onChange={e => setDriverForm(prev => ({ ...prev, isPrimaryDriver: e.target.checked }))}
-                    className="w-4 h-4 text-teal-700 rounded"
+                    className="h-4 w-4 rounded text-teal-700 focus:ring-teal-600"
                   />
                   Set as primary default driver
                 </label>
 
                 <div className="flex gap-2 pt-3">
-                  <button type="button" onClick={resetDriverForm} className="btn-secondary flex-1 py-2.5 text-xs font-bold">
+                  <button type="button" onClick={resetDriverForm} className="btn-secondary min-h-12 flex-1 py-2.5 text-sm font-bold">
                     Cancel
                   </button>
-                  <button type="submit" className="btn-primary flex-1 py-2.5 text-xs font-bold">
+                  <button type="submit" className="btn-primary min-h-12 flex-1 py-2.5 text-sm font-bold">
                     <Save className="w-3.5 h-3.5" />
                     {editingDriver ? 'Save Changes' : 'Add Profile'}
                   </button>
@@ -246,15 +249,18 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
       </section>
 
       {/* 2. Vehicles Section */}
-      <section className="space-y-3 pt-2">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Car className="w-4 h-4 text-teal-700" /> Vehicle Profiles
-          </h3>
+      <section className="space-y-3 border-t border-slate-200 pt-6 dark:border-slate-800">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
+              <Car className="h-4 w-4 text-teal-700 dark:text-teal-400" aria-hidden="true" /> Vehicle profiles
+            </h3>
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">Choose the vehicle used for each supervised drive.</p>
+          </div>
           <button
             type="button"
             onClick={() => { resetVehicleForm(); setShowAddVehicle(true); }}
-            className="btn-primary py-1.5 px-3 text-xs font-bold"
+            className="btn-primary min-h-11 py-2 px-3 text-xs font-bold whitespace-nowrap"
           >
             <Plus className="w-3.5 h-3.5" /> Add Vehicle
           </button>
@@ -262,16 +268,16 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
 
         <div className="space-y-2">
           {vehicles.map(vehicle => (
-            <div key={vehicle.id} className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-xs">
+            <div key={vehicle.id} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/60">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="w-10 h-10 shrink-0 rounded-xl bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-xs">
                   <Car className="w-4 h-4" />
                 </div>
-                <div>
-                  <p className="font-bold text-xs text-slate-900 dark:text-white">
+                <div className="min-w-0">
+                  <p className="font-bold text-sm text-slate-900 dark:text-white">
                     {vehicle.name}
                   </p>
-                  <p className="text-xs text-slate-600 dark:text-slate-300">
+                  <p className="mt-0.5 truncate text-xs text-slate-600 dark:text-slate-300">
                     {vehicle.year ? `${vehicle.year} ` : ''}{vehicle.make} {vehicle.model} {vehicle.licensePlate ? `• ${vehicle.licensePlate}` : ''}
                   </p>
                 </div>
@@ -281,16 +287,16 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
                 <button
                   type="button"
                   onClick={() => handleEditVehicle(vehicle)}
-                  className="btn-ghost p-1.5"
-                  aria-label="Edit vehicle"
+                  className="btn-ghost min-h-11 min-w-11 p-2"
+                  aria-label={`Edit ${vehicle.name}`}
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                 </button>
                 <button
                   type="button"
                   onClick={() => handleDeleteVehicle(vehicle.id)}
-                  className="btn-ghost p-1.5 text-red-500 hover:text-red-600"
-                  aria-label="Delete vehicle"
+                  className="btn-ghost min-h-11 min-w-11 p-2 text-red-600 hover:text-red-700 dark:text-red-400"
+                  aria-label={`Delete ${vehicle.name}`}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -379,10 +385,10 @@ export function MultiDriverForm({ drivers, vehicles, onDriversChange, onVehicles
                 </div>
 
                 <div className="flex gap-2 pt-3">
-                  <button type="button" onClick={resetVehicleForm} className="btn-secondary flex-1 py-2.5 text-xs font-bold">
+                  <button type="button" onClick={resetVehicleForm} className="btn-secondary min-h-12 flex-1 py-2.5 text-sm font-bold">
                     Cancel
                   </button>
-                  <button type="submit" className="btn-primary flex-1 py-2.5 text-xs font-bold">
+                  <button type="submit" className="btn-primary min-h-12 flex-1 py-2.5 text-sm font-bold">
                     <Save className="w-3.5 h-3.5" />
                     {editingVehicle ? 'Save Changes' : 'Add Vehicle'}
                   </button>

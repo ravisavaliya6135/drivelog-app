@@ -99,14 +99,12 @@ export const DriveLogEntry = memo(function DriveLogEntry({
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       
       {/* 1. Time & Duration Display Card */}
-      <div className="p-4 rounded-2xl bg-teal-50/70 dark:bg-teal-950/40 border border-teal-200/80 dark:border-teal-800/60 flex items-center justify-between">
+      <section className="flex items-center justify-between gap-3 rounded-2xl border border-teal-200 bg-teal-50 p-4 dark:border-teal-800 dark:bg-teal-950/40" aria-labelledby="session-summary-title">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300">
-            Total Session Time
-          </span>
+          <h3 id="session-summary-title" className="section-kicker">Session total</h3>
           <div className="font-mono text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tabular-nums">
             {durationHours > 0 ? `${durationHours}h ${durationMins}m` : `${durationMins}m`}
           </div>
@@ -117,30 +115,33 @@ export const DriveLogEntry = memo(function DriveLogEntry({
           <button
             type="button"
             onClick={() => setFormData(prev => ({ ...prev, dayNight: 'day' }))}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
+            aria-pressed={formData.dayNight === 'day'}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all focus:outline-none focus:ring-2 focus:ring-teal-500 ${
               formData.dayNight === 'day'
                 ? 'bg-amber-500 text-white shadow-sm'
                 : 'text-slate-500 hover:text-slate-900'
             }`}
           >
-            <Sun className="w-3.5 h-3.5" /> Day
+            <Sun className="w-3.5 h-3.5" aria-hidden="true" /> Day drive
           </button>
           <button
             type="button"
             onClick={() => setFormData(prev => ({ ...prev, dayNight: 'night' }))}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
+            aria-pressed={formData.dayNight === 'night'}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all focus:outline-none focus:ring-2 focus:ring-teal-500 ${
               formData.dayNight === 'night'
                 ? 'bg-indigo-600 text-white shadow-sm'
                 : 'text-slate-500 hover:text-slate-900'
             }`}
           >
-            <Moon className="w-3.5 h-3.5" /> Night
+            <Moon className="w-3.5 h-3.5" aria-hidden="true" /> Night drive
           </button>
         </div>
-      </div>
+      </section>
 
       {/* 2. Date & Duration Inputs */}
-      <div className="grid grid-cols-2 gap-3">
+      <fieldset className="grid grid-cols-2 gap-3">
+        <legend className="form-label col-span-2">Drive details</legend>
         <div>
           <label htmlFor="drive-date" className="form-label">Date</label>
           <input
@@ -166,10 +167,11 @@ export const DriveLogEntry = memo(function DriveLogEntry({
             className="form-input"
           />
         </div>
-      </div>
+      </fieldset>
 
       {/* 3. Driver & Vehicle Selectors */}
-      <div className="grid grid-cols-2 gap-3">
+      <fieldset className="grid grid-cols-2 gap-3">
+        <legend className="form-label col-span-2">People and vehicle</legend>
         <div>
           <label htmlFor="drive-supervisor" className="form-label">Supervising Adult</label>
           <select
@@ -197,32 +199,34 @@ export const DriveLogEntry = memo(function DriveLogEntry({
             ))}
           </select>
         </div>
-      </div>
+      </fieldset>
 
       {/* 4. Weather Chips */}
-      <div>
-        <label className="form-label">Weather Conditions</label>
+      <fieldset>
+        <legend className="form-label">Weather conditions</legend>
         <div className="grid grid-cols-4 gap-2">
           {weatherOptions.map(({ label, icon: Icon }) => (
             <button
               key={label}
               type="button"
               onClick={() => setFormData(prev => ({ ...prev, weather: label }))}
-              className={`py-2 px-1 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 border transition-all ${
+              aria-pressed={formData.weather === label}
+              className={`py-2 px-1 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 border transition-all focus:outline-none focus:ring-2 focus:ring-teal-500 ${
                 formData.weather === label
                   ? 'border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300 font-bold shadow-sm'
                   : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50'
               }`}
             >
-              <Icon className="w-4 h-4" />
+              <Icon className="w-4 h-4" aria-hidden="true" />
               <span>{label}</span>
             </button>
           ))}
         </div>
-      </div>
+      </fieldset>
 
       {/* 5. Notes & Supervisor Signature */}
-      <div className="space-y-3">
+      <fieldset className="space-y-3">
+        <legend className="form-label">Trip notes and supervisor record</legend>
         <div>
           <label htmlFor="drive-notes" className="form-label">Route & Practice Notes</label>
           <input
@@ -263,17 +267,17 @@ export const DriveLogEntry = memo(function DriveLogEntry({
             />
           </div>
         </div>
-      </div>
+      </fieldset>
 
       {/* 6. Parent Sign-Off Verification */}
-      <div>
-        <label className="form-label">Parent Sign-Off</label>
+      <fieldset>
+        <legend className="form-label">Parent sign-off</legend>
         <button
           type="button"
           onClick={() => setFormData(prev => ({ ...prev, isVerified: !prev.isVerified }))}
           aria-pressed={Boolean(formData.isVerified)}
-          aria-label="Mark as verified by parent"
-          className={`w-full p-4 rounded-2xl border flex items-center gap-3 text-left transition-all ${
+          aria-label={formData.isVerified ? 'Remove parent verification' : 'Mark as verified by parent'}
+          className={`w-full p-4 rounded-2xl border flex items-center gap-3 text-left transition-all focus:outline-none focus:ring-2 focus:ring-teal-500 ${
             formData.isVerified
               ? 'border-emerald-300 bg-emerald-50/70 dark:border-emerald-800 dark:bg-emerald-950/40'
               : 'border-amber-300 bg-amber-50/70 dark:border-amber-800 dark:bg-amber-950/40'
@@ -290,7 +294,7 @@ export const DriveLogEntry = memo(function DriveLogEntry({
             {formData.isVerified ? (
               <>
                 <span className="block font-bold text-xs text-emerald-700 dark:text-emerald-300">
-                  ✓ Verified by {(formData.initials || 'parent').toUpperCase()}
+                  Verified by {(formData.initials || 'parent').toUpperCase()}
                 </span>
                 <span className="block text-xs text-slate-600 dark:text-slate-300 mt-0.5">
                   Signed off for DMV submission
@@ -314,7 +318,7 @@ export const DriveLogEntry = memo(function DriveLogEntry({
             <div className="w-5 h-5 rounded-full bg-white shadow-sm" />
           </div>
         </button>
-      </div>
+      </fieldset>
 
       {/* 7. Form Actions */}
       <div className="pt-2 space-y-2">
@@ -329,7 +333,7 @@ export const DriveLogEntry = memo(function DriveLogEntry({
         <button
           type="button"
           onClick={onCancel}
-          className="w-full min-h-12 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-300 transition-colors text-center block"
+          className="btn-quiet w-full text-center"
         >
           Cancel
         </button>

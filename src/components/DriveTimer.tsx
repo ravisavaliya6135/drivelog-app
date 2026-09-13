@@ -93,7 +93,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
   const currentSupervisor = drivers.find(d => d.id === selectedDriverId) || drivers[0];
 
   return (
-    <div className="w-full flex flex-col items-center space-y-6 max-w-md mx-auto">
+    <div className="mx-auto flex w-full max-w-md flex-col items-center space-y-6">
 
       {/* Crash Recovery Toast */}
       {wasRecovered && (
@@ -121,7 +121,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
       )}
 
       {/* 1. Supervisor & Day/Night Context Bar */}
-      <div className="w-full grid grid-cols-2 gap-3">
+      <section className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2" aria-label="Driving session context">
         {/* Supervisor Card */}
         <div className="app-card p-3 flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 flex items-center justify-center flex-shrink-0 font-bold text-xs">
@@ -131,9 +131,10 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
             <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Supervisor</span>
             {drivers.length > 1 ? (
               <select
+                id="timer-supervisor"
                 value={selectedDriverId}
                 onChange={(e) => setSelectedDriverId(e.target.value)}
-                aria-label="Supervisor"
+                aria-label="Select supervisor"
                 className="w-full bg-transparent font-bold text-xs text-slate-800 dark:text-slate-200 focus:outline-none truncate cursor-pointer"
               >
                 {drivers.map(d => (
@@ -163,13 +164,13 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
             {isNightEffective ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
           </div>
           <div className="min-w-0">
-            <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Auto-detected</span>
+            <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Legal classification</span>
             <span className="font-bold text-xs text-slate-900 dark:text-white capitalize flex items-center gap-1">
-              {isNightEffective ? 'Night Drive' : 'Day Drive'}
+              {isNightEffective ? 'Night driving' : 'Day driving'}
             </span>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Polar day/night info (Alaska extreme latitudes only) */}
       {polarNote && (
@@ -179,18 +180,24 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
       )}
 
       {/* 2. Main Live Timer Display */}
-      <div className="w-full app-card-elevated p-8 text-center space-y-4 relative overflow-hidden">
+      <section className={`relative w-full overflow-hidden p-6 text-center sm:p-8 ${
+        isRunning
+          ? 'app-card-elevated border-teal-300 shadow-elevated dark:border-teal-700'
+          : 'app-card-elevated'
+      }`} aria-labelledby="live-timer-title">
+
+        <p id="live-timer-title" className="section-kicker">Live session timer</p>
 
         {/* Status Indicator */}
         <div className="flex items-center justify-center gap-2">
           {isRunning && !isPaused ? (
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 text-xs font-bold border border-emerald-200 dark:border-emerald-800">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500 motion-reduce:animate-none animate-pulse" aria-hidden="true" />
               Drive In Progress
             </span>
           ) : isRunning && isPaused ? (
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 text-xs font-bold border border-amber-200 dark:border-amber-800">
-              <span className="w-2 h-2 rounded-full bg-amber-500" />
+              <span className="w-2 h-2 rounded-full bg-amber-500" aria-hidden="true" />
               Drive Paused
             </span>
           ) : (
@@ -234,7 +241,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
             </div>
           </div>
         )}
-      </div>
+      </section>
 
       {/* 3. Tactile Large Touch Controls (Min 64px height) */}
       <div className="w-full space-y-3">
@@ -256,7 +263,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
               type="button"
               onClick={handlePauseResume}
               aria-label={isPaused ? 'Resume drive' : 'Pause drive'}
-              className={`h-16 rounded-2xl font-bold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-offset-1 ${
+              className={`h-16 rounded-2xl font-bold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-900 ${
                 isPaused
                   ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm focus:ring-emerald-500'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700'
@@ -270,7 +277,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
               type="button"
               onClick={() => void handleFinish()}
               aria-label="Stop drive"
-              className="h-16 rounded-2xl bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white font-bold text-base shadow-sm flex items-center justify-center gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
+              className="h-16 rounded-2xl bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white font-bold text-base shadow-sm flex items-center justify-center gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
             >
               <Square className="w-5 h-5 fill-white" />
               <span>Stop</span>
@@ -295,7 +302,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
       {/* Discard Confirmation Dialog */}
       {showDiscardConfirm && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div ref={discardDialogRef} role="dialog" aria-modal="true" aria-labelledby="discard-drive-title" tabIndex={-1} className="bg-white dark:bg-slate-900 max-w-sm w-full rounded-2xl p-5 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 animate-slide-up">
+          <div ref={discardDialogRef} role="dialog" aria-modal="true" aria-labelledby="discard-drive-title" tabIndex={-1} className="w-full max-w-sm space-y-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl animate-slide-up dark:border-slate-700 dark:bg-slate-900">
             <div className="flex items-center gap-3 text-red-600 dark:text-red-400">
               <AlertTriangle className="w-6 h-6 flex-shrink-0" />
               <h3 id="discard-drive-title" className="font-bold text-base text-slate-900 dark:text-white">Discard Drive?</h3>
@@ -307,7 +314,7 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
               <button
                 type="button"
                 onClick={() => setShowDiscardConfirm(false)}
-                className="flex-1 min-h-12 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs"
+                className="btn-secondary flex-1"
               >
                 Keep Driving
               </button>

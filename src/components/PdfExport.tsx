@@ -115,30 +115,33 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
 
   if (!isReady) {
     return (
-      <div className="card-gradient text-center">
-        <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-slate-900 mb-2">No drives logged yet</h3>
-        <p className="text-muted mb-6">Add at least one drive entry to generate a PDF</p>
-        <div className="text-sm text-muted">PDF will include all entries, totals, and signature lines</div>
-      </div>
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-8" aria-labelledby="empty-pdf-title">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+          <FileText className="h-7 w-7" aria-hidden="true" />
+        </div>
+        <h3 id="empty-pdf-title" className="text-lg font-bold text-slate-900 dark:text-white">No drives logged yet</h3>
+        <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-600 dark:text-slate-300">Add at least one drive entry before creating your official PDF record.</p>
+        <p className="mt-4 text-xs font-medium text-slate-600 dark:text-slate-300">Your PDF includes entries, totals, and signature lines.</p>
+      </section>
     );
   }
 
   return (
-    <div className="card-gradient space-y-6">
+    <section className="space-y-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6" aria-labelledby="pdf-export-heading">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-indigo-500" />
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-700 dark:text-teal-300">Document center</p>
+          <h2 id="pdf-export-heading" className="mt-1 flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white">
+            <FileText className="h-5 w-5 text-teal-700 dark:text-teal-400" aria-hidden="true" />
             Export DMV Log
           </h2>
-          <p className="text-sm text-muted mt-1">
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
             Generate a printable PDF for {state.name} DMV requirements
           </p>
         </div>
         {generated && (
-          <div className="badge badge-success flex items-center gap-2">
+          <div role="status" className="flex w-fit items-center gap-2 rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
             <CheckCircle className="w-4 h-4" />
             <span>PDF downloaded!</span>
           </div>
@@ -146,11 +149,11 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
       </div>
 
       {/* Preview Summary */}
-      <div className="glass rounded-xl p-5">
-        <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
-          <FileText className="w-4 h-4 text-indigo-500" /> What's included in the PDF
-        </h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-800/60">
+        <h3 className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
+          <FileText className="h-4 w-4 text-teal-700 dark:text-teal-400" aria-hidden="true" /> What's included in the PDF
+        </h3>
+        <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
           <div className="flex items-center gap-2 text-slate-600 transition-smooth">
             <CheckCircle className="w-4 h-4 text-green-500" />
             <span>{drives.length} drive entries</span>
@@ -168,8 +171,8 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
             <span>{totals.miles} miles</span>
           </div>
         </div>
-        <div className="divider" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+        <div className="my-4 border-t border-slate-200 dark:border-slate-700" />
+        <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
           <div className="flex items-center gap-2 text-slate-600 transition-smooth">
             <CheckCircle className="w-4 h-4 text-green-500" />
             <span>Driver & vehicle info</span>
@@ -190,13 +193,13 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
       </div>
 
       {/* DMV Compliance Check */}
-      <div className={`p-4 rounded-xl border transition-smooth ${isTotalComplete ? 'card-gradient-success' : 'card-gradient-warning'}`}>
+      <div className={`rounded-2xl border p-5 ${isTotalComplete ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/30' : 'border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30'}`}>
         <div className="flex items-start gap-3">
           <div className={`flex-shrink-0 p-2 rounded-lg transition-smooth ${isTotalComplete ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'}`}>
             {isTotalComplete ? <CheckCircle className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
           </div>
           <div className="flex-1">
-            <h4 className="font-medium text-slate-900 dark:text-white">DMV Compliance Check — {state.name}</h4>
+            <h3 className="font-bold text-slate-900 dark:text-white">DMV readiness — {state.name}</h3>
 
             {/* Per-requirement verification rows */}
             <div className="mt-3 space-y-2">
@@ -282,11 +285,11 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
       )}
 
       {/* Action Buttons */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <button
           onClick={handleGenerate}
           disabled={isGenerating || !driver || !vehicle || drives.length === 0}
-          className={`btn-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${exportBlocked ? 'opacity-80' : ''}`}
+          className={`btn-primary min-h-16 text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${exportBlocked ? 'opacity-80' : ''}`}
         >
           {isGenerating ? (
             <>
@@ -309,7 +312,7 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
         <button
           onClick={handlePrint}
           disabled={isGenerating || !driver || !vehicle || drives.length === 0}
-          className={`btn-secondary disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${exportBlocked ? 'opacity-80' : ''}`}
+          className={`btn-secondary min-h-16 text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${exportBlocked ? 'opacity-80' : ''}`}
         >
           {isGenerating ? (
             <>
@@ -332,11 +335,11 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
       />
 
       {/* Tips */}
-      <details className="group glass rounded-lg p-4 cursor-pointer">
-        <summary className="font-medium text-slate-700 cursor-pointer flex items-center gap-2 list-none transition-smooth hover:text-slate-900">
-          <span>💡</span> Tips for DMV Visit
+      <details className="group cursor-pointer rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 font-bold text-slate-800 hover:text-teal-700 dark:text-slate-100 dark:hover:text-teal-300">
+          <span aria-hidden="true">💡</span> Tips for your DMV visit
         </summary>
-        <div className="mt-3 text-sm text-slate-600 space-y-2">
+        <div className="mt-3 space-y-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
           <p>• Print 2 copies: one for DMV, one for your records</p>
           <p>• Both student and supervising adult must sign</p>
           <p>• Bring vehicle registration and insurance</p>
@@ -344,6 +347,6 @@ export function PdfExport({ drives, driver, vehicle, selectedState, isReady }: P
           <p>• Some states accept digital logs — ask at the counter</p>
         </div>
       </details>
-    </div>
+    </section>
   );
 }

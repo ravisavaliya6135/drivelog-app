@@ -15,6 +15,7 @@ import {
 import { useDriveLog } from '../hooks/useDriveLog';
 import { DriveLogEntry } from '../components/DriveLogEntry';
 import { useSeo } from '../hooks/useSeo';
+import { useAccessibleDialog } from '../hooks/useAccessibleDialog';
 import { getActiveTimerRecord } from '../utils/db';
 import type { DriveEntry } from '../types';
 
@@ -31,6 +32,10 @@ export function LogDrive() {
   const [filterType, setFilterType] = useState<'all' | 'day' | 'night'>('all');
   const [showManualForm, setShowManualForm] = useState(false);
   const [editingDrive, setEditingDrive] = useState<typeof drives[0] | null>(null);
+  const manualFormDialogRef = useAccessibleDialog(showManualForm, () => {
+    setShowManualForm(false);
+    setEditingDrive(null);
+  });
 
   // Zero-distraction focus mode: if a drive session is active (persisted in
   // IndexedDB), hide history and show only the "Current Drive" card.
@@ -95,29 +100,31 @@ export function LogDrive() {
 
       {/* Focus Mode: active drive session — hide all history & tools */}
       {driveActive ? (
-        <div className="app-card-elevated p-8 text-center space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 flex items-center justify-center mx-auto animate-pulse">
+        <section className="app-card-elevated border-teal-200 p-6 text-center shadow-elevated dark:border-teal-800 sm:p-8" aria-labelledby="current-drive-title">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300">
             <Car className="w-7 h-7" />
           </div>
-          <h1 className="text-lg font-extrabold text-slate-900 dark:text-white">Current Drive</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
+          <p className="mt-4 section-kicker">Active session</p>
+          <h1 id="current-drive-title" className="mt-1 text-xl font-extrabold text-slate-950 dark:text-white">Current drive</h1>
+          <p className="mx-auto mt-2 max-w-xs text-sm leading-6 text-slate-600 dark:text-slate-300">
             A driving session is in progress. History is hidden to keep you focused on the road.
           </p>
           <Link
             to="/?modal=timer"
-            className="inline-flex items-center justify-center w-full h-16 rounded-2xl bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white font-bold text-base shadow-teal transition-all"
+            className="btn-primary mt-5 w-full text-base"
           >
             Return to Live Timer
           </Link>
-        </div>
+        </section>
       ) : (
         <>
       {/* 1. Header & Summary Stats Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <header className="page-header flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">Driving History</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            {drives.length} total sessions • {totalHours} hrs logged ({nightHours}h night)
+          <p className="page-kicker">Practice log</p>
+          <h1 className="page-title">Driving history</h1>
+          <p className="page-subtitle">
+            {drives.length} sessions · <span className="font-mono font-semibold tabular-nums">{totalHours} hours</span> logged · <span className="font-mono font-semibold tabular-nums">{nightHours} night hours</span>
           </p>
         </div>
 
@@ -127,68 +134,73 @@ export function LogDrive() {
             setEditingDrive(null);
             setShowManualForm(true);
           }}
-          className="btn-primary py-2.5 px-4 text-xs font-bold self-start sm:self-auto"
+          className="btn-primary self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           <span>Log Past Drive</span>
         </button>
-      </div>
+      </header>
 
       {/* 2. Search & Filter Bar */}
-      <div className="app-card p-3 flex flex-col sm:flex-row gap-2.5">
+      <section className="app-card flex flex-col gap-3 p-3 sm:flex-row sm:items-end" aria-label="Search and filter driving history">
         {/* Search */}
         <div className="relative flex-1">
+          <label htmlFor="drive-history-search" className="sr-only">Search driving history</label>
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Search by driver, notes, or date..."
+            id="drive-history-search"
+            placeholder="Search supervisor, conditions, notes, or date"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="form-input bg-slate-50 pl-9 dark:bg-slate-800/60"
           />
         </div>
 
         {/* Filter Pills */}
-        <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+        <div className="flex gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800" role="group" aria-label="Drive time filter">
           <button
             type="button"
             onClick={() => setFilterType('all')}
-            className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
+            aria-pressed={filterType === 'all'}
+            className={`min-h-11 px-3 py-1 text-sm font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 ${
               filterType === 'all'
                 ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
                 : 'text-slate-500 hover:text-slate-900'
             }`}
           >
-            All ({drives.length})
+            All <span className="font-mono tabular-nums">({drives.length})</span>
           </button>
           <button
             type="button"
             onClick={() => setFilterType('day')}
-            className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all flex items-center gap-1 ${
+            aria-pressed={filterType === 'day'}
+            className={`min-h-11 px-3 py-1 text-sm font-semibold rounded-lg transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-teal-500 ${
               filterType === 'day'
                 ? 'bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm'
                 : 'text-slate-500 hover:text-slate-900'
             }`}
           >
-            <Sun className="w-3 h-3" /> Day
+            <Sun className="w-4 h-4" aria-hidden="true" /> Day
           </button>
           <button
             type="button"
             onClick={() => setFilterType('night')}
-            className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all flex items-center gap-1 ${
+            aria-pressed={filterType === 'night'}
+            className={`min-h-11 px-3 py-1 text-sm font-semibold rounded-lg transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-teal-500 ${
               filterType === 'night'
                 ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm'
                 : 'text-slate-500 hover:text-slate-900'
             }`}
           >
-            <Moon className="w-3 h-3" /> Night
+            <Moon className="w-4 h-4" aria-hidden="true" /> Night
           </button>
         </div>
-      </div>
+      </section>
 
       {/* 3. Chronological Drive List */}
       {filteredDrives.length > 0 ? (
-        <div className="space-y-2.5">
+        <section className="space-y-3" aria-label="Driving history results">
           {filteredDrives.map((drive) => {
             const driver = drivers.find(d => d.id === drive.driverId);
             const vehicle = vehicles.find(v => v.id === drive.vehicleId);
@@ -197,17 +209,19 @@ export function LogDrive() {
             const formattedDuration = durationHours > 0 ? `${durationHours}h ${durationMins}m` : `${durationMins}m`;
 
             return (
-              <div
+              <button
+                type="button"
                 key={drive.id}
                 onClick={() => {
                   setEditingDrive(drive);
                   setShowManualForm(true);
                 }}
-                className="app-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:border-teal-500/50 transition-all"
+                aria-label={`Edit ${formattedDuration} ${drive.dayNight} drive on ${new Date(drive.date).toLocaleDateString('en-US')}`}
+                className="app-card flex w-full flex-col justify-between gap-3 p-4 text-left hover:border-teal-500 hover:shadow-elevated focus:outline-none focus:ring-2 focus:ring-teal-500 sm:flex-row sm:items-center sm:p-5"
               >
                 {/* Left side: Time, Condition & Date */}
                 <div className="flex items-start sm:items-center gap-3.5">
-                  <div className={`w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 mt-0.5 sm:mt-0 ${
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 sm:mt-0 ${
                     drive.dayNight === 'night'
                       ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400'
                       : 'bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400'
@@ -220,12 +234,9 @@ export function LogDrive() {
                       <span className="font-mono text-base font-extrabold text-slate-900 dark:text-white tabular-nums">
                         {formattedDuration}
                       </span>
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${
-                        drive.dayNight === 'night'
-                          ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
-                          : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
-                      }`}>
-                        {drive.dayNight === 'night' ? 'Night' : 'Day'}
+                      <span className="badge-slate">
+                        {drive.dayNight === 'night' ? <Moon className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-300" aria-hidden="true" /> : <Sun className="h-3.5 w-3.5 text-amber-600 dark:text-amber-300" aria-hidden="true" />}
+                        {drive.dayNight === 'night' ? 'Night drive' : 'Day drive'}
                       </span>
                     </div>
 
@@ -253,7 +264,7 @@ export function LogDrive() {
                 </div>
 
                 {/* Right side: Notes snippet & Weather */}
-                <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-between sm:justify-end gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
                   {drive.notes ? (
                     <p className="text-xs text-slate-500 dark:text-slate-400 italic max-w-xs truncate">
                       "{drive.notes}"
@@ -263,41 +274,45 @@ export function LogDrive() {
                   )}
                   <ChevronRight className="w-4 h-4 text-slate-400 flex-shrink-0" />
                 </div>
-              </div>
+              </button>
             );
           })}
-        </div>
+        </section>
       ) : (
-        <div className="app-card p-10 text-center space-y-3">
+        <section className="app-card space-y-3 p-10 text-center" aria-labelledby="history-empty-title">
           <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center mx-auto">
             <Clock className="w-6 h-6" />
           </div>
-          <h3 className="font-bold text-sm text-slate-900 dark:text-white">
+          <h2 id="history-empty-title" className="font-bold text-base text-slate-900 dark:text-white">
             {searchQuery ? 'No drives matching search' : 'No driving history yet'}
-          </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
+          </h2>
+          <p className="mx-auto max-w-xs text-sm leading-6 text-slate-600 dark:text-slate-300">
             {searchQuery
               ? 'Try adjusting your search terms or filters.'
               : 'Completed driving sessions will be logged chronologically here.'}
           </p>
-        </div>
+        </section>
       )}
 
       {/* Manual Log / Edit Drive Modal */}
       {showManualForm && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 max-w-md w-full rounded-t-[32px] sm:rounded-[32px] max-h-[95vh] overflow-y-auto p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-slide-up">
+          <div ref={manualFormDialogRef} role="dialog" aria-modal="true" aria-labelledby="manual-drive-modal-title" tabIndex={-1} className="w-full max-w-md max-h-[95vh] overflow-y-auto rounded-t-[32px] border border-slate-200 bg-white p-5 shadow-2xl animate-slide-up dark:border-slate-700 dark:bg-slate-900 sm:rounded-[32px] sm:p-6">
             <div className="flex justify-between items-center mb-4">
-              <span className="font-bold text-base text-slate-900 dark:text-white">
+              <div>
+                <p className="section-kicker">Practice record</p>
+                <h2 id="manual-drive-modal-title" className="mt-1 font-bold text-lg text-slate-900 dark:text-white">
                 {editingDrive ? 'Edit Drive Entry' : 'Log Past Drive Manually'}
-              </span>
+                </h2>
+              </div>
               <button
                 type="button"
                 onClick={() => {
                   setShowManualForm(false);
                   setEditingDrive(null);
                 }}
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900"
+                aria-label="Close drive entry"
+                className="btn-quiet h-11 w-11 rounded-full bg-slate-100 p-0 dark:bg-slate-800"
               >
                 <X className="w-5 h-5" />
               </button>

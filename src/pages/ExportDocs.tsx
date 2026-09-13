@@ -93,23 +93,32 @@ export function ExportDocs() {
   };
 
   return (
-    <div className="space-y-5 animate-fade-in">
-      
-      {/* 1. Page Header */}
-      <div>
-        <h1 className="text-xl font-bold text-slate-900 dark:text-white">DMV Log Export</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
-          Generate an official, DMV-compliant driving log PDF for your state licensing appointment.
-        </p>
-      </div>
+    <div className="space-y-6 animate-fade-in">
+      <header className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+        <div className="flex items-start gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#0F172A] text-white shadow-sm dark:bg-teal-700">
+            <FileCheck className="h-6 w-6" aria-hidden="true" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-700 dark:text-teal-300">Document center</p>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">DMV log export</h1>
+            <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+              Review your state requirements, then create a clean record to bring to your licensing appointment.
+            </p>
+          </div>
+        </div>
+      </header>
 
       {/* 2. State & Format Selector */}
-      <div className="app-card p-4 space-y-3">
+      <section className="app-card space-y-4 p-5" aria-labelledby="export-state-heading">
         <div className="flex items-center justify-between">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-teal-700" />
-            Target State Requirement
-          </label>
+          <div>
+            <h2 id="export-state-heading" className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
+              <MapPin className="h-4 w-4 text-teal-700 dark:text-teal-400" aria-hidden="true" />
+              Licensing state
+            </h2>
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">Requirements and report details update with this selection.</p>
+          </div>
           <span className="badge-teal">
             {state.code} DMV Form
           </span>
@@ -122,28 +131,31 @@ export function ExportDocs() {
             localStorage.setItem('drivelog-state', newCode);
           }}
         />
-      </div>
+      </section>
 
       {/* 3. Document Readiness Preview Card */}
-      <div className="app-card-elevated p-6 space-y-5">
+      <section className="app-card-elevated space-y-6 p-5 sm:p-6" aria-labelledby="document-readiness-heading">
         
         {/* Document Header Preview */}
-        <div className="flex items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+        <div className="flex flex-col gap-4 border-b border-slate-200 pb-5 dark:border-slate-800 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center shadow-teal flex-shrink-0">
               <FileCheck className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-slate-900 dark:text-white">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-teal-700 dark:text-teal-300">Document readiness</p>
+              <h2 id="document-readiness-heading" className="mt-1 text-lg font-bold text-slate-900 dark:text-white">
                 {state.name} Driving Log Report
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Driver: <strong className="text-slate-700 dark:text-slate-300">{primaryDriver.name}</strong> • Vehicle: <strong className="text-slate-700 dark:text-slate-300">{primaryVehicle.name}</strong>
+              </h2>
+              <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+                <span className="font-semibold text-slate-700 dark:text-slate-200">Driver:</span> {primaryDriver.name}
+                <span aria-hidden="true"> · </span>
+                <span className="font-semibold text-slate-700 dark:text-slate-200">Vehicle:</span> {primaryVehicle.name}
               </p>
             </div>
           </div>
 
-          <span className={`text-xs font-bold px-3 py-1 rounded-full flex-shrink-0 flex items-center gap-1 ${
+          <span className={`w-fit text-xs font-bold px-3 py-1.5 rounded-full flex-shrink-0 flex items-center gap-1 ${
             isDmvReady
               ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
               : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
@@ -154,35 +166,35 @@ export function ExportDocs() {
         </div>
 
         {/* Readiness Bento Stats */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-3 text-center">
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
-            <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Total Logged</span>
-            <span className="font-mono text-lg sm:text-xl font-bold text-slate-900 dark:text-white tabular-nums">
+        <dl className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/60">
+            <dt className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">Total logged</dt>
+            <dd className="mt-1 font-mono text-2xl font-bold text-slate-900 tabular-nums dark:text-white">
               {totalHoursVal}h
-            </span>
-            <span className="text-xs text-slate-600 dark:text-slate-300 block">/ {state.requiredHours}h target</span>
+            </dd>
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">of {state.requiredHours}h required</p>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
-            <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Day Practice</span>
-            <span className="font-mono text-lg sm:text-xl font-bold text-slate-900 dark:text-white tabular-nums">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/60">
+            <dt className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">Day practice</dt>
+            <dd className="mt-1 font-mono text-2xl font-bold text-slate-900 tabular-nums dark:text-white">
               {dayHoursVal}h
-            </span>
-            <span className="text-xs text-slate-600 dark:text-slate-300 block">/ {state.requiredHours - state.requiredNightHours}h target</span>
+            </dd>
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">of {state.requiredHours - state.requiredNightHours}h target</p>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
-            <span className="text-xs uppercase font-bold text-slate-600 dark:text-slate-300 block">Night Practice</span>
-            <span className="font-mono text-lg sm:text-xl font-bold text-slate-900 dark:text-white tabular-nums">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/60">
+            <dt className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">Night practice</dt>
+            <dd className="mt-1 font-mono text-2xl font-bold text-slate-900 tabular-nums dark:text-white">
               {nightHoursVal}h
-            </span>
-            <span className="text-xs text-slate-600 dark:text-slate-300 block">/ {state.requiredNightHours}h target</span>
+            </dd>
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">of {state.requiredNightHours}h required</p>
           </div>
-        </div>
+        </dl>
 
         {/* Success Alert */}
         {downloadSuccess && (
-          <div className="p-3.5 rounded-xl bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold flex items-center gap-2 animate-fade-in">
+          <div role="status" className="p-3.5 rounded-xl bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-sm font-semibold flex items-center gap-2 animate-fade-in">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
             <span>PDF generated and downloaded successfully!</span>
           </div>
@@ -194,7 +206,7 @@ export function ExportDocs() {
             type="button"
             disabled={isGenerating || drives.length === 0}
             onClick={handleGeneratePdf}
-            className="btn-primary w-full h-14 text-base font-bold shadow-teal flex items-center justify-center gap-2 disabled:opacity-50"
+            className="btn-primary w-full min-h-16 text-base font-bold shadow-teal flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isGenerating ? (
               <>
@@ -213,7 +225,7 @@ export function ExportDocs() {
             <button
               type="button"
               onClick={handleShare}
-              className="btn-secondary py-3 text-xs font-bold"
+              className="btn-secondary min-h-12 py-3 text-sm font-bold"
             >
               <Share2 className="w-4 h-4" />
               <span>Share Summary</span>
@@ -222,7 +234,7 @@ export function ExportDocs() {
             <button
               type="button"
               onClick={handleGeneratePdf}
-              className="btn-secondary py-3 text-xs font-bold"
+              className="btn-secondary min-h-12 py-3 text-sm font-bold"
             >
               <Printer className="w-4 h-4" />
               <span>Print Preview</span>
@@ -230,11 +242,11 @@ export function ExportDocs() {
           </div>
         </div>
 
-        <p className="text-xs text-center text-slate-600 dark:text-slate-300">
+        <p className="border-t border-slate-200 pt-4 text-center text-xs leading-5 text-slate-600 dark:border-slate-800 dark:text-slate-300">
           Complies with state DMV log formats. All calculations are stored locally on your device.
         </p>
 
-      </div>
+      </section>
 
     </div>
   );
