@@ -65,24 +65,56 @@ export function StateGuide() {
   const otherStates = US_STATES.filter(s => s.code !== state.code).slice(0, 11);
   const year = new Date().getFullYear();
 
-  // Breadcrumb structured data: Home -> State Guides -> This State
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'DriveHours', item: `${SITE_URL}/` },
-      { '@type': 'ListItem', position: 2, name: 'State Guides', item: `${SITE_URL}/dmv` },
-      { '@type': 'ListItem', position: 3, name: state.name + ' Driving Requirements', item: `${SITE_URL}/dmv/${state.code.toLowerCase()}` },
-    ],
-  };
+  // Structured data: BreadcrumbList + Article with Speakable
+  const jsonLdSchemas = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'DriveHours', item: `${SITE_URL}/` },
+        { '@type': 'ListItem', position: 2, name: 'State Guides', item: `${SITE_URL}/dmv` },
+        { '@type': 'ListItem', position: 3, name: state.name + ' Driving Requirements', item: `${SITE_URL}/dmv/${state.code.toLowerCase()}` },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      '@id': `${SITE_URL}/dmv/${state.code.toLowerCase()}#article`,
+      headline: `${state.name} Teen Driving Log Requirements (${year})`,
+      description: seo.description,
+      url: `${SITE_URL}/dmv/${state.code.toLowerCase()}`,
+      mainEntityOfPage: `${SITE_URL}/dmv/${state.code.toLowerCase()}`,
+      author: {
+        '@type': 'Organization',
+        name: 'DriveHours',
+        url: SITE_URL,
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'DriveHours',
+        url: SITE_URL,
+        logo: {
+          '@type': 'ImageObject',
+          url: `${SITE_URL}/pwa-512x512.png`,
+        },
+      },
+      speakable: {
+        '@type': 'SpeakableSpecification',
+        cssSelector: ['.state-direct-answer', '#state-road-test-checklist'],
+      },
+    },
+  ];
 
   return (
     <article className="space-y-6 animate-fade-in max-w-3xl">
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+      {jsonLdSchemas.map((schema, idx) => (
+        <script
+          key={idx}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
 
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs">
@@ -95,13 +127,13 @@ export function StateGuide() {
         <span className="text-slate-500 dark:text-slate-400 font-medium">{state.name} Driving Requirements</span>
       </nav>
 
-      {/* H1 */}
+      {/* H1 & Direct Answer (AEO / GEO Featured Snippet) */}
       <header className="space-y-2">
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
           {state.name} Teen Driving Log Requirements ({year})
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-          {seo.intro} Check current licensing rules with the official {state.name} source before your road test.
+        <p className="state-direct-answer text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+          {seo.intro}
         </p>
       </header>
 
@@ -194,6 +226,16 @@ export function StateGuide() {
                 )}
               </td>
             </tr>
+            {state.statutoryCode && (
+              <tr>
+                <th scope="row" className="text-left px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">
+                  State statutory code
+                </th>
+                <td className="px-4 py-3 text-right font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  {state.statutoryCode}
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </section>

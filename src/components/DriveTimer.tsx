@@ -229,61 +229,107 @@ export function DriveTimer({ onDriveComplete }: DriveTimerProps) {
         </p>
       )}
 
-      {/* 2. Main Live Timer Display (Automotive HUD) */}
-      <div className="w-full rounded-3xl p-7 sm:p-8 text-center space-y-5 relative overflow-hidden bg-gradient-to-b from-[#131C2E] via-[#0F172A] to-[#0B0F19] border border-teal-500/25 shadow-[0_0_50px_rgba(20,184,166,0.15)]">
+      {/* 2. Main Live Timer Display (Automotive Chronograph Cluster) */}
+      <div className="w-full rounded-3xl p-6 sm:p-8 text-center space-y-6 relative overflow-hidden bg-gradient-to-b from-[#111C33] via-[#0F172A] to-[#080C14] border border-teal-500/30 shadow-[0_0_50px_rgba(20,184,166,0.18)]">
+        {/* Ambient Top Glow Line */}
+        <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-teal-400/60 to-transparent" />
 
-        {/* Status Indicator */}
+        {/* Status Badge */}
         <div className="flex items-center justify-center gap-2">
           {isRunning && !isPaused ? (
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 text-emerald-300 text-xs font-extrabold border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.25)]">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              Drive In Progress
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 text-emerald-300 text-xs font-extrabold border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+              SESSION RECORDING
             </span>
           ) : isRunning && isPaused ? (
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/15 text-amber-300 text-xs font-extrabold border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.25)]">
-              <span className="w-2 h-2 rounded-full bg-amber-400" />
-              Drive Paused
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/15 text-amber-300 text-xs font-extrabold border border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+              SESSION PAUSED
             </span>
           ) : (
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800 text-slate-300 text-xs font-bold border border-slate-700/60">
-              Ready to Start
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/80 text-slate-300 text-xs font-bold border border-slate-700/70">
+              READY TO LOG
             </span>
           )}
         </div>
 
-        {/* Ambient Ring Digital Clock with aria-live="off" */}
-        <div className="py-3 px-4 rounded-2xl bg-[#0B0F19]/70 border border-teal-500/20 shadow-[0_0_35px_rgba(20,184,166,0.15)] max-w-xs mx-auto">
-          <div
-            role="timer"
-            aria-live="off"
-            className="font-mono text-5xl sm:text-6xl font-extrabold text-white tabular-nums tracking-wider drop-shadow-[0_2px_15px_rgba(255,255,255,0.25)]"
-          >
-            {time.hours}:{time.minutes}:{time.seconds}
-          </div>
+        {/* Chronograph Dial Ring with SVG Arc */}
+        <div className="relative flex items-center justify-center mx-auto my-2 w-64 h-64 sm:w-72 sm:h-72">
+          {/* SVG Circular Track */}
+          <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
+            {/* Background Track */}
+            <circle
+              cx="50"
+              cy="50"
+              r="44"
+              className="stroke-slate-800/80"
+              strokeWidth="4"
+              fill="transparent"
+            />
+            {/* Active Sweeping Second Arc */}
+            <circle
+              cx="50"
+              cy="50"
+              r="44"
+              className={cn(
+                'transition-all duration-300',
+                isRunning && !isPaused
+                  ? 'stroke-teal-400 drop-shadow-[0_0_8px_rgba(45,212,191,0.8)]'
+                  : isRunning && isPaused
+                  ? 'stroke-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]'
+                  : 'stroke-teal-500/30'
+              )}
+              strokeWidth="4"
+              strokeDasharray={276.46}
+              strokeDashoffset={276.46 - ((seconds % 60) / 60) * 276.46}
+              strokeLinecap="round"
+              fill="transparent"
+            />
+          </svg>
 
-          {/* Polite off-screen container for milestone speech every 5 minutes */}
-          <div aria-live="polite" aria-atomic="true" className="sr-only">
-            {srAnnouncement}
-          </div>
+          {/* Center Digital Display */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+            <div
+              role="timer"
+              aria-live="off"
+              className="font-mono text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-300 tabular-nums tracking-wider drop-shadow-[0_2px_20px_rgba(255,255,255,0.3)]"
+            >
+              {time.hours}:{time.minutes}:{time.seconds}
+            </div>
 
-          <div className="grid grid-cols-3 text-center max-w-[220px] mx-auto text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">
-            <span>Hours</span>
-            <span>Mins</span>
-            <span>Secs</span>
+            {/* Polite off-screen container for milestone speech every 5 minutes */}
+            <div aria-live="polite" aria-atomic="true" className="sr-only">
+              {srAnnouncement}
+            </div>
+
+            <div className="grid grid-cols-3 gap-3 text-center max-w-[180px] mx-auto text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mt-2">
+              <span>HRS</span>
+              <span>MIN</span>
+              <span>SEC</span>
+            </div>
+
+            {/* In-dial mini stats */}
+            {isRunning && (
+              <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-slate-700/60 text-[11px] text-slate-300 font-mono">
+                <span>~{estimatedMiles} mi</span>
+                <span className="text-slate-500">•</span>
+                <span>{avgSpeed} mph</span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Telemetry Bento */}
+        {/* Telemetry Bento (when not running) */}
         {!isRunning && (
-          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-800/80">
-            <div className="bg-[#17233B]/60 p-3.5 rounded-xl text-center border border-slate-700/60">
-              <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Est. Distance</span>
+          <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-800/80">
+            <div className="bg-[#17233B]/60 p-3.5 rounded-2xl text-center border border-slate-700/60">
+              <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Est. Mileage</span>
               <span className="font-mono font-bold text-base text-white tabular-nums">
                 {estimatedMiles} mi
               </span>
             </div>
-            <div className="bg-[#17233B]/60 p-3.5 rounded-xl text-center border border-slate-700/60">
-              <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Average Speed</span>
+            <div className="bg-[#17233B]/60 p-3.5 rounded-2xl text-center border border-slate-700/60">
+              <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Estimated Speed</span>
               <span className="font-mono font-bold text-base text-white tabular-nums">
                 {avgSpeed} mph
               </span>

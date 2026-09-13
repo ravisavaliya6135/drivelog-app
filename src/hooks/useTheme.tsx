@@ -13,7 +13,11 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
-      return (localStorage.getItem('drivelog-theme') as Theme) || 'system';
+      return (
+        (localStorage.getItem('drivehours-theme') as Theme) ||
+        (localStorage.getItem('drivelog-theme') as Theme) ||
+        'system'
+      );
     }
     return 'system';
   });
@@ -37,7 +41,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       const root = document.documentElement;
       root.classList.remove('light', 'dark');
       root.classList.add(resolved);
-      localStorage.setItem('drivelog-theme', theme);
+      localStorage.setItem('drivehours-theme', theme);
     };
 
     resolveAndApply();

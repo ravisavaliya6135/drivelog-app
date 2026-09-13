@@ -33,7 +33,8 @@ const EntitlementContext = createContext<EntitlementContextType>({
   startCheckout: async () => ({ error: new Error('Not initialized') }),
 });
 
-const CACHE_KEY = 'drivelog_pro_entitlement';
+const CACHE_KEY = 'drivehours_pro_entitlement';
+const LEGACY_CACHE_KEY = 'drivelog_pro_entitlement';
 
 export function EntitlementProvider({ children }: { children: React.ReactNode }) {
   const { user, session } = useAuth();
@@ -42,7 +43,7 @@ export function EntitlementProvider({ children }: { children: React.ReactNode })
     // Read from local cache on initial load for instant offline speed
     if (typeof window !== 'undefined') {
       try {
-        const cached = localStorage.getItem(CACHE_KEY);
+        const cached = localStorage.getItem(CACHE_KEY) || localStorage.getItem(LEGACY_CACHE_KEY);
         if (cached) {
           const parsed = JSON.parse(cached);
           if (parsed.status === 'active' && parsed.plan === 'lifetime') {
@@ -69,7 +70,7 @@ export function EntitlementProvider({ children }: { children: React.ReactNode })
           setIsPro(true);
         }
       } catch (err) {
-        console.warn('[DriveLog Entitlement] IndexedDB cache read failed:', err);
+        console.warn('[DriveHours Entitlement] IndexedDB cache read failed:', err);
       }
     };
     void hydrateFromIndexedDB();
@@ -96,7 +97,7 @@ export function EntitlementProvider({ children }: { children: React.ReactNode })
         .maybeSingle();
 
       if (error) {
-        console.warn('[DriveLog Entitlement] Error fetching entitlement from server:', error);
+        console.warn('[DriveHours Entitlement] Error fetching entitlement from server:', error);
         setLoading(false);
         return isPro;
       }
@@ -123,7 +124,7 @@ export function EntitlementProvider({ children }: { children: React.ReactNode })
       setLoading(false);
       return hasActiveLifetime;
     } catch (err) {
-      console.warn('[DriveLog Entitlement] Offline or network error during entitlement check:', err);
+      console.warn('[DriveHours Entitlement] Offline or network error during entitlement check:', err);
       setLoading(false);
       return isPro;
     }

@@ -8,7 +8,7 @@ interface SeoProps {
   description?: string;
   canonicalUrl?: string;
   noindex?: boolean;
-  /** Social share image; defaults to the DriveLog card */
+  /** Social share image; defaults to the DriveHours card */
   ogImage?: string;
 }
 

@@ -14,10 +14,11 @@ export interface StateGuideSeo {
 }
 
 function defaultSeo(state: StateInfo): StateGuideSeo {
+  const statText = state.statutoryCode ? ` under ${state.statutoryCode}` : '';
   return {
-    title: `${state.name} Teen Driving Log Requirements | DriveHours`,
-    description: `Track your ${state.name} supervised driving hours, including ${state.requiredNightHours} required night hours. Print a clear practice log before your road test.`,
-    intro: `${state.name} requires ${state.requiredHours} supervised driving hours, including at least ${state.requiredNightHours} hours at night.`,
+    title: `${state.name} ${state.requiredHours}-Hour Teen Driving Log Requirements | DriveHours`,
+    description: `Track ${state.name}’s ${state.requiredHours} supervised practice hours, including ${state.requiredNightHours} at night. Keep an official DMV-compliant driving log before your road test.`,
+    intro: `${state.name} requires learner permit drivers to complete at least ${state.requiredHours} hours of supervised driving practice, including ${state.requiredNightHours} hours at night${statText}. All practice sessions must be certified with dates, driving conditions, and supervisor signatures before scheduling the DMV road test.`,
   };
 }
 
@@ -25,11 +26,12 @@ const STATE_OVERRIDES: Partial<Record<StateInfo['code'], StateGuideSeo>> = {
   CA: {
     title: 'California 50-Hour Driving Log: 10 Night Hours | DriveHours',
     description: 'Track California’s 50 supervised practice hours, including 10 at night. Keep a clear driving log and verify your road-test requirements.',
-    intro: 'California teen drivers need 50 hours of supervised practice, including 10 hours at night, before the driving test.',
+    intro: 'California requires learner permit drivers to complete at least 50 hours of supervised driving practice, including 10 hours at night, under Cal. Veh. Code § 12509. All practice sessions must be certified by a licensed adult supervisor before taking the DMV driving test for a provisional license.',
     details: [
-      'Your supervised practice must total at least 50 hours.',
-      'At least 10 of those hours must be completed at night.',
-      'Keep a parent-supervised practice record before the driving test.',
+      'Complete and log at least 50 hours of supervised practice.',
+      'Complete at least 10 of those practice hours at night.',
+      'Practice must be supervised by a licensed driver 25 years or older.',
+      'Certify your driving log prior to your California DMV behind-the-wheel exam.',
     ],
     officialSource: {
       label: 'California DMV teen driver roadmap',
@@ -39,11 +41,12 @@ const STATE_OVERRIDES: Partial<Record<StateInfo['code'], StateGuideSeo>> = {
   NC: {
     title: 'North Carolina 60-Hour Driving Log: 10 Night Hours | DriveHours',
     description: 'Track North Carolina’s 60 required driving hours, including 10 at night. Keep a digital or printed log ready for your licensing appointment.',
-    intro: 'North Carolina teen drivers need a 60-hour driving log, including 10 nighttime hours, before moving to the next license level.',
+    intro: 'North Carolina requires Level 1 permit drivers to log at least 60 hours of supervised driving practice, including 10 hours at night, under N.C. Gen. Stat. § 20-11. All practice must be signed off by a supervising parent or guardian prior to Level 2 licensing.',
     details: [
-      'Complete and log at least 60 hours of driving.',
+      'Complete and log at least 60 hours of supervised driving.',
       'At least 10 of the required hours must occur during nighttime hours.',
       'Keep your driving log ready for your Level 2 licensing appointment.',
+      'Supervising driver must be a parent, guardian, or approved licensed driver.',
     ],
     officialSource: {
       label: 'North Carolina DMV supervised driving requirements',
@@ -53,11 +56,12 @@ const STATE_OVERRIDES: Partial<Record<StateInfo['code'], StateGuideSeo>> = {
   OH: {
     title: 'Ohio 50-Hour Driving Log & BMV 5791 Affidavit | DriveHours',
     description: 'Track Ohio’s 50 driving hours, including 10 at night, and prepare the BMV 5791 Fifty-Hour Affidavit for your road test.',
-    intro: 'Ohio teen drivers need 50 hours of driving, including 10 at night, and a completed BMV 5791 affidavit for the driving test.',
+    intro: 'Ohio requires temporary instruction permit holders under 18 to complete at least 50 hours of supervised driving practice, including 10 hours at night, under Ohio Rev. Code § 4507.05. Drivers must present a completed BMV 5791 Fifty-Hour Affidavit at their road test.',
     details: [
       'Complete at least 50 hours of supervised driving.',
       'Include at least 10 hours of night driving.',
       'Bring the completed BMV 5791 Fifty-Hour Affidavit to the driving test.',
+      'Supervision must be provided by a licensed parent, guardian, or certified driving instructor.',
     ],
     officialSource: {
       label: 'Ohio BMV graduated driver licensing requirements',

@@ -100,6 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSession(null);
     setUser(null);
     // Clear local cached entitlement on sign out
+    localStorage.removeItem('drivehours_pro_entitlement');
     localStorage.removeItem('drivelog_pro_entitlement');
   };
 

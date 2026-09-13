@@ -64,7 +64,7 @@ export function LogDrive() {
 
   const [selectedState] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('drivelog-state') || 'CA';
+      return localStorage.getItem('drivehours-state') || localStorage.getItem('drivelog-state') || 'CA';
     }
     return 'CA';
   });

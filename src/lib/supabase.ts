@@ -31,7 +31,7 @@ export function getSupabaseClient(): Promise<SupabaseClient> {
       }
 
       // Preserve the graceful, non-networking fallback used in local builds.
-      return createClient('https://drivelog-placeholder.supabase.co', 'placeholder-anon-key', {
+      return createClient('https://drivehours-placeholder.supabase.co', 'placeholder-anon-key', {
         auth: {
           persistSession: false,
           autoRefreshToken: false,

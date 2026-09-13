@@ -55,7 +55,7 @@ export async function trackEvent(
     await db.put('analyticsEvents', record);
   } catch (err) {
     // Analytics must never disrupt the core app (offline-first guarantee)
-    console.warn('[DriveLog Analytics] Failed to persist event:', err);
+    console.warn('[DriveHours Analytics] Failed to persist event:', err);
     return;
   }
 
@@ -89,7 +89,7 @@ export async function flushEvents(): Promise<void> {
     );
 
     if (error) {
-      console.warn('[DriveLog Analytics] Sync deferred:', error.message);
+      console.warn('[DriveHours Analytics] Sync deferred:', error.message);
       return;
     }
 
@@ -109,7 +109,7 @@ export async function flushEvents(): Promise<void> {
       }
     }
   } catch (err) {
-    console.warn('[DriveLog Analytics] Flush skipped:', err);
+    console.warn('[DriveHours Analytics] Flush skipped:', err);
   }
 }
 

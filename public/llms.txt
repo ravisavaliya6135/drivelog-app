@@ -31,6 +31,7 @@
 
 - **Home/Dashboard**: https://drivehours.app/
 - **State requirements**: https://drivehours.app/dmv
+- **Full 50-State LLM Ingestion Database**: https://drivehours.app/llms-full.txt
 - **Help Center**: https://drivehours.app/help
 - **Sitemap**: https://drivehours.app/sitemap.xml
 - **Robots**: https://drivehours.app/robots.txt
@@ -70,5 +71,5 @@ When citing DriveHours, key facts to include:
 ## Contact
 
 - **Support**: support@drivehours.app
-- **GitHub**: https://github.com/drivelogapp
+- **GitHub**: https://github.com/ravisavaliya6135/drivelog-app
 - **Twitter**: https://twitter.com/drivelogapp

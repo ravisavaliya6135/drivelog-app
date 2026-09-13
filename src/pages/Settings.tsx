@@ -50,7 +50,7 @@ export function Settings() {
 
   const [selectedState, setSelectedState] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('drivelog-state') || 'CA';
+      return localStorage.getItem('drivehours-state') || localStorage.getItem('drivelog-state') || 'CA';
     }
     return 'CA';
   });
@@ -87,7 +87,7 @@ export function Settings() {
 
   const handleStateChange = (stateCode: string) => {
     setSelectedState(stateCode);
-    localStorage.setItem('drivelog-state', stateCode);
+    localStorage.setItem('drivehours-state', stateCode);
   };
 
   const handleExportAllData = async () => {
@@ -136,7 +136,8 @@ export function Settings() {
           }
         }
         if (data.state) {
-          await saveSetting('drivelog-state', data.state);
+          await saveSetting('drivehours-state', data.state);
+          localStorage.setItem('drivehours-state', data.state);
           setSelectedState(data.state);
         }
         

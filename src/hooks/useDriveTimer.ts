@@ -9,7 +9,7 @@ const HEARTBEAT_STALE_MS = 5000;
 
 function getCurrentStateCode(): string {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('drivelog-state') || 'CA';
+    return localStorage.getItem('drivehours-state') || localStorage.getItem('drivelog-state') || 'CA';
   }
   return 'CA';
 }
@@ -105,7 +105,7 @@ export function useDriveTimer() {
       if (!restored.isPaused && restored.lastHeartbeat !== null && now - restored.lastHeartbeat > HEARTBEAT_STALE_MS) {
         const missedSeconds = Math.max(0, Math.floor((elapsed - restored.lastSavedElapsedMs) / 1000));
         console.info(
-          `[DriveLog Timer Recovery] Active drive restored after ${Math.round((now - restored.lastHeartbeat) / 1000)}s gap. ` +
+          `[DriveHours Timer Recovery] Active drive restored after ${Math.round((now - restored.lastHeartbeat) / 1000)}s gap. ` +
           `Wall-clock catch-up credited ${missedSeconds}s. Recovery event logged.`
         );
         setWasRecovered(true);

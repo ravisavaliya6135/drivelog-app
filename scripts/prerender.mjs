@@ -1,5 +1,5 @@
 /**
- * Post-build SSG prerender step for DriveLog.
+ * Post-build SSG prerender step for DriveHours.
  *
  * Generates fully static HTML for all 50 /dmv/:stateCode routes so crawlers
  * see complete content (H1, table, meta tags, canonical URL, CTA) without

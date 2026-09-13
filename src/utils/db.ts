@@ -1,7 +1,7 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 import type { DriveEntry, DriverProfile, VehicleProfile } from '../types';
 
-interface DriveLogDB extends DBSchema {
+interface DriveHoursDB extends DBSchema {
   drives: {
     key: string;
     value: DriveEntry;
@@ -90,15 +90,15 @@ export async function getActiveTimerRecord(): Promise<ActiveTimerRecord | undefi
   return getSetting<ActiveTimerRecord>('activeTimer');
 }
 
-const DB_NAME = 'DriveLogDB';
+const DB_NAME = 'DriveHoursDB';
 const DB_VERSION = 3;
 
-let dbInstance: IDBPDatabase<DriveLogDB> | null = null;
+let dbInstance: IDBPDatabase<DriveHoursDB> | null = null;
 
-export async function getDB(): Promise<IDBPDatabase<DriveLogDB>> {
+export async function getDB(): Promise<IDBPDatabase<DriveHoursDB>> {
   if (dbInstance) return dbInstance;
 
-  dbInstance = await openDB<DriveLogDB>(DB_NAME, DB_VERSION, {
+  dbInstance = await openDB<DriveHoursDB>(DB_NAME, DB_VERSION, {
     upgrade(db) {
       // Drives store (guarded so the v1 -> v2 upgrade doesn't recreate existing stores)
       if (!db.objectStoreNames.contains('drives')) {

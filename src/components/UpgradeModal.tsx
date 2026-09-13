@@ -27,7 +27,7 @@ export function UpgradeModal({
 
   // Milestone context: compare logged hours against the user's selected state requirement
   const selectedStateCode = typeof window !== 'undefined'
-    ? localStorage.getItem('drivelog-state') || 'CA'
+    ? localStorage.getItem('drivehours-state') || localStorage.getItem('drivelog-state') || 'CA'
     : 'CA';
   const stateInfo = US_STATES.find(s => s.code === selectedStateCode) || US_STATES[4];
   const isMilestone = totalHoursLogged >= FREE_HOURS_LIMIT;

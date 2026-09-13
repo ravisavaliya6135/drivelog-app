@@ -24,7 +24,7 @@ export function ExportDocs() {
   const { drives, drivers, vehicles, dayMinutes, nightMinutes, totalHours } = useDriveLog();
   const [selectedState, setSelectedState] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('drivelog-state') || 'CA';
+      return localStorage.getItem('drivehours-state') || localStorage.getItem('drivelog-state') || 'CA';
     }
     return 'CA';
   });
@@ -119,7 +119,7 @@ export function ExportDocs() {
           value={selectedState}
           onChange={(newCode) => {
             setSelectedState(newCode);
-            localStorage.setItem('drivelog-state', newCode);
+            localStorage.setItem('drivehours-state', newCode);
           }}
         />
       </div>

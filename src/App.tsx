@@ -1,6 +1,6 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
-import { Home as HomeIcon, Clock, Play, FileText, Settings as SettingsIcon, Car } from 'lucide-react';
+import { Home as HomeIcon, Clock, Play, FileText, Settings as SettingsIcon, Sun, Moon } from 'lucide-react';
 import { Toaster } from 'sonner';
 import { ThemeProvider, useTheme } from './hooks/useTheme';
 import { AuthProvider } from './contexts/AuthContext';
@@ -8,6 +8,7 @@ import { EntitlementProvider } from './contexts/EntitlementContext';
 import { PwaInstallPrompt } from './components/PwaInstallPrompt';
 import { SiteFooter } from './components/SiteFooter';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { BrandLogo } from './components/BrandLogo';
 
 // Lazy load pages for fast code-split performance
 const HomePage = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
@@ -34,72 +35,83 @@ function PageSkeleton() {
 }
 
 function TopHeader() {
+  const { resolvedTheme, setTheme } = useTheme();
+
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-[#0B0F19]/85 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 pt-safe transition-colors">
+    <header className="sticky top-0 z-40 w-full bg-white/85 dark:bg-[#080C14]/85 backdrop-blur-2xl border-b border-slate-200/80 dark:border-slate-800/80 pt-safe transition-colors shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)]">
       <div className="max-w-4xl mx-auto h-16 px-4 flex items-center justify-between">
         {/* Brand */}
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-400 text-white flex items-center justify-center shadow-[0_2px_12px_rgba(20,184,166,0.35)]">
-            <Car className="w-5 h-5" />
-          </div>
-          <div>
-            <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">DriveHours</span>
-            <span className="hidden sm:inline-block ml-2 text-xs font-semibold text-teal-600 dark:text-teal-400/90 uppercase tracking-wider">Supervised Log</span>
-          </div>
-        </div>
+        <NavLink to="/" className="hover:opacity-90 transition-opacity focus:outline-none">
+          <BrandLogo size="md" />
+        </NavLink>
 
-        {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center gap-1.5">
-          <NavLink
-            to="/"
-            end
-            className={({ isActive }) =>
-              `min-h-11 inline-flex items-center px-3.5 rounded-xl text-sm font-semibold transition-all ${
-                isActive 
-                  ? 'bg-teal-50 dark:bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-500/30 shadow-sm' 
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
-              }`
-            }
+        {/* Desktop Nav & Theme Action */}
+        <div className="flex items-center gap-2">
+          <nav className="hidden md:flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100/80 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60">
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) =>
+                `min-h-10 inline-flex items-center px-4 rounded-xl text-xs font-bold transition-all ${
+                  isActive 
+                    ? 'bg-white text-slate-900 shadow-sm dark:bg-teal-500/20 dark:text-teal-300 dark:border dark:border-teal-500/35' 
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`
+              }
+            >
+              Home
+            </NavLink>
+            <NavLink
+              to="/log"
+              className={({ isActive }) =>
+                `min-h-10 inline-flex items-center px-4 rounded-xl text-xs font-bold transition-all ${
+                  isActive 
+                    ? 'bg-white text-slate-900 shadow-sm dark:bg-teal-500/20 dark:text-teal-300 dark:border dark:border-teal-500/35' 
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`
+              }
+            >
+              History
+            </NavLink>
+            <NavLink
+              to="/export"
+              className={({ isActive }) =>
+                `min-h-10 inline-flex items-center px-4 rounded-xl text-xs font-bold transition-all ${
+                  isActive 
+                    ? 'bg-white text-slate-900 shadow-sm dark:bg-teal-500/20 dark:text-teal-300 dark:border dark:border-teal-500/35' 
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`
+              }
+            >
+              Export
+            </NavLink>
+            <NavLink
+              to="/settings"
+              className={({ isActive }) =>
+                `min-h-10 inline-flex items-center px-4 rounded-xl text-xs font-bold transition-all ${
+                  isActive 
+                    ? 'bg-white text-slate-900 shadow-sm dark:bg-teal-500/20 dark:text-teal-300 dark:border dark:border-teal-500/35' 
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`
+              }
+            >
+              Settings
+            </NavLink>
+          </nav>
+
+          {/* Theme Quick Toggle */}
+          <button
+            onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500"
+            aria-label={`Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode`}
           >
-            Home
-          </NavLink>
-          <NavLink
-            to="/log"
-            className={({ isActive }) =>
-              `min-h-11 inline-flex items-center px-3.5 rounded-xl text-sm font-semibold transition-all ${
-                isActive 
-                  ? 'bg-teal-50 dark:bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-500/30 shadow-sm' 
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
-              }`
-            }
-          >
-            History
-          </NavLink>
-          <NavLink
-            to="/export"
-            className={({ isActive }) =>
-              `min-h-11 inline-flex items-center px-3.5 rounded-xl text-sm font-semibold transition-all ${
-                isActive 
-                  ? 'bg-teal-50 dark:bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-500/30 shadow-sm' 
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
-              }`
-            }
-          >
-            Export
-          </NavLink>
-          <NavLink
-            to="/settings"
-            className={({ isActive }) =>
-              `min-h-11 inline-flex items-center px-3.5 rounded-xl text-sm font-semibold transition-all ${
-                isActive 
-                  ? 'bg-teal-50 dark:bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-500/30 shadow-sm' 
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
-              }`
-            }
-          >
-            Settings
-          </NavLink>
-        </nav>
+            {resolvedTheme === 'dark' ? (
+              <Sun className="w-4 h-4 text-amber-400" />
+            ) : (
+              <Moon className="w-4 h-4 text-slate-600" />
+            )}
+          </button>
+        </div>
       </div>
     </header>
   );

@@ -1,0 +1,89 @@
+# DriveHours — Full 50-State Supervised Driving Log Reference & Requirements (2026)
+
+> Offline-first progressive web application for teen drivers and supervising parents. Automatically logs supervised driving practice hours, detects legal night driving conditions via solar calculation, and exports official DMV-compliant PDF reports for all 50 US states.
+
+- **Website**: https://drivehours.app/
+- **PWA Platform**: Web, iOS (Safari Add to Home Screen), Android (Chrome WebAPK), Desktop
+- **Cost**: Free tier includes first 20.0 logged hours; $4.99 one-time Lifetime Pro unlock for unlimited logging and DMV export.
+- **Data Privacy**: 100% offline-first storage via IndexedDB; user driving records never leave the local device unless intentionally backed up.
+
+---
+
+## Complete 50-State DMV Supervised Driving Requirements Table
+
+| State Code | State Name | Total Required Hours | Night Hours Required | Minimum Permit Age | Minimum License Age | Official DMV Form / Code | State Statutory / Legal Code |
+|:---|:---|:---:|:---:|:---:|:---:|:---|:---|
+| AL | Alabama | 50 | 0 | 15 | 16 | Supervised Driving Log | Ala. Code § 32-6-8 |
+| AK | Alaska | 40 | 10 | 14 | 16 | D1-408 Parent Certification | Alaska Stat. § 28.15.057 |
+| AZ | Arizona | 30 | 10 | 15.5 | 16 | Supervised Driving Practice Log | Ariz. Rev. Stat. § 28-3174 |
+| AR | Arkansas | 40 | 10 | 14 | 16 | Practice Driving Log | Ark. Code Ann. § 27-16-702 |
+| CA | California | 50 | 10 | 15.5 | 16 | DL-236 / Supervised Driving Log | Cal. Veh. Code § 12509 |
+| CO | Colorado | 50 | 10 | 15 | 16 | DR 2324 Drive Log Sheet | Colo. Rev. Stat. § 42-2-106 |
+| CT | Connecticut | 40 | 10 | 16 | 16.3 | CS-1 / Practice Driving Log | Conn. Gen. Stat. § 14-36 |
+| DE | Delaware | 50 | 10 | 16 | 16.5 | Supervised Driving Log | 21 Del. C. § 2710 |
+| FL | Florida | 50 | 10 | 15 | 16 | HSMV 71143 Parent Certification | Fla. Stat. § 322.05 |
+| GA | Georgia | 40 | 6 | 15 | 16 | DDS Supervised Driving Log | O.C.G.A. § 40-5-24 |
+| HI | Hawaii | 40 | 10 | 15.5 | 16 | HDOT Driver Education Log | Haw. Rev. Stat. § 286-108 |
+| ID | Idaho | 50 | 10 | 14.5 | 15 | ITD Supervised Driving Log | Idaho Code § 49-307 |
+| IL | Illinois | 50 | 10 | 15 | 16 | SOS Affidavit of 50 Hours (DSD X 152) | 625 ILCS 5/6-107 |
+| IN | Indiana | 50 | 10 | 15 | 16 | BMV Log of Supervised Driving (State Form 54706) | Ind. Code § 9-24-3-2.5 |
+| IA | Iowa | 20 | 2 | 14 | 16 | DOT Supervised Driving Log | Iowa Code § 321.180B |
+| KS | Kansas | 50 | 10 | 14 | 15 | KDOR Supervised Driving Log (DE-03) | Kan. Stat. Ann. § 8-2,101 |
+| KY | Kentucky | 60 | 10 | 16 | 16.5 | TC 94-32 Supervised Driving Log | Ky. Rev. Stat. Ann. § 186.452 |
+| LA | Louisiana | 50 | 15 | 15 | 16 | OMV Supervised Driving Log | La. Stat. Ann. § 32:405.1 |
+| ME | Maine | 70 | 10 | 15 | 16 | BMV Supervised Driving Log | 29-A M.R.S. § 1304 |
+| MD | Maryland | 60 | 10 | 15.75 | 16.5 | MVA Skills Log (RD-006) | Md. Code, Transp. § 16-105 |
+| MA | Massachusetts | 40 | 10 | 16 | 16.5 | RMV Supervised Driving Log | Mass. Gen. Laws ch. 90 § 8 |
+| MI | Michigan | 50 | 10 | 14.75 | 16 | SOS Supervised Driving Log | Mich. Comp. Laws § 257.310e |
+| MN | Minnesota | 50 | 15 | 15 | 16 | DVS Supervised Driving Log | Minn. Stat. § 171.05 |
+| MS | Mississippi | 50 | 10 | 15 | 16 | DPS Supervised Driving Log | Miss. Code Ann. § 63-1-21 |
+| MO | Missouri | 40 | 10 | 15 | 16 | DOR Form 4901 Driving Log | Mo. Rev. Stat. § 302.178 |
+| MT | Montana | 50 | 10 | 14.5 | 15 | MVD Supervised Driving Log | Mont. Code Ann. § 61-5-106 |
+| NE | Nebraska | 50 | 10 | 15 | 16 | DMV 50-Hour Certification (DMV-03-01) | Neb. Rev. Stat. § 60-4,124 |
+| NV | Nevada | 50 | 10 | 15.5 | 16 | DMV Form DLD-130 Driving Experience Log | Nev. Rev. Stat. § 483.2521 |
+| NH | New Hampshire | 40 | 10 | 15.5 | 16 | DMV Supervised Driving Log | N.H. Rev. Stat. Ann. § 263:25 |
+| NJ | New Jersey | 50 | 10 | 16 | 17 | MVC Supervised Driving Log | N.J. Stat. Ann. § 39:3-13 |
+| NM | New Mexico | 50 | 10 | 15 | 15.5 | MVD-11100 Driving Practice Log | N.M. Stat. Ann. § 66-5-8 |
+| NY | New York | 50 | 15 | 16 | 16.5 | MV-262 Certification of Supervised Driving | N.Y. Veh. & Traf. Law § 502 |
+| NC | North Carolina | 60 | 10 | 15 | 16 | DL-4A Driving Log | N.C. Gen. Stat. § 20-11 |
+| ND | North Dakota | 50 | 10 | 14 | 15 | DOT Supervised Driving Log | N.D. Cent. Code § 39-06-04 |
+| OH | Ohio | 50 | 10 | 15.5 | 16 | BMV 5791 Fifty-Hour Affidavit | Ohio Rev. Code § 4507.05 |
+| OK | Oklahoma | 50 | 10 | 15.5 | 16 | DPS Supervised Driving Log | Okla. Stat. tit. 47 § 6-105 |
+| OR | Oregon | 50 | 10 | 15 | 16 | ODOT Form 735-7186 Driver Log | Or. Rev. Stat. § 807.065 |
+| PA | Pennsylvania | 65 | 10 | 16 | 16.5 | DL-180C Non-Commercial Learner's Permit Log | 75 Pa. C.S. § 1505 |
+| RI | Rhode Island | 50 | 10 | 16 | 16.5 | DMV Supervised Driving Log | R.I. Gen. Laws § 31-10-6 |
+| SC | South Carolina | 40 | 10 | 15 | 15.5 | SCDMV Form DL-405 Certification | S.C. Code Ann. § 56-1-176 |
+| SD | South Dakota | 50 | 10 | 14 | 14.5 | DPS Supervised Driving Log | S.D. Codified Laws § 32-12-11 |
+| TN | Tennessee | 50 | 10 | 15 | 16 | SF-1256 Supervised Driving Log | Tenn. Code Ann. § 55-50-311 |
+| TX | Texas | 30 | 10 | 15 | 16 | Texas Supervised Driving Log (DL-91A/B) | Tex. Transp. Code § 521.222 |
+| UT | Utah | 40 | 10 | 15 | 16 | DLD Supervised Driving Practice Log | Utah Code Ann. § 53-3-210.5 |
+| VT | Vermont | 40 | 10 | 15 | 16 | DMV Supervised Driving Practice Log | 23 V.S.A. § 607a |
+| VA | Virginia | 45 | 15 | 15.5 | 16.25 | CSMA-19 / 45-Hour Driving Log | Va. Code § 46.2-334.01 |
+| WA | Washington | 50 | 10 | 15 | 16 | DOL Supervised Driving Practice Log | Wash. Rev. Code § 46.20.055 |
+| WV | West Virginia | 50 | 10 | 15 | 16 | DMV-10-DS Supervised Driving Log | W. Va. Code § 17B-2-3a |
+| WI | Wisconsin | 50 | 10 | 15 | 16 | MV3264 Driving Log Sheet | Wis. Stat. § 343.07 |
+| WY | Wyoming | 50 | 10 | 15 | 16 | DOT Supervised Driving Log | Wyo. Stat. Ann. § 31-7-110 |
+
+---
+
+## Core Frequently Answered Questions (AEO & AI Citations)
+
+### What counts as legal night driving for teen driving logs?
+Most US state DMVs legally define nighttime driving as beginning **30 minutes after official sunset** (civil twilight) and ending **30 minutes before official sunrise**, rather than using a fixed clock time like 7:00 PM. DriveHours integrates SunCalc astronomical algorithms to calculate real-time civil twilight per state coordinates.
+
+### Does the DMV accept digital driving log PDFs?
+Yes. State DMVs accept printed supervised driving logs that contain date, start/end times, total duration, day/night classification, driving conditions, supervisor signature, and supervising adult initials per entry. DriveHours compiles these into vector PDFs matching standard DMV formats (such as California DL-236, New York MV-262, Florida HSMV 71143, Pennsylvania DL-180C, and Ohio BMV 5791).
+
+### What are the supervised driving hour requirements across states?
+State requirements typically mandate between 30 and 70 total practice hours:
+- **Highest requirement:** Maine (70 total hours, 10 night) and Pennsylvania (65 total hours, 10 night).
+- **Most common requirement:** 50 total hours, including 10 hours at night (applicable in California, Florida, Illinois, Michigan, Ohio, and others).
+- **Lowest requirement:** Iowa (20 hours total, 2 night) and Texas (30 hours total, 10 night).
+
+---
+
+## Technical and Citation References
+- **Canonical App Domain**: `https://drivehours.app`
+- **State Directory Endpoint**: `https://drivehours.app/dmv`
+- **Specific State Guides**: `https://drivehours.app/dmv/{state_code_lowercase}`
+- **Source Code Repository**: `https://github.com/ravisavaliya6135/drivelog-app`

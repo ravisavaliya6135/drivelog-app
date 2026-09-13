@@ -37,7 +37,7 @@ export function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedState] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('drivelog-state') || 'CA';
+      return localStorage.getItem('drivehours-state') || localStorage.getItem('drivelog-state') || 'CA';
     }
     return 'CA';
   });
@@ -201,26 +201,32 @@ export function Home() {
   return (
     <div className="space-y-5 animate-fade-in">
       
-      {/* 1. Main Overall Progress Card */}
-      <section className="app-card-glow p-5 sm:p-7 space-y-5 border border-teal-500/25">
+      {/* 1. Main Overall Progress Card (Digital Cockpit Instrument Cluster) */}
+      <section className="app-card-glow p-6 sm:p-8 space-y-6 border border-teal-500/30 relative overflow-hidden">
+        {/* Subtle Specular Top Highlight */}
+        <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-teal-400/50 to-transparent" />
+
         {/* Card Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-xl bg-teal-500/15 text-teal-400 border border-teal-500/20 shadow-sm">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-teal-500/15 text-teal-400 border border-teal-500/25 shadow-sm">
               <ShieldCheck className="w-4 h-4" strokeWidth={1.75} />
             </span>
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              <Link to="/dmv" className="hover:text-teal-600 dark:hover:text-teal-300 transition-colors">
-                {state.name} Requirement
+            <div>
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
+                DMV Requirement
+              </span>
+              <Link to="/dmv" className="text-xs font-bold text-slate-200 hover:text-teal-300 transition-colors">
+                {state.name} Compliance
               </Link>
-            </span>
+            </div>
           </div>
           
           <span className={cn(
-            'text-xs font-extrabold px-3 py-1 rounded-full border',
+            'text-xs font-extrabold px-3 py-1.5 rounded-full border shadow-sm',
             isTotalComplete
-              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-              : 'bg-teal-500/10 text-teal-300 border-teal-500/20'
+              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/35 shadow-[0_0_12px_rgba(16,185,129,0.3)]'
+              : 'bg-teal-500/15 text-teal-300 border-teal-500/30 shadow-[0_0_12px_rgba(20,184,166,0.25)]'
           )}>
             {isTotalComplete ? 'Goal Met ✓' : `${totalProgress}% Complete`}
           </span>
@@ -228,73 +234,77 @@ export function Home() {
 
         {/* Hero Hours Display */}
         <div className="flex items-baseline justify-between pt-1">
-          <div className="flex items-baseline gap-2">
-            <span className="font-mono text-5xl sm:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-300 tabular-nums tracking-tight drop-shadow-sm">
+          <div className="flex items-baseline gap-2.5">
+            <span className="font-mono text-5xl sm:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-300 tabular-nums tracking-tight drop-shadow-[0_2px_15px_rgba(255,255,255,0.25)]">
               {totalHoursVal}
             </span>
-            <span className="text-xl sm:text-2xl font-bold text-slate-400 dark:text-slate-400">
+            <span className="text-xl sm:text-2xl font-bold text-slate-400">
               / {state.requiredHours} hrs
             </span>
           </div>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300">
-            {remainingTotal}h left
-          </span>
+          <div className="text-right">
+            <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-slate-900/90 text-slate-300 border border-slate-700/70 inline-block">
+              {remainingTotal}h remaining
+            </span>
+          </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full h-4 bg-slate-100 dark:bg-slate-900/90 rounded-full overflow-hidden p-1 border border-slate-200/60 dark:border-slate-700/60 shadow-inner">
-          <div
-            className={cn(
-              'h-full rounded-full transition-all duration-700 shadow-sm',
-              isTotalComplete
-                ? 'bg-gradient-to-r from-emerald-400 to-teal-400 shadow-[0_0_15px_rgba(16,185,129,0.5)]'
-                : 'bg-gradient-to-r from-teal-400 via-teal-500 to-emerald-400 shadow-[0_0_15px_rgba(20,184,166,0.5)]'
-            )}
-            style={{ width: `${totalProgress}%` }}
-          />
+        {/* High-Performance Progress Bar */}
+        <div className="space-y-1.5">
+          <div className="w-full h-3.5 bg-slate-900/90 rounded-full overflow-hidden p-0.5 border border-slate-700/70 shadow-inner">
+            <div
+              className={cn(
+                'h-full rounded-full transition-all duration-700',
+                isTotalComplete
+                  ? 'bg-gradient-to-r from-emerald-400 to-teal-400 shadow-[0_0_15px_rgba(16,185,129,0.7)]'
+                  : 'bg-gradient-to-r from-teal-400 via-cyan-400 to-emerald-400 shadow-[0_0_15px_rgba(20,184,166,0.7)]'
+              )}
+              style={{ width: `${totalProgress}%` }}
+            />
+          </div>
         </div>
 
-        {/* Day & Night Breakdown Bento */}
-        <div className="grid grid-cols-2 gap-3 pt-1">
-          {/* Day */}
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#17233B]/75 border border-slate-200/70 dark:border-slate-700/60 space-y-2 hover:border-amber-500/40 transition-all">
+        {/* Day & Night Breakdown Bento Cards */}
+        <div className="grid grid-cols-2 gap-3.5 pt-1">
+          {/* Day Bento */}
+          <div className="p-4 rounded-2xl bg-[#131E35]/80 border border-slate-700/60 space-y-2 hover:border-amber-500/50 transition-all group">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
-                <Sun className="w-3.5 h-3.5 text-amber-400" strokeWidth={1.75} /> Day
+              <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                <Sun className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" strokeWidth={1.75} /> Day Practice
               </span>
-              <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{dayProgress}%</span>
+              <span className="text-xs font-bold text-amber-300">{dayProgress}%</span>
             </div>
-            <div className="flex items-baseline gap-1">
-              <span className="font-mono text-2xl font-extrabold text-slate-900 dark:text-white tabular-nums">{dayHoursVal}h</span>
-              <span className="text-xs text-slate-600 dark:text-slate-300">/ {state.requiredHours - state.requiredNightHours}h</span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-mono text-2xl font-extrabold text-white tabular-nums">{dayHoursVal}h</span>
+              <span className="text-xs text-slate-400">/ {state.requiredHours - state.requiredNightHours}h</span>
             </div>
-            <div className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-500" style={{ width: `${dayProgress}%` }} />
+            <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" style={{ width: `${dayProgress}%` }} />
             </div>
           </div>
 
-          {/* Night */}
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#17233B]/75 border border-slate-200/70 dark:border-slate-700/60 space-y-2 hover:border-indigo-500/40 transition-all">
+          {/* Night Bento */}
+          <div className="p-4 rounded-2xl bg-[#131E35]/80 border border-slate-700/60 space-y-2 hover:border-indigo-500/50 transition-all group">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
-                <Moon className="w-3.5 h-3.5 text-indigo-400" strokeWidth={1.75} /> Night
+              <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                <Moon className="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform" strokeWidth={1.75} /> Night Practice
               </span>
-              <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{nightProgress}%</span>
+              <span className="text-xs font-bold text-indigo-300">{nightProgress}%</span>
             </div>
-            <div className="flex items-baseline gap-1">
-              <span className="font-mono text-2xl font-extrabold text-slate-900 dark:text-white tabular-nums">{nightHoursVal}h</span>
-              <span className="text-xs text-slate-600 dark:text-slate-300">/ {state.requiredNightHours}h</span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-mono text-2xl font-extrabold text-white tabular-nums">{nightHoursVal}h</span>
+              <span className="text-xs text-slate-400">/ {state.requiredNightHours}h</span>
             </div>
-            <div className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full transition-all duration-500" style={{ width: `${nightProgress}%` }} />
+            <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-indigo-400 to-cyan-400 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" style={{ width: `${nightProgress}%` }} />
             </div>
           </div>
         </div>
       </section>
 
       {/* 2. Primary Start Drive Action & Quick Duration Chips */}
-      <section className="space-y-3.5">
-        {/* Main 64px CTA */}
+      <section className="space-y-4">
+        {/* Main 64px In-Car Cockpit CTA */}
         <button
           type="button"
           onClick={() => {
@@ -306,9 +316,9 @@ export function Home() {
             setShowTimerModal(true);
             updateModalUrl('timer');
           }}
-          className="w-full min-h-[64px] h-16 rounded-2xl bg-gradient-to-r from-teal-500 via-teal-600 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 active:scale-[0.98] text-white font-extrabold text-base shadow-[0_4px_25px_rgba(20,184,166,0.4)] hover:shadow-[0_6px_30px_rgba(20,184,166,0.55)] border border-teal-400/30 flex items-center justify-center gap-3 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 dark:focus:ring-offset-[#0B0F19]"
+          className="w-full min-h-[64px] h-16 rounded-2xl bg-gradient-to-r from-teal-500 via-teal-600 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 active:scale-[0.98] text-white font-extrabold text-base shadow-[0_4px_25px_rgba(20,184,166,0.4)] hover:shadow-[0_6px_35px_rgba(20,184,166,0.6)] border border-teal-400/30 flex items-center justify-center gap-3 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 dark:focus:ring-offset-[#080C14] group"
         >
-          <Play className="w-6 h-6 fill-white" strokeWidth={1.75} />
+          <Play className="w-6 h-6 fill-white group-hover:scale-110 transition-transform" strokeWidth={1.75} />
           <span>Start Driving Session</span>
         </button>
 
@@ -344,7 +354,7 @@ export function Home() {
                 type="button"
                 onClick={() => handleQuickDuration(mins)}
                 aria-label={`Log ${label} drive`}
-                className="min-h-[50px] py-3 px-3 rounded-2xl bg-white dark:bg-[#131C2E]/90 border border-slate-200/90 dark:border-slate-700/70 hover:border-teal-500/60 hover:bg-teal-50/60 dark:hover:bg-teal-950/40 text-slate-800 dark:text-slate-100 font-extrabold text-xs shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)] transition-all active:scale-95 flex items-center justify-center gap-1 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="min-h-[52px] py-3 px-3 rounded-2xl bg-white dark:bg-[#111C33]/90 border border-slate-200/90 dark:border-slate-700/70 hover:border-teal-500/60 hover:bg-teal-50/60 dark:hover:bg-teal-950/40 text-slate-800 dark:text-slate-100 font-extrabold text-xs shadow-sm hover:shadow-[0_0_18px_rgba(20,184,166,0.25)] transition-all active:scale-95 flex items-center justify-center gap-1 focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
                 <span>{label}</span>
               </button>

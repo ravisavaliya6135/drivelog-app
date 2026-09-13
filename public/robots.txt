@@ -5,4 +5,30 @@ Disallow: /*?*modal=*
 Disallow: /*?*payment=*
 Disallow: /*?*edit=*
 
+# AI Search & Retrieval Crawlers (GEO)
+User-agent: GPTBot
+Allow: /
+Disallow: /settings
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /settings
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /settings
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /settings
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /settings
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /settings
+
 Sitemap: https://drivehours.app/sitemap.xml
+

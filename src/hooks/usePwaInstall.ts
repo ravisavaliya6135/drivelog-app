@@ -31,14 +31,14 @@ interface BeforeInstallPromptEvent extends Event {
 
 declare global {
   interface Window {
-    __drivelogPwaDeferredPrompt?: BeforeInstallPromptEvent | null;
+    __drivehoursPwaDeferredPrompt?: BeforeInstallPromptEvent | null;
   }
 }
 
 export function usePwaInstall(): PwaInstallState {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(() => {
-    if (typeof window !== 'undefined' && window.__drivelogPwaDeferredPrompt) {
-      return window.__drivelogPwaDeferredPrompt;
+    if (typeof window !== 'undefined' && window.__drivehoursPwaDeferredPrompt) {
+      return window.__drivehoursPwaDeferredPrompt;
     }
     return null;
   });
@@ -86,14 +86,14 @@ export function usePwaInstall(): PwaInstallState {
     setIsMobile(isMobileDevice);
 
     // Check if dismissed in this session
-    const isDismissed = sessionStorage.getItem('drivelog_pwa_dismissed') === 'true';
+    const isDismissed = sessionStorage.getItem('drivehours_pwa_dismissed') === 'true';
 
     // If pre-captured prompt already exists, set it and trigger timer
-    if (window.__drivelogPwaDeferredPrompt && !deferredPrompt) {
-      setDeferredPrompt(window.__drivelogPwaDeferredPrompt);
+    if (window.__drivehoursPwaDeferredPrompt && !deferredPrompt) {
+      setDeferredPrompt(window.__drivehoursPwaDeferredPrompt);
       if (!isDismissed && !standalone && isMobileDevice) {
         setTimeout(() => {
-          if (!sessionStorage.getItem('drivelog_pwa_dismissed')) {
+          if (!sessionStorage.getItem('drivehours_pwa_dismissed')) {
             setShowPrompt(true);
           }
         }, 3000);
@@ -104,13 +104,13 @@ export function usePwaInstall(): PwaInstallState {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       const promptEvent = e as BeforeInstallPromptEvent;
-      window.__drivelogPwaDeferredPrompt = promptEvent;
+      window.__drivehoursPwaDeferredPrompt = promptEvent;
       setDeferredPrompt(promptEvent);
 
       // Delay prompt slightly (3s) so user has interacted with the app first
-      if (!sessionStorage.getItem('drivelog_pwa_dismissed') && !standalone && isMobileDevice) {
+      if (!sessionStorage.getItem('drivehours_pwa_dismissed') && !standalone && isMobileDevice) {
         setTimeout(() => {
-          if (!sessionStorage.getItem('drivelog_pwa_dismissed')) {
+          if (!sessionStorage.getItem('drivehours_pwa_dismissed')) {
             setShowPrompt(true);
           }
         }, 3000);
@@ -119,11 +119,11 @@ export function usePwaInstall(): PwaInstallState {
 
     // Custom event dispatched from early index.html script
     const handleEarlyPromptAvailable = () => {
-      if (window.__drivelogPwaDeferredPrompt) {
-        setDeferredPrompt(window.__drivelogPwaDeferredPrompt);
-        if (!sessionStorage.getItem('drivelog_pwa_dismissed') && !standalone && isMobileDevice) {
+      if (window.__drivehoursPwaDeferredPrompt) {
+        setDeferredPrompt(window.__drivehoursPwaDeferredPrompt);
+        if (!sessionStorage.getItem('drivehours_pwa_dismissed') && !standalone && isMobileDevice) {
           setTimeout(() => {
-            if (!sessionStorage.getItem('drivelog_pwa_dismissed')) {
+            if (!sessionStorage.getItem('drivehours_pwa_dismissed')) {
               setShowPrompt(true);
             }
           }, 3000);
@@ -134,7 +134,7 @@ export function usePwaInstall(): PwaInstallState {
     // For iOS Safari: Show subtle prompt after interaction if not dismissed and not standalone
     if (isIosDevice && !standalone && !isDismissed) {
       const timer = setTimeout(() => {
-        if (!sessionStorage.getItem('drivelog_pwa_dismissed')) {
+        if (!sessionStorage.getItem('drivehours_pwa_dismissed')) {
           setShowPrompt(true);
         }
       }, 3500);
@@ -149,16 +149,16 @@ export function usePwaInstall(): PwaInstallState {
       setShowPrompt(false);
       setShowIosInstructions(false);
       setDeferredPrompt(null);
-      window.__drivelogPwaDeferredPrompt = null;
+      window.__drivehoursPwaDeferredPrompt = null;
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('drivelog-pwa-prompt-available', handleEarlyPromptAvailable);
+    window.addEventListener('drivehours-pwa-prompt-available', handleEarlyPromptAvailable);
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('drivelog-pwa-prompt-available', handleEarlyPromptAvailable);
+      window.removeEventListener('drivehours-pwa-prompt-available', handleEarlyPromptAvailable);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, [deferredPrompt]);
@@ -170,7 +170,7 @@ export function usePwaInstall(): PwaInstallState {
       return;
     }
 
-    const activePrompt = deferredPrompt || window.__drivelogPwaDeferredPrompt;
+    const activePrompt = deferredPrompt || window.__drivehoursPwaDeferredPrompt;
 
     if (activePrompt) {
       try {
@@ -181,7 +181,7 @@ export function usePwaInstall(): PwaInstallState {
           setShowPrompt(false);
         }
         setDeferredPrompt(null);
-        window.__drivelogPwaDeferredPrompt = null;
+        window.__drivehoursPwaDeferredPrompt = null;
       } catch {
         setShowIosInstructions(true);
       }
@@ -192,7 +192,7 @@ export function usePwaInstall(): PwaInstallState {
 
   const dismissPrompt = useCallback(() => {
     setShowPrompt(false);
-    sessionStorage.setItem('drivelog_pwa_dismissed', 'true');
+    sessionStorage.setItem('drivehours_pwa_dismissed', 'true');
   }, []);
 
   const openIosInstructions = useCallback(() => {

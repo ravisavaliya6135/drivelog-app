@@ -31,15 +31,15 @@
 
     <!-- PWA Install Interception Script -->
     <script>
-      window.__drivelogPwaDeferredPrompt = null;
+      window.__drivehoursPwaDeferredPrompt = null;
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
-        window.__drivelogPwaDeferredPrompt = e;
-        window.dispatchEvent(new CustomEvent('drivelog-pwa-prompt-available'));
+        window.__drivehoursPwaDeferredPrompt = e;
+        window.dispatchEvent(new CustomEvent('drivehours-pwa-prompt-available'));
       });
       window.addEventListener('appinstalled', () => {
-        window.__drivelogPwaDeferredPrompt = null;
-        window.dispatchEvent(new CustomEvent('drivelog-pwa-installed'));
+        window.__drivehoursPwaDeferredPrompt = null;
+        window.dispatchEvent(new CustomEvent('drivehours-pwa-installed'));
       });
     </script>
 
@@ -60,6 +60,37 @@
     <meta name="twitter:description" content="Offline-first supervised driving practice log for teen drivers. Track day & night hours, manage supervisors, and export official DMV-ready PDFs." />
     <meta name="twitter:image" content="https://drivehours.app/og-image.png" />
 
+    <!-- JSON-LD Structured Data: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://drivehours.app/#organization",
+      "name": "DriveHours",
+      "url": "https://drivehours.app/",
+      "logo": "https://drivehours.app/pwa-512x512.png",
+      "sameAs": [
+        "https://github.com/ravisavaliya6135/drivelog-app",
+        "https://twitter.com/drivelogapp"
+      ],
+      "description": "Developer of DriveHours, an offline-first supervised teen driving log application for US learner permit drivers."
+    }
+    </script>
+
+    <!-- JSON-LD Structured Data: WebSite -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": "https://drivehours.app/#website",
+      "url": "https://drivehours.app/",
+      "name": "DriveHours",
+      "publisher": {
+        "@id": "https://drivehours.app/#organization"
+      }
+    }
+    </script>
+
     <!-- JSON-LD Structured Data: WebApplication -->
     <script type="application/ld+json">
     {
@@ -72,6 +103,9 @@
       "url": "https://drivehours.app/",
       "applicationCategory": "UtilitiesApplication",
       "operatingSystem": "iOS, Android, Windows, macOS, ChromeOS (PWA)",
+      "publisher": {
+        "@id": "https://drivehours.app/#organization"
+      },
       "offers": [
         {
           "@type": "Offer",

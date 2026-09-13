@@ -45,7 +45,7 @@ async function trySyncPending(): Promise<boolean> {
     );
 
     if (error) {
-      console.warn('[DriveLog Feedback] Sync deferred:', error.message);
+      console.warn('[DriveHours Feedback] Sync deferred:', error.message);
       for (const f of batch) {
         await db.put('feedback', { ...f, status: 'failed' as const });
       }
@@ -57,7 +57,7 @@ async function trySyncPending(): Promise<boolean> {
     }
     return true;
   } catch (err) {
-    console.warn('[DriveLog Feedback] Sync skipped:', err);
+    console.warn('[DriveHours Feedback] Sync skipped:', err);
     return false;
   }
 }
