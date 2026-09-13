@@ -78,7 +78,7 @@ define(['./workbox-2427537b'], (function (workbox) { 'use strict';
    */
   workbox.precacheAndRoute([{
     "url": "index.html",
-    "revision": "0.6q3ecb5hht4"
+    "revision": "0.8jj08m5qbhs"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
@@ -89,26 +89,36 @@ define(['./workbox-2427537b'], (function (workbox) { 'use strict';
   }) => request.destination === "document", new workbox.NetworkFirst({
     "cacheName": "html-cache",
     plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 10
+      maxEntries: 10,
+      maxAgeSeconds: 2592000
     })]
   }), 'GET');
   workbox.registerRoute(({
     request
   }) => request.destination === "style", new workbox.StaleWhileRevalidate({
     "cacheName": "css-cache",
-    plugins: []
+    plugins: [new workbox.ExpirationPlugin({
+      maxEntries: 50,
+      maxAgeSeconds: 2592000
+    })]
   }), 'GET');
   workbox.registerRoute(({
     request
   }) => request.destination === "font", new workbox.StaleWhileRevalidate({
     "cacheName": "font-cache",
-    plugins: []
+    plugins: [new workbox.ExpirationPlugin({
+      maxEntries: 50,
+      maxAgeSeconds: 2592000
+    })]
   }), 'GET');
   workbox.registerRoute(({
     request
   }) => request.destination === "image", new workbox.CacheFirst({
     "cacheName": "image-cache",
-    plugins: []
+    plugins: [new workbox.ExpirationPlugin({
+      maxEntries: 50,
+      maxAgeSeconds: 2592000
+    })]
   }), 'GET');
 
 }));
