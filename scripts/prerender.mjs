@@ -47,6 +47,8 @@ let generated = 0;
 const publicPages = [
   ['/dmv', 'Teen Driving Log Requirements by State (All 50) | DriveHours', 'Browse supervised driving hour requirements, night-hour rules, and official DMV log forms for all 50 US states.'],
   ['/night-driving-hours', 'How Many Night Driving Hours Are Required? | DriveHours', 'See supervised driving and night-hour requirements for every US state, then keep a clear practice log before your road test.'],
+  ['/50-hour-driving-log', '50-Hour Driving Log: How to Track Supervised Practice | DriveHours', 'Learn what to record in a supervised driving log, how to track day and night practice, and where to check your state’s required hours.'],
+  ['/does-dmv-check-driving-hours', 'Does the DMV Check Your Driving Hours? | DriveHours', 'Understand how to prepare a clear supervised-practice record, when signatures or affidavits may be needed, and why you should check your state’s rules.'],
   ['/about', 'About DriveHours — Why We Built It | DriveHours', "Why we built an offline-first, ad-free driving hours tracker for teens and parents."],
   ['/help', 'Help Center | DriveHours', 'Answers about logging drives, night hours, parent verification, offline PDF export, and DriveHours Pro.'],
   ['/privacy', 'Privacy Policy | DriveHours', 'What DriveHours stores on your device, what leaves it, and why.'],
@@ -138,7 +140,7 @@ for (const state of stateData) {
 console.log(`[prerender] Generated ${generated} static /dmv/:stateCode pages into dist/dmv/`);
 
 // Regenerate sitemap.xml including all state guide URLs (replaces public/sitemap.xml in dist)
-const staticPaths = ['/', '/about', '/help', '/privacy', '/terms', '/contact', '/dmv', '/night-driving-hours'];
+const staticPaths = ['/', '/about', '/help', '/privacy', '/terms', '/contact', '/dmv', '/night-driving-hours', '/50-hour-driving-log', '/does-dmv-check-driving-hours'];
 const today = new Date().toISOString().split('T')[0];
 const urls = [
   ...staticPaths.map(
