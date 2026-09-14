@@ -21,3 +21,12 @@ test('global CSS keeps the reduced-motion safety net', async () => {
   assert.match(css, /animation-duration: 0\.01ms !important/);
   assert.match(css, /transition-duration: 0\.01ms !important/);
 });
+
+test('animated presence honors reduced motion and keeps exit state explicit', async () => {
+  const hook = await source('src/hooks/useAnimatedPresence.ts');
+
+  assert.match(hook, /export function useAnimatedPresence\(/);
+  assert.match(hook, /'entering' \| 'entered' \| 'exiting'/);
+  assert.match(hook, /prefers-reduced-motion: reduce/);
+  assert.match(hook, /window\.setTimeout/);
+});
