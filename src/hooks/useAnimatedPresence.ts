@@ -21,8 +21,11 @@ export function useAnimatedPresence(isOpen: boolean, exitDurationMs = 160): Anim
     } else {
       setPhase('exiting');
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const duration = reducedMotion ? 0 : exitDurationMs;
-      timeoutId = window.setTimeout(() => setShouldRender(false), duration);
+      if (reducedMotion) {
+        setShouldRender(false);
+      } else {
+        timeoutId = window.setTimeout(() => setShouldRender(false), exitDurationMs);
+      }
     }
 
     return () => {
