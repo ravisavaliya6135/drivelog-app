@@ -47,7 +47,7 @@ export function NightDrivingHoursGuide() {
           How Many Night Driving Hours Are Required?
         </h1>
         <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-          Night-driving requirements vary by state. Use this table to find your total supervised-practice target and night-hour target, then check your state guide before your road test.
+          Your required night-driving hours depend on your state. Use this table to find your supervised-practice target and night-hour target, then check your state guide before your road test.
         </p>
       </header>
 
@@ -89,6 +89,14 @@ export function NightDrivingHoursGuide() {
               ))}
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <section className="app-card p-5 space-y-3">
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Related driving-log guides</h2>
+        <div className="flex flex-col gap-2 text-sm font-semibold">
+          <Link to="/50-hour-driving-log" className="text-teal-700 hover:underline dark:text-teal-300">Learn what to include in a 50-hour driving log</Link>
+          <Link to="/does-dmv-check-driving-hours" className="text-teal-700 hover:underline dark:text-teal-300">Prepare a clear record for your licensing appointment</Link>
         </div>
       </section>
 

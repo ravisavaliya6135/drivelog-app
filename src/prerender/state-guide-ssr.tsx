@@ -8,6 +8,8 @@ import { PrivacyPolicy } from '../pages/PrivacyPolicy';
 import { TermsOfUse } from '../pages/TermsOfUse';
 import { ContactFeedback } from '../pages/ContactFeedback';
 import { NightDrivingHoursGuide } from '../pages/NightDrivingHoursGuide';
+import { FiftyHourDrivingLogGuide } from '../pages/FiftyHourDrivingLogGuide';
+import { DmvDrivingHoursVerificationGuide } from '../pages/DmvDrivingHoursVerificationGuide';
 import { US_STATES } from '../types';
 export { getStateGuideCanonical, getStateGuideSeo } from '../content/stateGuideSeo';
 
@@ -35,6 +37,8 @@ export function renderPublicPage(path: string): string {
       <Routes>
         <Route path="/dmv" element={<StateGuideIndex />} />
         <Route path="/night-driving-hours" element={<NightDrivingHoursGuide />} />
+        <Route path="/50-hour-driving-log" element={<FiftyHourDrivingLogGuide />} />
+        <Route path="/does-dmv-check-driving-hours" element={<DmvDrivingHoursVerificationGuide />} />
         <Route path="/about" element={<About />} />
         <Route path="/help" element={<HelpCenter />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />

@@ -6,6 +6,7 @@ import { useSeo } from '../hooks/useSeo';
 import { getStateGuideCanonical, getStateGuideSeo } from '../content/stateGuideSeo';
 
 const SITE_URL = 'https://drivehours.app';
+const priorityContentStateCodes = new Set(['CA', 'NC', 'OH']);
 
 function formatAge(age?: number): string {
   if (age === undefined) return 'Varies — check DMV';
@@ -64,6 +65,7 @@ export function StateGuide() {
   const dayHoursNeeded = state.requiredHours - state.requiredNightHours;
   const otherStates = US_STATES.filter(s => s.code !== state.code).slice(0, 11);
   const year = new Date().getFullYear();
+  const showContentCluster = priorityContentStateCodes.has(state.code);
 
   // Structured data: BreadcrumbList + Article with Speakable
   const jsonLdSchemas = [
@@ -284,6 +286,17 @@ export function StateGuide() {
           </li>
         </ul>
       </section>
+
+      {showContentCluster && (
+        <section className="app-card p-5 space-y-3" aria-labelledby="related-driving-log-guides">
+          <h2 id="related-driving-log-guides" className="text-base font-bold text-slate-900 dark:text-white">Helpful driving-log guides</h2>
+          <ul className="space-y-2 text-sm font-semibold">
+            <li><Link to="/night-driving-hours" className="text-teal-700 hover:underline dark:text-teal-300">See how night driving hours vary by state</Link></li>
+            <li><Link to="/50-hour-driving-log" className="text-teal-700 hover:underline dark:text-teal-300">Learn what to include in a 50-hour driving log</Link></li>
+            <li><Link to="/does-dmv-check-driving-hours" className="text-teal-700 hover:underline dark:text-teal-300">Prepare a clear record for your licensing appointment</Link></li>
+          </ul>
+        </section>
+      )}
 
       {/* How DriveHours helps */}
       <section className="app-card p-5 space-y-3 bg-gradient-to-br from-teal-50/60 to-transparent dark:from-teal-950/30">
