@@ -7,6 +7,30 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      keyframes: {
+        'fade-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        'fade-out': {
+          from: { opacity: '1' },
+          to: { opacity: '0' },
+        },
+        'slide-up': {
+          from: { opacity: '0', transform: 'translateY(16px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        'slide-down': {
+          from: { opacity: '1', transform: 'translateY(0)' },
+          to: { opacity: '0', transform: 'translateY(12px)' },
+        },
+      },
+      animation: {
+        'fade-in': 'fade-in 180ms ease-out both',
+        'fade-out': 'fade-out 140ms ease-in both',
+        'slide-up': 'slide-up 220ms cubic-bezier(0.16, 1, 0.3, 1) both',
+        'slide-down': 'slide-down 160ms ease-in both',
+      },
       colors: {
         brand: {
           midnight: '#0B0F19',
